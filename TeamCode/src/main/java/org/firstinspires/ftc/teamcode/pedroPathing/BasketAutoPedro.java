@@ -1,37 +1,56 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+
 import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.follower;
 
+import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import com.pedropathing.paths.*;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
-@Autonomous(name="BasketAuto)",preselectTeleOp = "TeleopMain")
+@Autonomous(name="BasketAutoPedro",preselectTeleOp = "TeleopMain")
 
 
 
-public class BasketAutoPedro extends LinearOpMode {
+public class BasketAutoPedro extends OpMode {
 
     public static double DISTANCE = 40;
     private boolean forward = true;
-
+    public static Follower follower;
     private Path forwards;
     private Path backwards;
 
-    private Path path;
+    private PathChain path;
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0)); // this is a way to define a pose
+    private final Pose endPose = new Pose(10, 2, Math.toRadians(3.14)); // this is a way to define a pose
 
     @Override
-    public void runOpMode() {
+    public void init() {
+        follower = Constants.createFollower(hardwareMap);
     }
-//        path = follower.pathBuilder()
-//            .addPath(new BezierLine(new Point(scorePose), new Point(pickup1Pose)))
-//            .setLinearHeadingInterpolation(scorePose.getHeading(), pickup1Pose.getHeading())
-//            .addPath(new BezierLine(new Point(pickup1Pose), new Point(scorePose)))
-//            .setLinearHeadingInterpolation(pickup1Pose.getHeading(), scorePose.getHeading())
-//            .build();
-//        follower.followPath(path);
+
+    public void start() {
+        path = follower.pathBuilder()
+                .addPath(new BezierLine(startPose, endPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), endPose.getHeading())
+                .build();
+
+        follower.followPath(path);
+    }
+
+    @Override
+    public void loop() {
+        follower.update();
+    }
+
+    public static void stopRobot() {
+        follower.startTeleopDrive(true);
+        follower.setTeleOpDrive(0,0,0,true);
+    }
+
     }
