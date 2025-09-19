@@ -35,11 +35,12 @@ public class BasketAutoPedro extends OpMode {
     }
 
     public void start() {
+        follower.activateDrive();
+
         path = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, endPose))
                 .setLinearHeadingInterpolation(startPose.getHeading(), endPose.getHeading())
                 .build();
-
         follower.followPath(path);
     }
 
