@@ -1,23 +1,19 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
 
-import static org.firstinspires.ftc.teamcode.pedroPathing.Tuning.follower;
-
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import com.pedropathing.paths.*;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
-@Autonomous(name="BasketAutoPedro",preselectTeleOp = "TeleopMain")
-
+@Autonomous(name="PedroAutoTest",preselectTeleOp = "TeleopMain")
 
 
-public class BasketAutoPedro extends OpMode {
+
+public class PedroAutoTest extends OpMode {
 
     public static double DISTANCE = 40;
     private boolean forward = true;

@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name="ArmTest", group="Iterative OpMode")
+@TeleOp(name="ShooterTest", group="Iterative OpMode")
 
 public class ShooterTest extends OpMode
 {
