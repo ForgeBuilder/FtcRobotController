@@ -15,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import java.util.HashMap;
 import java.util.Map;
 
+
 @TeleOp(name="TeleopMain")
 
 public class TeleopMain extends OpMode {
@@ -23,11 +24,11 @@ public class TeleopMain extends OpMode {
 
     // Initialise motor variables
 
-    private DcMotor rightFront = hardwareMap.get(DcMotor.class, "rf");
-    private DcMotor rightBack = hardwareMap.get(DcMotor.class, "rb");
+    private DcMotor rightFront;
+    private DcMotor rightBack;
 
-    private DcMotor leftFront = hardwareMap.get(DcMotor.class, "lf");
-    private DcMotor leftBack = hardwareMap.get(DcMotor.class, "lb");
+    private DcMotor leftFront;
+    private DcMotor leftBack;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -35,6 +36,12 @@ public class TeleopMain extends OpMode {
 
     @Override
     public void init() {
+        DcMotor rightFront = hardwareMap.get(DcMotor.class, "rf");
+        DcMotor rightBack = hardwareMap.get(DcMotor.class, "rb");
+
+        DcMotor leftFront = hardwareMap.get(DcMotor.class, "lf");
+        DcMotor leftBack = hardwareMap.get(DcMotor.class, "lb");
+
         telemetry.addData("Status", "Initialized");
 
         leftFront.setDirection(DcMotor.Direction.REVERSE);
@@ -96,6 +103,7 @@ public class TeleopMain extends OpMode {
             Strafe = Strafe * slowdown;
             turn = turn * slowdown;
 
+            //thiz iz giving me null pointer exzecptionz for zome reazon vvv it zayz the referencez to the motorz are null objectz.. what??
 
             //setpower for drive
             leftFront.setPower(forward + Strafe + turn);

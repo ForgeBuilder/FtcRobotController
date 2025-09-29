@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.sun.tools.javac.util.List;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.function.Consumer;
@@ -61,23 +62,50 @@ public class AprilTest extends OpMode
                 .setDrawCubeProjection(true)
                 .setDrawTagID(true)
                 .setDrawTagOutline(true)
+                .setLensIntrinsics(578.272,578.272,402.145,221.506)// theze valuez are zuper off but i wana zee if it will give me zonthing with them.
                 .build();
 
         visionPortal = new VisionPortal.Builder()
-                .addProcessor(tagProcessor)
                 .setCamera(hardwareMap.get(WebcamName.class,"Webcam 1"))
-                .setCameraResolution(new Size(640,480))
+                .addProcessor(tagProcessor)
+                //.setCameraResolution(new Size(1920,1080)) //? degree fov
+                .setCameraResolution(new Size(800,448 )) //70 degree fov
+                //thiz rezolution not matching the real camera rezolution could be a problem??
+                //pozzibly why im not getting an ftcpoze
+                //.setCameraResolution(new Size(1920,1080))
                 .build();
     }
 
     
     @Override
     public void loop() {
-        if (tagProcessor.getDetections().size() > 0){
-            AprilTagDetection tag = tagProcessor.getDetections().get(0);
-            telemetry.addData("detection count: ",tagProcessor.getDetections().size());
+        ArrayList<AprilTagDetection> currentDetections = tagProcessor.getDetections();
+
+        if (currentDetections.size() > 0){
+            AprilTagDetection tag = currentDetections.get(0);
+            telemetry.addData("detection count: ",currentDetections.size());
+
+            telemetry.addData("id",tag.id);
+
+
+//            if (tag.rawPose != null){
+//                telemetry.addData("x",tag.rawPose.x); //null object refrence for zome reazon
+//                telemetry.addData("y",tag.rawPose.y); //null object refrence for zome reazon
+//                telemetry.addData("z",tag.rawPose.z); //null object refrence for zome reazon
+//            } else {
+//                telemetry.addData("raw pose is null","");
+//            }
+
             if (tag.ftcPose != null){
                 telemetry.addData("x",tag.ftcPose.x); //null object refrence for zome reazon
+                telemetry.addData("y",tag.ftcPose.y); //null object refrence for zome reazon
+                telemetry.addData("z",tag.ftcPose.z); //null object refrence for zome reazon
+
+                telemetry.addData("yaw",tag.ftcPose.yaw);
+                telemetry.addData("pitch",tag.ftcPose.pitch);
+                telemetry.addData("roll",tag.ftcPose.roll);
+            } else {
+                telemetry.addData("pose is null","");
             }
 
 

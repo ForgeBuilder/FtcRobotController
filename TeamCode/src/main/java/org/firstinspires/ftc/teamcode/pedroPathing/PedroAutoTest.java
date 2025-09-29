@@ -23,7 +23,9 @@ public class PedroAutoTest extends OpMode {
 
     private PathChain path;
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0)); // this is a way to define a pose
-    private final Pose endPose = new Pose(10, 2, Math.toRadians(3.14)); // this is a way to define a pose
+    private final Pose endPose = new Pose(10, 2, Math.toRadians(0)); // this is a way to define a pose
+
+    private final Pose nextendPose = new Pose(20, 0, Math.toRadians(3.14));
 
     @Override
     public void init() {
@@ -35,7 +37,8 @@ public class PedroAutoTest extends OpMode {
 
         path = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, endPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), endPose.getHeading())
+//                .addPath(new BezierLine(endPose, nextendPose))
+                .setLinearHeadingInterpolation(startPose.getHeading(), nextendPose.getHeading())
                 .build();
         follower.followPath(path);
     }
