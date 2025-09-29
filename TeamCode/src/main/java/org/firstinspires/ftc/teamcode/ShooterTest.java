@@ -26,15 +26,12 @@ public class ShooterTest extends OpMode
     
     @Override
     public void init() {
-        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
-        rightSlide = hardwareMap.get(DcMotor.class, "rightSlide");
-        rightArm = hardwareMap.get(DcMotor.class, "rightArm");
-    
-        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-        leftSlide = hardwareMap.get(DcMotor.class, "leftSlide");
-        leftArm = hardwareMap.get(DcMotor.class, "leftArm");
+        DcMotor rightFront = hardwareMap.get(DcMotor.class, "rf");
+        DcMotor rightBack = hardwareMap.get(DcMotor.class, "rb");
+        DcMotor leftFront = hardwareMap.get(DcMotor.class, "lf");
+        DcMotor leftBack = hardwareMap.get(DcMotor.class, "lb");
+
+
     }
 
     private boolean shooting = false;

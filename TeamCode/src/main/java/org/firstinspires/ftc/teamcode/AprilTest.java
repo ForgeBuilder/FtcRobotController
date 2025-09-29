@@ -5,8 +5,10 @@ import android.graphics.Canvas;
 import android.util.Size;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.function.Consumer;
@@ -36,17 +38,21 @@ public class AprilTest extends OpMode
     private DcMotor leftFront;
     private DcMotor leftBack;
 
+    private CRServo intakeServo;
+
     private AprilTagProcessor tagProcessor;
     private VisionPortal visionPortal;
 
 
     @Override
     public void init() {
-        rightFront = hardwareMap.get(DcMotor.class, "rf");
-        rightBack = hardwareMap.get(DcMotor.class, "rb");
-    
-        leftFront = hardwareMap.get(DcMotor.class, "lf");
-        leftBack = hardwareMap.get(DcMotor.class, "lb");
+//        rightFront = hardwareMap.get(DcMotor.class, "rf");
+//        rightBack = hardwareMap.get(DcMotor.class, "rb");
+//
+//        leftFront = hardwareMap.get(DcMotor.class, "lf");
+//        leftBack = hardwareMap.get(DcMotor.class, "lb");
+//
+//        intakeServo = hardwareMap.get(CRServo.class,"servo1");
 
         int idiot = 4;
 
@@ -69,9 +75,18 @@ public class AprilTest extends OpMode
     public void loop() {
         if (tagProcessor.getDetections().size() > 0){
             AprilTagDetection tag = tagProcessor.getDetections().get(0);
+            telemetry.addData("detection count: ",tagProcessor.getDetections().size());
+            if (tag.ftcPose != null){
+                telemetry.addData("x",tag.ftcPose.x); //null object refrence for zome reazon
+            }
 
-            telemetry.addData("x",tag.ftcPose.x);
+
         }
 
+//        if (gamepad1.x) {
+//            intakeServo.setPower(1.0);
+//        }
+        telemetry.addData("time",runtime.toString());
+        telemetry.update();
     }
 }

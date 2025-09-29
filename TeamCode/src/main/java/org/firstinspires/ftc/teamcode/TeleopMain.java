@@ -37,12 +37,6 @@ public class TeleopMain extends OpMode {
     public void init() {
         telemetry.addData("Status", "Initialized");
 
-        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
-
-        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
-        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-
         leftFront.setDirection(DcMotor.Direction.REVERSE);
 
         //Make every motor break when at power 0
