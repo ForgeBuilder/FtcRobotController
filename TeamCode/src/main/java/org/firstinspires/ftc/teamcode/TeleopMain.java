@@ -36,11 +36,11 @@ public class TeleopMain extends OpMode {
 
     @Override
     public void init() {
-        DcMotor rightFront = hardwareMap.get(DcMotor.class, "rf");
-        DcMotor rightBack = hardwareMap.get(DcMotor.class, "rb");
+        rightFront = hardwareMap.get(DcMotor.class, "rf");
+        rightBack = hardwareMap.get(DcMotor.class, "rb");
 
-        DcMotor leftFront = hardwareMap.get(DcMotor.class, "lf");
-        DcMotor leftBack = hardwareMap.get(DcMotor.class, "lb");
+        leftFront = hardwareMap.get(DcMotor.class, "lf");
+        leftBack = hardwareMap.get(DcMotor.class, "lb");
 
         telemetry.addData("Status", "Initialized");
 
@@ -106,6 +106,7 @@ public class TeleopMain extends OpMode {
             //thiz iz giving me null pointer exzecptionz for zome reazon vvv it zayz the referencez to the motorz are null objectz.. what??
 
             //setpower for drive
+
             leftFront.setPower(forward + Strafe + turn);
             leftBack.setPower(forward - (Strafe - turn));
             rightFront.setPower(forward - (Strafe + turn));
