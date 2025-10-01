@@ -1,34 +1,29 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.pedroPathing;
 
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
-import java.util.HashMap;
-import java.util.Map;
+@TeleOp(name="DecodeTeleopMain")
 
-
-@TeleOp(name="TeleopMain")
-
-public class TeleopMain extends OpMode {
+public class DecodeTeleopMain extends OpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
 
     // Initialise motor variables
-
     private DcMotor rightFront;
     private DcMotor rightBack;
 
     private DcMotor leftFront;
     private DcMotor leftBack;
+
+    //pedro
+    private PathChain path;
+    public static Follower follower;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -45,6 +40,7 @@ public class TeleopMain extends OpMode {
         telemetry.addData("Status", "Initialized");
 
         leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftBack.setDirection(DcMotor.Direction.REVERSE);
 
         //Make every motor break when at power 0
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -59,6 +55,9 @@ public class TeleopMain extends OpMode {
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
+
+        //pedro
+        follower = Constants.createFollower(hardwareMap);
     }
 
     /*
@@ -74,6 +73,15 @@ public class TeleopMain extends OpMode {
     @Override
     public void start() {
         runtime.reset();
+
+//        follower.activateDrive();
+
+//        path = follower.pathBuilder()
+//                .addPath(new BezierLine(startPose, endPose))
+////                .addPath(new BezierLine(endPose, nextendPose))
+//                .setLinearHeadingInterpolation(startPose.getHeading(), nextendPose.getHeading())
+//                .build();
+//        follower.followPath(path);
     }
 
     /*

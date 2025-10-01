@@ -45,7 +45,9 @@ public class PedroAutoTest extends OpMode {
 
     @Override
     public void loop() {
-        follower.update();
+        if (follower.isBusy()){
+            follower.update();
+        }
     }
 
     public static void stopRobot() {
