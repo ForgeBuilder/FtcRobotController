@@ -101,8 +101,28 @@ public class DecodeTeleopMain extends OpMode {
 
     final Pose startPose = new Pose(0, 0, Math.toRadians(0)); // this is a way to define a pose
 
+    Pose remembered_pose;
+
     @Override
     public void loop() {
+
+        if (gamepad1.aWasPressed()){
+            pose_tracker.update();
+            remembered_pose = follower.getPose();
+        }
+
+        if (gamepad1.bWasPressed()){
+            if (remembered_pose != null){
+                pose_tracker.update();
+                Pose current_pose = follower.getPose();
+                path = follower.pathBuilder()
+                        .addPath(new BezierLine(current_pose, remembered_pose))
+//                .addPath(new BezierLine(endPose, nextendPose))
+                        .setLinearHeadingInterpolation(current_pose.getHeading(), remembered_pose.getHeading())
+                        .build();
+                follower.followPath(path);
+            }
+        }
 
         if (gamepad1.xWasPressed()){
             pose_tracker.update();
