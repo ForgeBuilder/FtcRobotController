@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.localization.PoseTracker;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -27,6 +28,7 @@ public class DecodeTeleopMain extends OpMode {
     //pedro
     private PathChain path;
     public static Follower follower;
+    public static PoseTracker pose_tracker;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -56,6 +58,9 @@ public class DecodeTeleopMain extends OpMode {
 
         //pedro
         follower = Constants.createFollower(hardwareMap);
+        pose_tracker = follower.getPoseTracker();
+
+
     }
 
     /*
@@ -100,7 +105,7 @@ public class DecodeTeleopMain extends OpMode {
     public void loop() {
 
         if (gamepad1.xWasPressed()){
-            follower.update();
+            pose_tracker.update();
             Pose current_pose = follower.getPose();
             path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, endPose))
