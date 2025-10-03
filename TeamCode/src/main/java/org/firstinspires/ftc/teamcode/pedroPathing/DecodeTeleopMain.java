@@ -25,6 +25,8 @@ public class DecodeTeleopMain extends OpMode {
     private DcMotor leftFront;
     private DcMotor leftBack;
 
+    private DcMotor launchMotor;
+
     //pedro
     private PathChain path;
     public static Follower follower;
@@ -41,6 +43,8 @@ public class DecodeTeleopMain extends OpMode {
 
         leftFront = hardwareMap.get(DcMotor.class, "lf");
         leftBack = hardwareMap.get(DcMotor.class, "lb");
+
+        launchMotor = hardwareMap.get(DcMotor.class,"LaunchMotor");
 
         telemetry.addData("Status", "Initialized");
 
@@ -105,6 +109,14 @@ public class DecodeTeleopMain extends OpMode {
 
     @Override
     public void loop() {
+
+        
+
+        if (gamepad2.a){
+            launchMotor.setPower(1);
+        } else {
+            launchMotor.setPower(0);
+        }
 
         if (gamepad1.aWasPressed()){
             pose_tracker.update();
