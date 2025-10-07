@@ -8,6 +8,7 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -19,6 +20,7 @@ public class DecodeTeleopMain extends OpMode {
 
     // Initialise motor
     // variables
+    private Servo launchKickServo;
     private DcMotor rightFront;
     private DcMotor rightBack;
 
@@ -43,6 +45,8 @@ public class DecodeTeleopMain extends OpMode {
 
         leftFront = hardwareMap.get(DcMotor.class, "lf");
         leftBack = hardwareMap.get(DcMotor.class, "lb");
+
+        launchKickServo = hardwareMap.get(Servo.class,"launchKickServo");
 
         launchMotor = hardwareMap.get(DcMotor.class,"LaunchMotor");
 
@@ -107,12 +111,29 @@ public class DecodeTeleopMain extends OpMode {
 
     Pose remembered_pose;
 
+    boolean spin_launcher = false;
+
     @Override
     public void loop() {
 
-        
+        if (gamepad2.b) {
+            launchKickServo.setPosition(0.75);
+        } else {
+            launchKickServo.setPosition(1);
+        }
+            //way to troubleshoot servo positions
 
-        if (gamepad2.a){
+        if (gamepad2.left_stick_x != 0){
+            telemetry.addData("servo position",gamepad2.left_stick_x);
+            launchKickServo.setPosition(gamepad2.left_stick_x);
+        }
+
+
+        if (gamepad2.aWasPressed()){
+            spin_launcher = !spin_launcher;
+        }
+
+        if (spin_launcher){
             launchMotor.setPower(1);
         } else {
             launchMotor.setPower(0);
