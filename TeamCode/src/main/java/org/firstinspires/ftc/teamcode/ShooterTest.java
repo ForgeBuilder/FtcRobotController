@@ -13,7 +13,7 @@ public class ShooterTest extends OpMode
     private ElapsedTime runtime = new ElapsedTime();
     
     // Initialise motor variables
-    
+    // kill everyone
     private DcMotor rightFront = null;
     private DcMotor rightBack = null;
     private DcMotor rightSlide = null;
