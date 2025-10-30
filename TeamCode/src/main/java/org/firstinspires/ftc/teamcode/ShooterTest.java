@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="ShooterTest", group="Iterative OpMode")
 
+//evil burger
+
 public class ShooterTest extends OpMode
 {
     // Declare OpMode members.
