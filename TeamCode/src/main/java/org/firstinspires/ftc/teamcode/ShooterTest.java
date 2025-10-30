@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name="ShooterTest", group="Iterative OpMode")
+@TeleOp(name="Joebifen", group="Iterative OpMode")
 
 public class ShooterTest extends OpMode
 {
@@ -38,7 +38,7 @@ public class ShooterTest extends OpMode
     
     @Override
     public void loop() {
-        if (gamepad1.xWasPressed()){
+        if (gamepad1.x){
             shooting = !shooting;
         }
         if (shooting){
