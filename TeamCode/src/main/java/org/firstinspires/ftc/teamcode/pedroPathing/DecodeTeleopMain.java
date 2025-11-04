@@ -29,6 +29,7 @@ public class DecodeTeleopMain extends OpMode {
 
     private DcMotor launchMotor;
 
+    private DcMotor intakeMotor;
     //pedro
     private PathChain path;
     public static Follower follower;
@@ -49,6 +50,7 @@ public class DecodeTeleopMain extends OpMode {
         launchKickServo = hardwareMap.get(Servo.class,"launchKickServo");
 
         launchMotor = hardwareMap.get(DcMotor.class,"LaunchMotor");
+        intakeMotor = hardwareMap.get(DcMotor.class,"intake");
 
         telemetry.addData("Status", "Initialized");
 
@@ -112,6 +114,7 @@ public class DecodeTeleopMain extends OpMode {
     Pose remembered_pose;
 
     boolean spin_launcher = false;
+    boolean spin_intake = false;
 
     @Override
     public void loop() {
@@ -138,6 +141,17 @@ public class DecodeTeleopMain extends OpMode {
         } else {
             launchMotor.setPower(0);
         }
+
+        if (gamepad2.bWasPressed()){
+            spin_intake = !spin_intake;
+        }
+
+        if (spin_intake){
+            intakeMotor.setPower(1);
+        } else {
+            intakeMotor.setPower(0);
+        }
+
 
         if (gamepad1.aWasPressed()){
             pose_tracker.update();
