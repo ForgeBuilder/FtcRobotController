@@ -1,5 +1,5 @@
 import static
-com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE
+com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -31,5 +31,9 @@ public class TeleOpJava extends OpMode {
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
         leftDrive.setDirection(DcMotor.Direction.REVERSE);
         rightDrive.setDirection(DcMotor.Direction.FORWARD);
+    }
+
+    public void loop(){
+        telemetry.addData("nothing - ","nothing");
     }
 }

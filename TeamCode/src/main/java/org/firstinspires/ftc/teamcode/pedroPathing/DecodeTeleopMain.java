@@ -119,11 +119,14 @@ public class DecodeTeleopMain extends OpMode {
     @Override
     public void loop() {
 
-        if (gamepad2.b) {
-            launchKickServo.setPosition(0.75);
-        } else {
-            launchKickServo.setPosition(1);
-        }
+        launchKickServo.setPosition(gamepad2.left_stick_y);
+        telemetry.addData("Servo Angle: ",gamepad2.left_stick_y);
+
+//        if (gamepad2.x) {
+//            launchKickServo.setPosition(0.75);
+//        } else {
+//            launchKickServo.setPosition(1);
+//        }
             //way to troubleshoot servo positions
 
         if (gamepad2.left_stick_x != 0){
@@ -132,7 +135,7 @@ public class DecodeTeleopMain extends OpMode {
         }
 
 
-        if (gamepad2.aWasPressed()){
+        if (gamepad2.yWasPressed()){
             spin_launcher = !spin_launcher;
         }
 
@@ -142,7 +145,7 @@ public class DecodeTeleopMain extends OpMode {
             launchMotor.setPower(0);
         }
 
-        if (gamepad2.bWasPressed()){
+        if (gamepad2.aWasPressed()){
             spin_intake = !spin_intake;
         }
 
