@@ -17,9 +17,6 @@ public class TeleOpJava extends OpMode {
 
     private enum LaunchState {
         IDLE,
-        SPIN_UP,
-        LAUNCH,
-        LAUNCHING,
     }
     private LaunchState launchState;
     double leftPower;
@@ -33,10 +30,31 @@ public class TeleOpJava extends OpMode {
         rightDrive.setDirection(DcMotor.Direction.FORWARD);
         leftDrive.setZeroPowerBehavior(BRAKE);
         rightDrive.setZeroPowerBehavior(BRAKE);
+
         telemetry.addData("Status", "Initialized");
     }
+    @Override
+    public void init_loop() {
 
+    }
+
+    @Override
+    public void start() {
+
+    }
+    @Override
     public void loop(){
-        telemetry.addData("nothing - ","nothing");
+        arcadeDrive(-gamepad1.left_stick_y, gamepad1.right_stick_x);
+        telemetry.addData("State", launchState);
+        telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+    }
+    @Override
+    public void stop() {
+    }
+    void arcadeDrive(double forward, double rotate) {
+        leftPower = forward + rotate;
+        rightPower = forward - rotate;
+        leftDrive.setPower(leftPower);
+        rightDrive.setPower(rightPower);
     }
 }
