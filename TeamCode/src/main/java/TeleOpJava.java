@@ -31,6 +31,9 @@ public class TeleOpJava extends OpMode {
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
         leftDrive.setDirection(DcMotor.Direction.REVERSE);
         rightDrive.setDirection(DcMotor.Direction.FORWARD);
+        leftDrive.setZeroPowerBehavior(BRAKE);
+        rightDrive.setZeroPowerBehavior(BRAKE);
+        telemetry.addData("Status", "Initialized");
     }
 
     public void loop(){
