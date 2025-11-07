@@ -20,7 +20,11 @@ public class DecodeTeleopMain extends OpMode {
 
     // Initialise motor
     // variables
-    private Servo launchKickServo;
+    private Servo launchKickServo1;
+    private Servo launchKickServo2;
+
+    private double LaunchServoAngle = 0.35;
+
     private DcMotor rightFront;
     private DcMotor rightBack;
 
@@ -47,7 +51,8 @@ public class DecodeTeleopMain extends OpMode {
         leftFront = hardwareMap.get(DcMotor.class, "lf");
         leftBack = hardwareMap.get(DcMotor.class, "lb");
 
-        launchKickServo = hardwareMap.get(Servo.class,"launchKickServo");
+        launchKickServo1 = hardwareMap.get(Servo.class,"lks1");
+        launchKickServo2 = hardwareMap.get(Servo.class,"lks2");
 
         launchMotor = hardwareMap.get(DcMotor.class,"LaunchMotor");
         intakeMotor = hardwareMap.get(DcMotor.class,"intake");
@@ -119,21 +124,17 @@ public class DecodeTeleopMain extends OpMode {
     @Override
     public void loop() {
 
-        launchKickServo.setPosition(gamepad2.left_stick_y);
-        telemetry.addData("Servo Angle: ",gamepad2.left_stick_y);
+//        telemetry.addData("servo position",gamepad2.left_stick_x);
+//        launchKickServo1.setPosition(gamepad2.left_stick_x);
+//        launchKickServo2.setPosition(1-gamepad2.left_stick_y);
 
-//        if (gamepad2.x) {
-//            launchKickServo.setPosition(0.75);
-//        } else {
-//            launchKickServo.setPosition(1);
-//        }
-            //way to troubleshoot servo positions
-
-        if (gamepad2.left_stick_x != 0){
-            telemetry.addData("servo position",gamepad2.left_stick_x);
-            launchKickServo.setPosition(gamepad2.left_stick_x);
+        if (gamepad2.right_trigger>0.1) {
+            launchKickServo1.setPosition(LaunchServoAngle);
+            launchKickServo2.setPosition(1-LaunchServoAngle);
+        } else {
+            launchKickServo1.setPosition(0);
+            launchKickServo2.setPosition(1);
         }
-
 
         if (gamepad2.yWasPressed()){
             spin_launcher = !spin_launcher;
