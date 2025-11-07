@@ -8,9 +8,10 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
+import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 
 @TeleOp(name="DecodeTeleopMain")
 
@@ -31,13 +32,15 @@ public class DecodeTeleopMain extends OpMode {
     private DcMotor leftFront;
     private DcMotor leftBack;
 
-    private DcMotor launchMotor;
+    private DcMotorEx launchMotor;
 
     private DcMotor intakeMotor;
     //pedro
     private PathChain path;
     public static Follower follower;
     public static PoseTracker pose_tracker;
+
+
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -54,7 +57,9 @@ public class DecodeTeleopMain extends OpMode {
         launchKickServo1 = hardwareMap.get(Servo.class,"lks1");
         launchKickServo2 = hardwareMap.get(Servo.class,"lks2");
 
-        launchMotor = hardwareMap.get(DcMotor.class,"LaunchMotor");
+        launchMotor = hardwareMap.get(DcMotorEx.class,"LaunchMotor");
+        launchMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         intakeMotor = hardwareMap.get(DcMotor.class,"intake");
 
         telemetry.addData("Status", "Initialized");
@@ -116,7 +121,8 @@ public class DecodeTeleopMain extends OpMode {
 
     final Pose startPose = new Pose(0, 0, Math.toRadians(0)); // this is a way to define a pose
 
-    Pose remembered_pose;
+    //the initial remembered pose
+    private Pose remembered_pose = new Pose(0,0,Math.toRadians(0));
 
     boolean spin_launcher = false;
     boolean spin_intake = false;
@@ -140,8 +146,23 @@ public class DecodeTeleopMain extends OpMode {
             spin_launcher = !spin_launcher;
         }
 
+//        if gamepad2.dpadUpWasPressed(){
+//            //increase velocity variable
+//        }
+
         if (spin_launcher){
-            launchMotor.setPower(1);
+            //the 6000 motor has 28 ticks per revolution, so 6000 RPM (100RPS) would be 2800 reference.. possibly.
+            launchMotor.setVelocity(800); //ticks/s
+            telemetry.addData("launchmotor velocity",launchMotor.getVelocity());//ticks/s
+
+            //1200 can overshoot
+
+            //2000 can overshoot FROM FAR. dang.
+
+            //seting it to 6000 gives me 2400.. peculiar.. oh wait it's because that's the max. 6000 is 6000 ticks per second which is not possible.
+
+            //2800 ticks/s = 100 RPS
+            //2000 ticks/s = 71.4285714286 RPS
         } else {
             launchMotor.setPower(0);
         }
@@ -161,6 +182,10 @@ public class DecodeTeleopMain extends OpMode {
             pose_tracker.update();
             remembered_pose = follower.getPose();
         }
+        telemetry.addData("remembered pose information","");
+        telemetry.addData("heading",remembered_pose.getHeading());
+        telemetry.addData("x",remembered_pose.getX());
+        telemetry.addData("y",remembered_pose.getY());
 
         if (gamepad1.bWasPressed()){
             if (remembered_pose != null){
@@ -175,21 +200,24 @@ public class DecodeTeleopMain extends OpMode {
             }
         }
 
-        if (gamepad1.xWasPressed()){
-            pose_tracker.update();
-            Pose current_pose = follower.getPose();
-            path = follower.pathBuilder()
-                    .addPath(new BezierLine(current_pose, endPose))
-//                .addPath(new BezierLine(endPose, nextendPose))
-                    .setLinearHeadingInterpolation(current_pose.getHeading(), nextendPose.getHeading())
-                    .build();
-            follower.followPath(path);
-        }
-
+//        if (gamepad1.xWasPressed()){
+//            pose_tracker.update();
+//            Pose current_pose = follower.getPose();
+//            path = follower.pathBuilder()
+//                    .addPath(new BezierLine(current_pose, endPose))
+////                .addPath(new BezierLine(endPose, nextendPose))
+//                    .setLinearHeadingInterpolation(current_pose.getHeading(), nextendPose.getHeading())
+//                    .build();
+//            follower.followPath(path);
+//        }
+ 
 
         if (follower.isBusy()) {
             follower.update();
             follower_was_just_busy = true;
+            if (gamepad1.x){
+                follower.breakFollowing();
+            }
         } else {
             if (follower_was_just_busy == true){
                 rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -240,5 +268,25 @@ public class DecodeTeleopMain extends OpMode {
      */
     @Override
     public void stop() {
+    }
+
+    double integralSum = 0;
+    double Kp = 1;
+    double Ki = 0;
+    double Kd = 0;
+    double Kf = 0; //feedforward..??
+    ElapsedTime timer = new ElapsedTime();
+    double lastError = 0;
+
+    public double PIDControl(double reference,double state){
+        double error = reference - state;
+        integralSum += error * timer.seconds();
+        double derivitive = (error - lastError);
+        lastError = error;
+
+        timer.reset();
+
+        double output = (error * Kp) + (derivitive * Kd) + (integralSum * Ki) + (reference * Kf);
+        return output;
     }
 }

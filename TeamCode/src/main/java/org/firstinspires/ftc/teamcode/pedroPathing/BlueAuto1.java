@@ -23,9 +23,9 @@ public class BlueAuto1 extends OpMode {
 
     private PathChain path;
     private final Pose startPose = new Pose(0, 0, Math.toRadians(0)); // this is a way to define a pose
-    private final Pose endPose = new Pose(10, 2, Math.toRadians(0)); // this is a way to define a pose
-    private final Pose midPose = new Pose(15, 20, Math.toRadians(0));
-    private final Pose nextendPose = new Pose(20, 0, Math.toRadians(3.14));
+    private final Pose endPose = new Pose(20, 0, Math.toRadians(0)); // this is a way to define a pose
+//    private final Pose midPose = new Pose(15, 20, Math.toRadians(0));
+//    private final Pose nextendPose = new Pose(20, 0, Math.toRadians(3.14));
 
     @Override
     public void init() {
@@ -35,11 +35,13 @@ public class BlueAuto1 extends OpMode {
     public void start() {
         follower.activateDrive();
 
+        //becasue we start with the intake facing backwards and the intake faces forwards, we start backwards. thus this is vital.
+        follower.setPose(new Pose(0,0,Math.toRadians(180)));
+
         path = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, midPose))
-                .addPath(new BezierLine(midPose, startPose))
+                .addPath(new BezierLine(startPose, endPose))
 //                .addPath(new BezierLine(endPose, nextendPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), nextendPose.getHeading())
+                .setLinearHeadingInterpolation(startPose.getHeading(), endPose.getHeading())
                 .build();
         follower.followPath(path);
     }
@@ -48,15 +50,6 @@ public class BlueAuto1 extends OpMode {
     public void loop() {
         if (follower.isBusy()){
             follower.update();
-
-        } else {
-            path = follower.pathBuilder()
-                    .addPath(new BezierLine(startPose, midPose))
-                    .addPath(new BezierLine(midPose, startPose))
-//                .addPath(new BezierLine(endPose, nextendPose))
-                    .setLinearHeadingInterpolation(startPose.getHeading(), nextendPose.getHeading())
-                    .build();
-            follower.followPath(path);
         }
     }
 
