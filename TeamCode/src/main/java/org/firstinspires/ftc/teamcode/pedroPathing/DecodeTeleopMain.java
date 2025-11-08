@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 
 @TeleOp(name="DecodeTeleopMain")
 
@@ -40,7 +39,8 @@ public class DecodeTeleopMain extends OpMode {
     public static Follower follower;
     public static PoseTracker pose_tracker;
 
-    private int launcherTicksPerSecond = 900;
+    private int launcherSpeed = 900;
+    //ticks per second
 
 
 
@@ -98,6 +98,7 @@ public class DecodeTeleopMain extends OpMode {
     @Override
     public void start() {
         runtime.reset();
+        timeSinceShot.reset();
 
 //        follower.activateDrive();
 
@@ -129,6 +130,9 @@ public class DecodeTeleopMain extends OpMode {
     boolean spin_launcher = true;
     boolean spin_intake = true;
 
+    boolean kick = false;
+    private ElapsedTime timeSinceShot = new ElapsedTime();
+
     @Override
     public void loop() {
 
@@ -137,6 +141,22 @@ public class DecodeTeleopMain extends OpMode {
 //        launchKickServo2.setPosition(1-gamepad2.left_stick_y);
 
         if ((gamepad2.right_trigger>0.1)||(gamepad1.right_trigger>0.1)) {
+            spin_launcher = true;
+           if (launchMotor.getVelocity() >= (launcherSpeed-10)){
+               if (timeSinceShot.seconds() > 1.5){
+                   kick = true;
+                   timeSinceShot.reset();
+               }
+           }
+        } else {
+            spin_launcher = false;
+        }
+
+        if (timeSinceShot.seconds() > 0.5) {
+            kick = false;
+        }
+
+        if (kick) {
             launchKickServo1.setPosition(LaunchServoAngle);
             launchKickServo2.setPosition(1-LaunchServoAngle);
         } else {
@@ -144,9 +164,9 @@ public class DecodeTeleopMain extends OpMode {
             launchKickServo2.setPosition(1);
         }
 
-        if (gamepad2.yWasPressed()){
-            spin_launcher = !spin_launcher;
-        }
+//        if (gamepad2.yWasPressed()){
+//            spin_launcher = !spin_launcher;
+//        }
 
         //range change code
 
@@ -154,16 +174,16 @@ public class DecodeTeleopMain extends OpMode {
 
         //Still need a way to visually show this besides telemetry
         if (gamepad2.dpadUpWasPressed()||gamepad1.dpadUpWasPressed()){
-            launcherTicksPerSecond += 100;
-            launcherTicksPerSecond = Math.max(Math.min(launcherTicksPerSecond,1000),600);
+            launcherSpeed += 100;
+            launcherSpeed = Math.max(Math.min(launcherSpeed,1800),600);
         } else if (gamepad2.dpadDownWasPressed()||gamepad1.dpadDownWasPressed()) {
-            launcherTicksPerSecond -= 100;
-            launcherTicksPerSecond = Math.max(Math.min(launcherTicksPerSecond,1000),600);
+            launcherSpeed -= 100;
+            launcherSpeed = Math.max(Math.min(launcherSpeed,1800),600);
         }
 
         if (spin_launcher){
             //the 6000 motor has 28 ticks per revolution, so 6000 RPM (100RPS) would be 2800 reference.. possibly.
-            launchMotor.setVelocity(launcherTicksPerSecond); //ticks/s
+            launchMotor.setVelocity(launcherSpeed); //ticks/s
             telemetry.addData("launchmotor velocity",launchMotor.getVelocity());//ticks/s
 
             //1200 can overshoot
@@ -178,16 +198,17 @@ public class DecodeTeleopMain extends OpMode {
             launchMotor.setPower(0.05);
         }
 
-        if (gamepad2.aWasPressed()){
+        if (gamepad2.aWasPressed()||gamepad1.rightBumperWasPressed()){
             spin_intake = !spin_intake;
         }
 
         if (spin_intake){
             intakeMotor.setPower(1);
+        } else if(gamepad2.a||gamepad1.right_bumper) {
+            intakeMotor.setPower(-1);
         } else {
             intakeMotor.setPower(0);
         }
-
 
         if (gamepad1.aWasPressed()){
             pose_tracker.update();
