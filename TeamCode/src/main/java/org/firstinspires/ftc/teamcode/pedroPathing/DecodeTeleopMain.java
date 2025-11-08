@@ -136,7 +136,7 @@ public class DecodeTeleopMain extends OpMode {
 //        launchKickServo1.setPosition(gamepad2.left_stick_x);
 //        launchKickServo2.setPosition(1-gamepad2.left_stick_y);
 
-        if ((gamepad2.right_trigger>0.1)||(gamepad1.left_trigger>0.1)) {
+        if ((gamepad2.right_trigger>0.1)||(gamepad1.right_trigger>0.1)) {
             launchKickServo1.setPosition(LaunchServoAngle);
             launchKickServo2.setPosition(1-LaunchServoAngle);
         } else {
