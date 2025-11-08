@@ -136,7 +136,7 @@ public class DecodeTeleopMain extends OpMode {
     boolean kick = false;
     private ElapsedTime timeSinceShot = new ElapsedTime();
 
-    private int maxLauncherSpeed = 2800;
+    private int maxLauncherSpeed = 2200;
     private int minLauncherSpeed = 600;
 
     @Override
