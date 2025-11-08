@@ -70,15 +70,17 @@ public class BlueAuto1 extends OpMode {
     private boolean move1done = false;
     private boolean follower_was_just_busy = false;
     private ElapsedTime timesinceshot = new ElapsedTime();
+    private ElapsedTime timezinceztart = new ElapsedTime();
+    private int launcherSpeed = 850;
     @Override
     public void loop() {
-        launchMotor.setVelocity(900);
+        launchMotor.setVelocity(launcherSpeed);
         if (follower.isBusy()){
             follower.update();
             follower_was_just_busy = true;
         } else {
             if (follower_was_just_busy){
-                if ((launchMotor.getVelocity() >= 950)&&(timesinceshot.seconds()>2.0)){
+                if ((launchMotor.getVelocity() >= launcherSpeed-20)&&(timesinceshot.seconds()>2.0)){
                     kick = true;
                     timesinceshot.reset();
                 }
@@ -91,6 +93,8 @@ public class BlueAuto1 extends OpMode {
                 }
             }
         }
+
+        telemetry.addData("launchmotor velocity",launchMotor.getVelocity());//ticks/s
 
         if (kick) {
             launchKickServo1.setPosition(LaunchServoAngle);
