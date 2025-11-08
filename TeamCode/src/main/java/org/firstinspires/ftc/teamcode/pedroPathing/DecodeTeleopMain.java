@@ -82,6 +82,9 @@ public class DecodeTeleopMain extends OpMode {
         follower = Constants.createFollower(hardwareMap);
         pose_tracker = follower.getPoseTracker();
 
+        //servo start position
+        launchKickServo1.setPosition(0);
+        launchKickServo2.setPosition(1);
 
     }
 

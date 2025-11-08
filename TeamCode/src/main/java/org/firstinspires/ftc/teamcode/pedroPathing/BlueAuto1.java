@@ -43,6 +43,10 @@ public class BlueAuto1 extends OpMode {
         launchMotor = hardwareMap.get(DcMotorEx.class,"LaunchMotor");
         launchMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         intakeMotor = hardwareMap.get(DcMotor.class,"intake");
+
+        //servo start position
+        launchKickServo1.setPosition(0);
+        launchKickServo2.setPosition(1);
     }
 
     public void start() {
@@ -69,7 +73,9 @@ public class BlueAuto1 extends OpMode {
     private Pose zkirtpoze = new Pose ();
     private boolean move1done = false;
     private boolean follower_was_just_busy = false;
-    private ElapsedTime timesinceshot = new ElapsedTime();
+
+    private boolean spin_launcher = false;
+    private ElapsedTime timeSinceShot = new ElapsedTime();
     private ElapsedTime timezinceztart = new ElapsedTime();
     private int launcherSpeed = 850;
     @Override
@@ -79,22 +85,40 @@ public class BlueAuto1 extends OpMode {
             follower.update();
             follower_was_just_busy = true;
         } else {
-            if (follower_was_just_busy){
-                if ((launchMotor.getVelocity() >= launcherSpeed-20)&&(timesinceshot.seconds()>2.0)){
-                    kick = true;
-                    timesinceshot.reset();
+            if (fired_count<=4) { //just incase it intakes another one lol
+                spin_launcher = true;
+                if (launchMotor.getVelocity() >= (launcherSpeed-10)){
+                    if (timeSinceShot.seconds() > 1.5){
+                        kick = true;
+                        timeSinceShot.reset();
+                    }
                 }
-                if (timesinceshot.seconds() > 0.5){
-                    kick = false;
-                    fired_count += 1;
-                }
-                if (fired_count >= 3){
-                    //do nothing lol
-                }
+            } else {
+                spin_launcher = false;
+            }
+
+            if (timeSinceShot.seconds() > 0.5) {
+                kick = false;
             }
         }
 
-        telemetry.addData("launchmotor velocity",launchMotor.getVelocity());//ticks/s
+        if (spin_launcher){
+            //the 6000 motor has 28 ticks per revolution, so 6000 RPM (100RPS) would be 2800 reference.. possibly.
+            launchMotor.setVelocity(launcherSpeed); //ticks/s
+            telemetry.addData("launchmotor targetv", launcherSpeed);
+            telemetry.addData("launchmotor velocity",launchMotor.getVelocity());//ticks/s
+
+            //1200 can overshoot
+
+            //2000 can overshoot FROM FAR. dang.
+
+            //seting it to 6000 gives me 2400.. peculiar.. oh wait it's because that's the max. 6000 is 6000 ticks per second which is not possible.
+
+            //2800 ticks/s = 100 RPS
+            //2000 ticks/s = 71.4285714286 RPS
+        } else {
+            launchMotor.setPower(0.05);
+        }
 
         if (kick) {
             launchKickServo1.setPosition(LaunchServoAngle);
