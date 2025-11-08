@@ -255,8 +255,8 @@ public class DecodeTeleopMain extends OpMode {
             follower_was_just_busy = false;
             //manual control for drive, will use user input if pedro is not executing a task.
 
-            double forward = -gamepad1.left_stick_y;
-            double Strafe = gamepad1.left_stick_x;
+            double forward = gamepad1.left_stick_y;
+            double Strafe = -gamepad1.left_stick_x;
             double turn = gamepad1.right_stick_x;
 
             //slide recalibrate..
