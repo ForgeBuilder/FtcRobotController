@@ -40,7 +40,7 @@ public class DecodeTeleopMain extends OpMode {
     public static Follower follower;
     public static PoseTracker pose_tracker;
 
-    private int launcherTicksPerSecond = 800;
+    private int launcherTicksPerSecond = 900;
 
 
 
@@ -126,8 +126,8 @@ public class DecodeTeleopMain extends OpMode {
     //the initial remembered pose
     private Pose remembered_pose = new Pose(0,0,Math.toRadians(0));
 
-    boolean spin_launcher = false;
-    boolean spin_intake = false;
+    boolean spin_launcher = true;
+    boolean spin_intake = true;
 
     @Override
     public void loop() {
@@ -136,7 +136,7 @@ public class DecodeTeleopMain extends OpMode {
 //        launchKickServo1.setPosition(gamepad2.left_stick_x);
 //        launchKickServo2.setPosition(1-gamepad2.left_stick_y);
 
-        if (gamepad2.right_trigger>0.1) {
+        if ((gamepad2.right_trigger>0.1)||(gamepad1.left_trigger>0.1)) {
             launchKickServo1.setPosition(LaunchServoAngle);
             launchKickServo2.setPosition(1-LaunchServoAngle);
         } else {
@@ -152,10 +152,11 @@ public class DecodeTeleopMain extends OpMode {
 
         //replace the max and mins of 1000 and 600 with variablez later
 
-        if (gamepad2.dpadUpWasPressed()){
+        //Still need a way to visually show this besides telemetry
+        if (gamepad2.dpadUpWasPressed()||gamepad1.dpadUpWasPressed()){
             launcherTicksPerSecond += 100;
             launcherTicksPerSecond = Math.max(Math.min(launcherTicksPerSecond,1000),600);
-        } else if (gamepad2.dpadDownWasPressed()) {
+        } else if (gamepad2.dpadDownWasPressed()||gamepad1.dpadDownWasPressed()) {
             launcherTicksPerSecond -= 100;
             launcherTicksPerSecond = Math.max(Math.min(launcherTicksPerSecond,1000),600);
         }
@@ -174,7 +175,7 @@ public class DecodeTeleopMain extends OpMode {
             //2800 ticks/s = 100 RPS
             //2000 ticks/s = 71.4285714286 RPS
         } else {
-            launchMotor.setPower(0);
+            launchMotor.setPower(0.05);
         }
 
         if (gamepad2.aWasPressed()){
