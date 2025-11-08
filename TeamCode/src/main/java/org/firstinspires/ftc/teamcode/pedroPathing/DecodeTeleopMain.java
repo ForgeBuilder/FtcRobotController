@@ -40,6 +40,8 @@ public class DecodeTeleopMain extends OpMode {
     public static Follower follower;
     public static PoseTracker pose_tracker;
 
+    private int launcherTicksPerSecond = 800;
+
 
 
     /*
@@ -146,13 +148,21 @@ public class DecodeTeleopMain extends OpMode {
             spin_launcher = !spin_launcher;
         }
 
-//        if gamepad2.dpadUpWasPressed(){
-//            //increase velocity variable
-//        }
+        //range change code
+
+        //replace the max and mins of 1000 and 600 with variablez later
+
+        if (gamepad2.dpadUpWasPressed()){
+            launcherTicksPerSecond += 100;
+            launcherTicksPerSecond = Math.max(Math.min(launcherTicksPerSecond,1000),600);
+        } else if (gamepad2.dpadDownWasPressed()) {
+            launcherTicksPerSecond -= 100;
+            launcherTicksPerSecond = Math.max(Math.min(launcherTicksPerSecond,1000),600);
+        }
 
         if (spin_launcher){
             //the 6000 motor has 28 ticks per revolution, so 6000 RPM (100RPS) would be 2800 reference.. possibly.
-            launchMotor.setVelocity(800); //ticks/s
+            launchMotor.setVelocity(launcherTicksPerSecond); //ticks/s
             telemetry.addData("launchmotor velocity",launchMotor.getVelocity());//ticks/s
 
             //1200 can overshoot
@@ -199,18 +209,6 @@ public class DecodeTeleopMain extends OpMode {
                 follower.followPath(path);
             }
         }
-
-//        if (gamepad1.xWasPressed()){
-//            pose_tracker.update();
-//            Pose current_pose = follower.getPose();
-//            path = follower.pathBuilder()
-//                    .addPath(new BezierLine(current_pose, endPose))
-////                .addPath(new BezierLine(endPose, nextendPose))
-//                    .setLinearHeadingInterpolation(current_pose.getHeading(), nextendPose.getHeading())
-//                    .build();
-//            follower.followPath(path);
-//        }
- 
 
         if (follower.isBusy()) {
             follower.update();
