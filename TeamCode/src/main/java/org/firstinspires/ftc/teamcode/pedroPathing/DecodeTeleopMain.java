@@ -133,6 +133,9 @@ public class DecodeTeleopMain extends OpMode {
     boolean kick = false;
     private ElapsedTime timeSinceShot = new ElapsedTime();
 
+    private int maxLauncherSpeed = 2800;
+    private int minLauncherSpeed = 600;
+
     @Override
     public void loop() {
 
@@ -174,16 +177,17 @@ public class DecodeTeleopMain extends OpMode {
 
         //Still need a way to visually show this besides telemetry
         if (gamepad2.dpadUpWasPressed()||gamepad1.dpadUpWasPressed()){
-            launcherSpeed += 100;
-            launcherSpeed = Math.max(Math.min(launcherSpeed,1800),600);
+            launcherSpeed += 50;
+            launcherSpeed = Math.max(Math.min(launcherSpeed,maxLauncherSpeed),minLauncherSpeed);
         } else if (gamepad2.dpadDownWasPressed()||gamepad1.dpadDownWasPressed()) {
-            launcherSpeed -= 100;
-            launcherSpeed = Math.max(Math.min(launcherSpeed,1800),600);
+            launcherSpeed -= 50;
+            launcherSpeed = Math.max(Math.min(launcherSpeed,maxLauncherSpeed),minLauncherSpeed);
         }
 
         if (spin_launcher){
             //the 6000 motor has 28 ticks per revolution, so 6000 RPM (100RPS) would be 2800 reference.. possibly.
             launchMotor.setVelocity(launcherSpeed); //ticks/s
+            telemetry.addData("launchmotor targetv", launcherSpeed);
             telemetry.addData("launchmotor velocity",launchMotor.getVelocity());//ticks/s
 
             //1200 can overshoot
