@@ -30,10 +30,9 @@ public class BlueAuto1 extends OpMode {
 
     private DcMotorEx launchMotor;
     private PathChain path;
-    private final Pose startPose = new Pose(0, 0, Math.toRadians(0)); // this is a way to define a pose
-    private final Pose endPose = new Pose(44, 0, 0); // this should be aiming at the back plate
-//    private final Pose midPose = new Pose(15, 20, Math.toRadians(0));
-//    private final Pose nextendPose = new Pose(20, 0, Math.toRadians(3.14));
+    private final Pose firstPose = new Pose(0, 0, Math.toRadians(0)); // this is a way to define a pose
+    private final Pose secondPose = new Pose(44, 0, 0); // this should be aiming at the back plate
+    private final Pose thirdPose = new Pose(44, 0, Math.toRadians(180));
 
     @Override
     public void init() {
@@ -56,13 +55,6 @@ public class BlueAuto1 extends OpMode {
 
         //becasue we start with the intake facing backwards and the intake faces forwards, we start backwards. thus this is vital.
 //        follower.setPose(new Pose(0,0,Math.toRadians(180)));
-
-        path = follower.pathBuilder()
-                .addPath(new BezierLine(startPose, endPose))
-//                .addPath(new BezierLine(endPose, nextendPose))
-                .setLinearHeadingInterpolation(startPose.getHeading(), endPose.getHeading())
-                .build();
-        follower.followPath(path);
     }
 
     private double LaunchServoAngle = 0.35;
@@ -70,22 +62,39 @@ public class BlueAuto1 extends OpMode {
 
     private int fired_count = 0;
 
-    private Pose zkirtpoze = new Pose ();
     private boolean move1done = false;
     private boolean follower_was_just_busy = false;
 
     private boolean spin_launcher = false;
     private ElapsedTime timeSinceShot = new ElapsedTime();
     private ElapsedTime timezinceztart = new ElapsedTime();
+
+    private String state = "initialization";
     private int launcherSpeed = 850;
     @Override
     public void loop() {
-        launchMotor.setVelocity(launcherSpeed);
         if (follower.isBusy()){
             follower.update();
             follower_was_just_busy = true;
         } else {
-            if (fired_count<=4) { //just incase it intakes another one lol
+            follower_was_just_busy = false;
+        }
+
+        if (state == "initialization"){
+            launchMotor.setVelocity(launcherSpeed);//this is done every frame.. not neccecary but i
+            path = follower.pathBuilder()
+                    .addPath(new BezierLine(firstPose, secondPose))
+//                .addPath(new BezierLine(endPose, nextendPose))
+                    .setLinearHeadingInterpolation(firstPose.getHeading(), secondPose.getHeading())
+                    .build();
+            follower.followPath(path);
+            state = "first_movement";
+        } else if (state == "first_movement"){
+            if (!follower.isBusy()){
+                state = "first_fire_loop";
+            }
+        } else if (state == "first_fire_loop"){
+            if (fired_count<=3) {
                 spin_launcher = true;
                 if (launchMotor.getVelocity() >= (launcherSpeed-10)){
                     if (timeSinceShot.seconds() > 1.5){
@@ -95,10 +104,21 @@ public class BlueAuto1 extends OpMode {
                 }
             } else {
                 spin_launcher = false;
+                state = "second_movement";
+                path = follower.pathBuilder()
+                        .addPath(new BezierLine(secondPose, thirdPose))
+//                .addPath(new BezierLine(endPose, nextendPose))
+                        .setLinearHeadingInterpolation(secondPose.getHeading(), thirdPose.getHeading())
+                        .build();
+                follower.followPath(path);
             }
 
             if (timeSinceShot.seconds() > 0.5) {
                 kick = false;
+            }
+        } else if (state == "second_movement"){
+            if (!follower.isBusy()){
+                //do the next thing
             }
         }
 
