@@ -188,22 +188,12 @@ public class DecodeTeleopMain extends OpMode {
         }
 
         if (spin_launcher){
-            //the 6000 motor has 28 ticks per revolution, so 6000 RPM (100RPS) would be 2800 reference.. possibly.
             launchMotor.setVelocity(launcherSpeed); //ticks/s
-            telemetry.addData("launchmotor targetv", launcherSpeed);
-            telemetry.addData("launchmotor velocity",launchMotor.getVelocity());//ticks/s
-
-            //1200 can overshoot
-
-            //2000 can overshoot FROM FAR. dang.
-
-            //seting it to 6000 gives me 2400.. peculiar.. oh wait it's because that's the max. 6000 is 6000 ticks per second which is not possible.
-
-            //2800 ticks/s = 100 RPS
-            //2000 ticks/s = 71.4285714286 RPS
         } else {
             launchMotor.setPower(0.05);
         }
+        telemetry.addData("launchmotor targetv", launcherSpeed);
+        telemetry.addData("launchmotor velocity",launchMotor.getVelocity());//ticks/s
 
         if (gamepad2.aWasPressed()||gamepad1.rightBumperWasPressed()){
             spin_intake = !spin_intake;

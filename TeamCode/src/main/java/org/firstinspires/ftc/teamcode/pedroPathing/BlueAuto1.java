@@ -32,7 +32,7 @@ public class BlueAuto1 extends OpMode {
     private PathChain path;
     private final Pose firstPose = new Pose(0, 0, Math.toRadians(0)); // this is a way to define a pose
     private final Pose secondPose = new Pose(44, 0, 0); // this should be aiming at the back plate
-    private final Pose thirdPose = new Pose(44, 0, Math.toRadians(180));
+    private final Pose thirdPose = new Pose(54, 10, Math.toRadians(180));
 
     @Override
     public void init() {
@@ -100,6 +100,7 @@ public class BlueAuto1 extends OpMode {
                     if (timeSinceShot.seconds() > 1.5){
                         kick = true;
                         timeSinceShot.reset();
+                        fired_count += 1;
                     }
                 }
             } else {
@@ -107,14 +108,9 @@ public class BlueAuto1 extends OpMode {
                 state = "second_movement";
                 path = follower.pathBuilder()
                         .addPath(new BezierLine(secondPose, thirdPose))
-//                .addPath(new BezierLine(endPose, nextendPose))
                         .setLinearHeadingInterpolation(secondPose.getHeading(), thirdPose.getHeading())
                         .build();
                 follower.followPath(path);
-            }
-
-            if (timeSinceShot.seconds() > 0.5) {
-                kick = false;
             }
         } else if (state == "second_movement"){
             if (!follower.isBusy()){
@@ -122,23 +118,17 @@ public class BlueAuto1 extends OpMode {
             }
         }
 
+        if (timeSinceShot.seconds() > 0.5) {
+            kick = false;
+        }
+
         if (spin_launcher){
-            //the 6000 motor has 28 ticks per revolution, so 6000 RPM (100RPS) would be 2800 reference.. possibly.
             launchMotor.setVelocity(launcherSpeed); //ticks/s
-            telemetry.addData("launchmotor targetv", launcherSpeed);
-            telemetry.addData("launchmotor velocity",launchMotor.getVelocity());//ticks/s
-
-            //1200 can overshoot
-
-            //2000 can overshoot FROM FAR. dang.
-
-            //seting it to 6000 gives me 2400.. peculiar.. oh wait it's because that's the max. 6000 is 6000 ticks per second which is not possible.
-
-            //2800 ticks/s = 100 RPS
-            //2000 ticks/s = 71.4285714286 RPS
         } else {
             launchMotor.setPower(0.05);
         }
+        telemetry.addData("launchmotor targetv", launcherSpeed);
+        telemetry.addData("launchmotor velocity",launchMotor.getVelocity());//ticks/s
 
         if (kick) {
             launchKickServo1.setPosition(LaunchServoAngle);
