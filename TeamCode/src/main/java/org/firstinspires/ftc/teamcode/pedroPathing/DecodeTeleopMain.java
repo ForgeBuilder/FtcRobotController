@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -42,7 +43,7 @@ public class DecodeTeleopMain extends OpMode {
     private int launcherSpeed = 900;
     //ticks per second
 
-
+    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(10,3,10,0); //change to 3 next time
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -61,6 +62,7 @@ public class DecodeTeleopMain extends OpMode {
 
         launchMotor = hardwareMap.get(DcMotorEx.class,"LaunchMotor");
         launchMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        launchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherCoefficients);
 
         intakeMotor = hardwareMap.get(DcMotor.class,"intake");
 
@@ -190,7 +192,7 @@ public class DecodeTeleopMain extends OpMode {
         if (spin_launcher){
             launchMotor.setVelocity(launcherSpeed); //ticks/s
         } else {
-            launchMotor.setPower(0.05);
+            launchMotor.setVelocity(100);
         }
         telemetry.addData("launchmotor targetv", launcherSpeed);
         telemetry.addData("launchmotor velocity",launchMotor.getVelocity());//ticks/s
@@ -285,25 +287,5 @@ public class DecodeTeleopMain extends OpMode {
      */
     @Override
     public void stop() {
-    }
-
-    double integralSum = 0;
-    double Kp = 1;
-    double Ki = 0;
-    double Kd = 0;
-    double Kf = 0; //feedforward..??
-    ElapsedTime timer = new ElapsedTime();
-    double lastError = 0;
-
-    public double PIDControl(double reference,double state){
-        double error = reference - state;
-        integralSum += error * timer.seconds();
-        double derivitive = (error - lastError);
-        lastError = error;
-
-        timer.reset();
-
-        double output = (error * Kp) + (derivitive * Kd) + (integralSum * Ki) + (reference * Kf);
-        return output;
     }
 }
