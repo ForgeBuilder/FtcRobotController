@@ -43,7 +43,7 @@ public class DecodeTeleopMain extends OpMode {
     private int launcherSpeed = 900;
     //ticks per second
 
-    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(10,3,10,0); //change to 3 next time
+    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(6,0,0,0); //change to 3 next time
 
     /*
      * Code to run ONCE when the driver hits INIT
