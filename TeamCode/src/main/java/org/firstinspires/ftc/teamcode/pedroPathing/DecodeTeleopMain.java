@@ -148,7 +148,7 @@ public class DecodeTeleopMain extends OpMode {
 
         if ((gamepad2.right_trigger>0.1)||(gamepad1.right_trigger>0.1)) {
             spin_launcher = true;
-           if (launchMotor.getVelocity() >= (launcherSpeed-10)){
+           if (launchMotor.getVelocity() == (launcherSpeed)){
                if (timeSinceShot.seconds() > 1.5){
                    kick = true;
                    timeSinceShot.reset();
@@ -180,10 +180,10 @@ public class DecodeTeleopMain extends OpMode {
 
         //Still need a way to visually show this besides telemetry
         if (gamepad2.dpadUpWasPressed()||gamepad1.dpadUpWasPressed()){
-            launcherSpeed += 50;
+            launcherSpeed += 40;
             launcherSpeed = Math.max(Math.min(launcherSpeed,maxLauncherSpeed),minLauncherSpeed);
         } else if (gamepad2.dpadDownWasPressed()||gamepad1.dpadDownWasPressed()) {
-            launcherSpeed -= 50;
+            launcherSpeed -= 40;
             launcherSpeed = Math.max(Math.min(launcherSpeed,maxLauncherSpeed),minLauncherSpeed);
         }
 

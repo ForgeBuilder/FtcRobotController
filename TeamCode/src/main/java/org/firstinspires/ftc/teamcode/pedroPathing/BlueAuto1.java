@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -31,8 +32,12 @@ public class BlueAuto1 extends OpMode {
     private DcMotorEx launchMotor;
     private PathChain path;
     private final Pose firstPose = new Pose(0, 0, Math.toRadians(0)); // this is a way to define a pose
-    private final Pose secondPose = new Pose(44, 0, 0); // this should be aiming at the back plate
-    private final Pose thirdPose = new Pose(54, 10, Math.toRadians(180));
+    private final Pose secondPose = new Pose(30, 0, 0); // this should be aiming at the back plate
+    private final Pose thirdPose = new Pose(30, 0, Math.toRadians(0));
+
+    //10, 3, 0, 0 is the default for 312s converted to 6000s.
+    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(10,3,0.01,0);
+//    private PIDFCoefficients currentCoefficients;
 
     @Override
     public void init() {
@@ -46,6 +51,10 @@ public class BlueAuto1 extends OpMode {
         //servo start position
         launchKickServo1.setPosition(0);
         launchKickServo2.setPosition(1);
+
+//        for grabbing the coificcients
+//        currentCoefficients = launchMotor.getPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER);
+        launchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherCoefficients);
     }
 
     public void start() {
@@ -71,11 +80,22 @@ public class BlueAuto1 extends OpMode {
 
     private String state = "initialization";
     private int launcherSpeed = 850;
+
+    //I need to separate the code into functions or organize this better. State is nice, should be called step tho
+    //cuz its not like state its different. states are repeated, steps are not. state machine != step machine
+
+    private Pose currentPose;
+
     @Override
     public void loop() {
         if (follower.isBusy()){
             follower.update();
             follower_was_just_busy = true;
+            currentPose = follower.getPose();
+            telemetry.addData("current pose information","");
+            telemetry.addData("heading",currentPose.getHeading());
+            telemetry.addData("x",currentPose.getX());
+            telemetry.addData("y",currentPose.getY());
         } else {
             follower_was_just_busy = false;
         }
@@ -96,7 +116,7 @@ public class BlueAuto1 extends OpMode {
         } else if (state == "first_fire_loop"){
             if (fired_count<=3) {
                 spin_launcher = true;
-                if (launchMotor.getVelocity() >= (launcherSpeed-10)){
+                if (launchMotor.getVelocity() == (launcherSpeed)){
                     if (timeSinceShot.seconds() > 1.5){
                         kick = true;
                         timeSinceShot.reset();
@@ -137,6 +157,12 @@ public class BlueAuto1 extends OpMode {
             launchKickServo1.setPosition(0);
             launchKickServo2.setPosition(1);
         }
+
+
+//        telemetry.addData("p",currentCoefficients.p);
+//        telemetry.addData("i",currentCoefficients.i);
+//        telemetry.addData("d",currentCoefficients.d);
+//        telemetry.addData("f",currentCoefficients.f);
     }
 
     public static void stopRobot() {
