@@ -176,7 +176,7 @@ public class DecodeTeleopMain extends OpMode {
         telemetry.addData("d",PIDFCoefficientsList[2]);
         telemetry.addData("f",PIDFCoefficientsList[3]);
         if (gamepad1.xWasPressed()){
-            launcherCoefficients = new PIDFCoefficients(10,0,0,0);
+            launcherCoefficients = new PIDFCoefficients(PIDFCoefficientsList[0],PIDFCoefficientsList[1],PIDFCoefficientsList[2],PIDFCoefficientsList[3]);
             launchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,launcherCoefficients);
         }
 
