@@ -13,8 +13,6 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import java.sql.Array;
-
 @TeleOp(name="DecodeTeleopMain")
 
 public class DecodeTeleopMain extends OpMode {
@@ -34,7 +32,8 @@ public class DecodeTeleopMain extends OpMode {
     private DcMotor leftFront;
     private DcMotor leftBack;
 
-    private DcMotorEx launchMotor;
+    private DcMotorEx launchMotor1;
+    private DcMotorEx launchMotor2;
 
     private DcMotorEx intakeMotor;
     //pedro
@@ -65,9 +64,13 @@ public class DecodeTeleopMain extends OpMode {
         launchKickServo1 = hardwareMap.get(Servo.class,"lks1");
         launchKickServo2 = hardwareMap.get(Servo.class,"lks2");
 
-        launchMotor = hardwareMap.get(DcMotorEx.class,"LaunchMotor");
-        launchMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        launchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherCoefficients);
+        launchMotor1 = hardwareMap.get(DcMotorEx.class,"lm1");
+        launchMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        launchMotor1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherCoefficients);
+
+        launchMotor2 = hardwareMap.get(DcMotorEx.class,"lm2");
+        launchMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        launchMotor2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherCoefficients);
 
         intakeMotor = hardwareMap.get(DcMotorEx.class,"intake");
 
@@ -153,22 +156,22 @@ public class DecodeTeleopMain extends OpMode {
     @Override
     public void loop() {
 
-        if (gamepad1.dpadLeftWasPressed()){
+        if (gamepad2.dpadLeftWasPressed()){
             selector+=1;
             if (selector == 4){
                 selector = 0;
             }
         }
-        if (gamepad1.dpadRightWasPressed()){
+        if (gamepad2.dpadRightWasPressed()){
             selector-=1;
             if (selector == -1){
                 selector = 3;
             }
         }
-        if (gamepad1.dpadUpWasPressed()){
+        if (gamepad2.dpadUpWasPressed()){
             PIDFCoefficientsList[selector] += 1;
         }
-        if (gamepad1.dpadDownWasPressed()){
+        if (gamepad2.dpadDownWasPressed()){
             PIDFCoefficientsList[selector] -= 1;
         }
         telemetry.addData("p",PIDFCoefficientsList[0]);
@@ -177,7 +180,8 @@ public class DecodeTeleopMain extends OpMode {
         telemetry.addData("f",PIDFCoefficientsList[3]);
         if (gamepad1.xWasPressed()){
             launcherCoefficients = new PIDFCoefficients(PIDFCoefficientsList[0],PIDFCoefficientsList[1],PIDFCoefficientsList[2],PIDFCoefficientsList[3]);
-            launchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,launcherCoefficients);
+            launchMotor1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,launcherCoefficients);
+            launchMotor2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,launcherCoefficients);
         }
 
 //        telemetry.addData("servo position",gamepad2.left_stick_x);
@@ -187,7 +191,7 @@ public class DecodeTeleopMain extends OpMode {
         if ((gamepad2.right_trigger>0.1)||(gamepad1.right_trigger>0.1)) {
             spin_launcher = true;
             //when the motor's velocity is equal - so when it fires, ball will likley be slightly overshot.
-           if ((launchMotor.getVelocity() == (launcherSpeed))||gamepad1.right_bumper){
+           if (((launchMotor1.getVelocity() == (launcherSpeed))||(launchMotor1.getVelocity() == (launcherSpeed)))||gamepad1.right_bumper){
                if (timeSinceShot.seconds() > 1.5){
                    kick = true;
                    timeSinceShot.reset();
@@ -218,23 +222,27 @@ public class DecodeTeleopMain extends OpMode {
         //replace the max and mins of 1000 and 600 with variablez later
 
         //Still need a way to visually show this besides telemetry
-        if (gamepad2.dpadUpWasPressed()){//||gamepad1.dpadUpWasPressed()
+        if (gamepad1.dpadUpWasPressed()){//||gamepad1.dpadUpWasPressed()
             launcherSpeed += 40;
             launcherSpeed = Math.max(Math.min(launcherSpeed,maxLauncherSpeed),minLauncherSpeed);
-        } else if (gamepad2.dpadDownWasPressed()) {//||gamepad1.dpadDownWasPressed()
+        } else if (gamepad1.dpadDownWasPressed()) {//||gamepad1.dpadDownWasPressed()
             launcherSpeed -= 40;
             launcherSpeed = Math.max(Math.min(launcherSpeed,maxLauncherSpeed),minLauncherSpeed);
         }
 
         if (spin_launcher){
-            launchMotor.setPower(1);
-            launchMotor.setVelocity(launcherSpeed); //ticks/s
+            launchMotor1.setPower(1);
+            launchMotor1.setVelocity(launcherSpeed); //ticks/s
+            launchMotor2.setPower(1);
+            launchMotor2.setVelocity(launcherSpeed); //ticks/s
         } else {
 
-            launchMotor.setPower(0);
+            launchMotor1.setPower(0);
+            launchMotor2.setPower(0);
         }
         telemetry.addData("launchmotor targetv", launcherSpeed);
-        telemetry.addData("launchmotor velocity",launchMotor.getVelocity());//ticks/s
+        telemetry.addData("launchmotor1 velocity", launchMotor1.getVelocity());//ticks/s
+        telemetry.addData("launchmotor2 velocity", launchMotor2.getVelocity());//ticks/s
 
         if (gamepad2.aWasPressed()||gamepad1.leftBumperWasPressed()){
             spin_intake = !spin_intake;
