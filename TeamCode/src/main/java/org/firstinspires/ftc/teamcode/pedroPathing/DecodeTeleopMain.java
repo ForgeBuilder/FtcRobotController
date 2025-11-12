@@ -44,7 +44,7 @@ public class DecodeTeleopMain extends OpMode {
     private int launcherSpeed = 900;
     //ticks per second
 
-    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(10,0,0,0);
+    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(200,2,0,0);
 //    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(0,0,0,0);
     /*
      * Code to run ONCE when the driver hits INIT
@@ -151,7 +151,7 @@ public class DecodeTeleopMain extends OpMode {
 
     private int selector = 0;
 
-    private Integer[] PIDFCoefficientsList = {0,0,0,0};
+    private Double[] PIDFCoefficientsList = {200.0,20.0,0.0,0.0};
 
     @Override
     public void loop() {
@@ -169,17 +169,17 @@ public class DecodeTeleopMain extends OpMode {
             }
         }
         if (gamepad2.dpadUpWasPressed()){
-            PIDFCoefficientsList[selector] += 1;
+            PIDFCoefficientsList[selector] += 1.0;
         }
         if (gamepad2.dpadDownWasPressed()){
-            PIDFCoefficientsList[selector] -= 1;
+            PIDFCoefficientsList[selector] -= 1.0;
         }
         telemetry.addData("p",PIDFCoefficientsList[0]);
-        telemetry.addData("i",PIDFCoefficientsList[1]);
+        telemetry.addData("i",PIDFCoefficientsList[1]/10);
         telemetry.addData("d",PIDFCoefficientsList[2]);
         telemetry.addData("f",PIDFCoefficientsList[3]);
         if (gamepad1.xWasPressed()){
-            launcherCoefficients = new PIDFCoefficients(PIDFCoefficientsList[0],PIDFCoefficientsList[1],PIDFCoefficientsList[2],PIDFCoefficientsList[3]);
+            launcherCoefficients = new PIDFCoefficients(PIDFCoefficientsList[0],PIDFCoefficientsList[1]/10,PIDFCoefficientsList[2],PIDFCoefficientsList[3]);
             launchMotor1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,launcherCoefficients);
             launchMotor2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,launcherCoefficients);
         }
@@ -191,7 +191,7 @@ public class DecodeTeleopMain extends OpMode {
         if ((gamepad2.right_trigger>0.1)||(gamepad1.right_trigger>0.1)) {
             spin_launcher = true;
             //when the motor's velocity is equal - so when it fires, ball will likley be slightly overshot.
-           if (((launchMotor1.getVelocity() == (launcherSpeed))||(launchMotor1.getVelocity() == (launcherSpeed)))||gamepad1.right_bumper){
+           if (((launchMotor1.getVelocity() == (launcherSpeed))&&(launchMotor1.getVelocity() == (launcherSpeed)))||gamepad1.right_bumper){
                if (timeSinceShot.seconds() > 1.5){
                    kick = true;
                    timeSinceShot.reset();
@@ -234,7 +234,7 @@ public class DecodeTeleopMain extends OpMode {
             launchMotor1.setPower(1);
             launchMotor1.setVelocity(launcherSpeed); //ticks/s
             launchMotor2.setPower(1);
-            launchMotor2.setVelocity(launcherSpeed); //ticks/s
+            launchMotor2.setVelocity(-1*launcherSpeed); //ticks/s
         } else {
 
             launchMotor1.setPower(0);
@@ -246,14 +246,14 @@ public class DecodeTeleopMain extends OpMode {
 
         if (gamepad2.aWasPressed()||gamepad1.leftBumperWasPressed()){
             spin_intake = !spin_intake;
-        }
+        }   
 
 
         //it's a 312 so 537.7 PPR at the Output Shaft. 5.2 RPS (max) would be 2796.04 or about 2800.
         if (spin_intake){
-            intakeMotor.setVelocity(300);
+            intakeMotor.setVelocity(2000);
         } else if(gamepad2.a||gamepad1.left_bumper) {
-            intakeMotor.setPower(-300);
+            intakeMotor.setPower(-2000);
         } else {
             intakeMotor.setPower(0);
         }
