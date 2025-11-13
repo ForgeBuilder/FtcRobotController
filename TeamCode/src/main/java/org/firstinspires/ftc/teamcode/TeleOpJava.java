@@ -24,8 +24,8 @@ public class TeleOpJava extends OpMode {
     @Override
     public void init() {
         launchState = LaunchState.IDLE;
-        leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        leftDrive = hardwareMap.get(DcMotor.class, "lf");
+        rightDrive = hardwareMap.get(DcMotor.class, "rf");
         leftDrive.setDirection(DcMotor.Direction.REVERSE);
         rightDrive.setDirection(DcMotor.Direction.FORWARD);
         leftDrive.setZeroPowerBehavior(BRAKE);
