@@ -11,8 +11,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @TeleOp(name = "StarterBotTeleop", group = "StarterBot")
 
 public class TeleOpJava extends OpMode {
-    private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
+    private DcMotor lfDrive = null;
+    private DcMotor lbDrive = null;
+    private DcMotor rfDrive = null;
+    private DcMotor rbDrive = null;
     ElapsedTime feederTimer = new ElapsedTime();
 
     private enum LaunchState {
@@ -24,12 +26,18 @@ public class TeleOpJava extends OpMode {
     @Override
     public void init() {
         launchState = LaunchState.IDLE;
-        leftDrive = hardwareMap.get(DcMotor.class, "lf");
-        rightDrive = hardwareMap.get(DcMotor.class, "rf");
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightDrive.setDirection(DcMotor.Direction.FORWARD);
-        leftDrive.setZeroPowerBehavior(BRAKE);
-        rightDrive.setZeroPowerBehavior(BRAKE);
+        lfDrive = hardwareMap.get(DcMotor.class, "lf");
+        lbDrive = hardwareMap.get(DcMotor.class, "lb");
+        rfDrive = hardwareMap.get(DcMotor.class, "rf");
+        rbDrive = hardwareMap.get(DcMotor.class, "rb");
+        lfDrive.setDirection(DcMotor.Direction.FORWARD);
+        lbDrive.setDirection(DcMotor.Direction.REVERSE);
+        rfDrive.setDirection(DcMotor.Direction.FORWARD);
+        rbDrive.setDirection(DcMotor.Direction.REVERSE);
+        lfDrive.setZeroPowerBehavior(BRAKE);
+        lbDrive.setZeroPowerBehavior(BRAKE);
+        rfDrive.setZeroPowerBehavior(BRAKE);
+        rbDrive.setZeroPowerBehavior(BRAKE);
 
         telemetry.addData("Status", "Initialized");
     }
@@ -54,7 +62,9 @@ public class TeleOpJava extends OpMode {
     void arcadeDrive(double forward, double rotate) {
         leftPower = forward + rotate;
         rightPower = forward - rotate;
-        leftDrive.setPower(leftPower);
-        rightDrive.setPower(rightPower);
+        lfDrive.setPower(leftPower);
+        lbDrive.setPower(leftPower);
+        rfDrive.setPower(rightPower);
+        rbDrive.setPower(rightPower);
     }
 }
