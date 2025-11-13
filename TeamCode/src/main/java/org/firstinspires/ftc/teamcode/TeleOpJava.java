@@ -21,8 +21,11 @@ public class TeleOpJava extends OpMode {
         IDLE,
     }
     private LaunchState launchState;
-    double leftPower;
-    double rightPower;
+    double lfPower;
+    double lbPower;
+    double rfPower;
+    double rbPower;
+
     @Override
     public void init() {
         launchState = LaunchState.IDLE;
@@ -30,10 +33,10 @@ public class TeleOpJava extends OpMode {
         lbDrive = hardwareMap.get(DcMotor.class, "lb");
         rfDrive = hardwareMap.get(DcMotor.class, "rf");
         rbDrive = hardwareMap.get(DcMotor.class, "rb");
-        lfDrive.setDirection(DcMotor.Direction.FORWARD);
+        lfDrive.setDirection(DcMotor.Direction.REVERSE);
         lbDrive.setDirection(DcMotor.Direction.REVERSE);
         rfDrive.setDirection(DcMotor.Direction.FORWARD);
-        rbDrive.setDirection(DcMotor.Direction.REVERSE);
+        rbDrive.setDirection(DcMotor.Direction.FORWARD);
         lfDrive.setZeroPowerBehavior(BRAKE);
         lbDrive.setZeroPowerBehavior(BRAKE);
         rfDrive.setZeroPowerBehavior(BRAKE);
@@ -52,19 +55,21 @@ public class TeleOpJava extends OpMode {
     }
     @Override
     public void loop(){
-        arcadeDrive(-gamepad1.left_stick_y, gamepad1.right_stick_x);
+        arcadeDrive(-gamepad1.left_stick_y, gamepad1.right_stick_x, gamepad1.left_stick_x);
         telemetry.addData("State", launchState);
-        telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+        telemetry.addData("Motors", "left (%.2f), right (%.2f)", lfPower, lbPower, rfPower, rbPower);
     }
     @Override
     public void stop() {
     }
-    void arcadeDrive(double forward, double rotate) {
-        leftPower = forward + rotate;
-        rightPower = forward - rotate;
-        lfDrive.setPower(leftPower);
-        lbDrive.setPower(leftPower);
-        rfDrive.setPower(rightPower);
-        rbDrive.setPower(rightPower);
+    void arcadeDrive(double forward, double rotate, double strafe) {
+        lfPower = forward + rotate + strafe;
+        lbPower = forward + rotate - strafe;
+        rfPower = forward - rotate - strafe;
+        rbPower = forward - rotate + strafe;
+        lfDrive.setPower(lfPower);
+        lbDrive.setPower(lbPower);
+        rfDrive.setPower(rfPower);
+        rbDrive.setPower(rbPower);
     }
 }
