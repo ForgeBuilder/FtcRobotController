@@ -6,7 +6,6 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.PoseTracker;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -16,12 +15,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
-@TeleOp(name="DecodeTeleopMain")
+//@TeleOp(name="DecodeTeleopMain")
 
 
-public class DecodeTeleopMain extends OpMode {
+public class CrossbowMain extends OpMode {
     // Declare OpMode members.
-    private ElapsedTime runtime = new ElapsedTime();
     private Servo launchKickServo1;
     private Servo launchKickServo2;
 
@@ -35,16 +33,17 @@ public class DecodeTeleopMain extends OpMode {
     private DcMotorEx leftLaunchMotor;
 
     private DcMotorEx intakeMotor;
-    //pedro
-    private PathChain path;
+
+    Limelight3A limelight;
+
+    //universal pedro stuff
+
     public static Follower follower;
     public static PoseTracker pose_tracker;
 //    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(0,0,0,0);
     /*
      * Code to run ONCE when the driver hits INIT
      */
-    Limelight3A limelight;
-
 
 
     @Override
@@ -72,12 +71,6 @@ public class DecodeTeleopMain extends OpMode {
 
         leftFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.REVERSE);
-
-        //Make every motor break when at power 0
-
-        // make the right side wheels reversed
-        // leftBack.setDirection(DcMotor.Direction.REVERSE);
-
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -109,34 +102,20 @@ public class DecodeTeleopMain extends OpMode {
      */
     @Override
     public void start() {
-        runtime.reset();
         timeSinceShot.reset();
     }
 
     @Override
     public void loop() {
-        //must run before others or there's a chance of a nil I think
-        limelight_code();
-        launcher_code();
-        intake_code();
-        //handles saving position and making return path to saved position
-        save_and_return_code();
+    }
 
-        //drivetrain stuff
-        if (follower.isBusy()) {
-            follower.update();
-            follower_was_just_busy = true;
-            if (gamepad1.x){
-                follower.breakFollowing();
-            }
-        } else {
-            drive_with_teleop();
+
+    public void follower_code(boolean break_path){
+        follower.update();
+        follower_was_just_busy = true;
+        if (break_path){
+            follower.breakFollowing();
         }
-
-        // Show the elapsed game time and update telemetry so we can see it
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
-
-        telemetry.update();
     }
 
     /*
@@ -146,7 +125,7 @@ public class DecodeTeleopMain extends OpMode {
     private boolean follower_was_just_busy = true;
 
     //the initial remembered pose
-    private Pose remembered_pose = new Pose(0,0,Math.toRadians(0));
+
 
     boolean spin_launcher = true;
 
@@ -166,8 +145,14 @@ public class DecodeTeleopMain extends OpMode {
     private int launcherSpeed = 900;
     //ticks per second
     private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(200,2,0,0);
-    public void launcher_code(){
-        if ((gamepad2.right_trigger>0.1)||(gamepad1.right_trigger>0.1)) {
+
+
+    //returns true each time it fires the artifact. indicates when the robot has decided to fire, not when the shot is clear.
+    //do not move the instant this function returns true. You may attempt to fire again.
+    public boolean launcher_code(boolean fire){
+        //the return value of the function: did the robot fire the artifact
+        boolean fired_this_tick = false;
+        if (fire) {
             spin_launcher = true;
             //when the motor's velocity is equal - so when it fires, ball will likley be slightly overshot.
 
@@ -182,10 +167,12 @@ public class DecodeTeleopMain extends OpMode {
                     //
                     left_speed_at_kick = leftLaunchMotor.getVelocity();
                     right_speed_at_kick = rightLaunchMotor.getVelocity();
+                    fired_this_tick = true;
                 }
             }
         } else {
             spin_launcher = false;
+            fired_this_tick = false;
         }
         telemetry.addData("left_speed_at_kick",left_speed_at_kick);
         telemetry.addData("right_speed_at_kick",right_speed_at_kick);
@@ -232,16 +219,18 @@ public class DecodeTeleopMain extends OpMode {
         telemetry.addData("launchmotor targetv", launcherSpeed);
         telemetry.addData("launchmotor1 velocity", rightLaunchMotor.getVelocity());//ticks/s
         telemetry.addData("launchmotor2 velocity", leftLaunchMotor.getVelocity());//ticks/s
+
+        return fired_this_tick;
     }
 
-    LLResult result;
-    public void limelight_code(){
+    LLResult LLresult;
+    public void teleop_limelight_code(){
         //limelight stuff
-        result = limelight.getLatestResult();
-        if (result != null && result.isValid()) {
-            double tx = result.getTx(); // How far left or right the target is (degrees)
-            double ty = result.getTy(); // How far up or down the target is (degrees)
-            double ta = result.getTa(); // How big the target looks (0%-100% of the image)
+        LLresult = limelight.getLatestResult();
+        if (LLresult != null && LLresult.isValid()) {
+            double tx = LLresult.getTx(); // How far left or right the target is (degrees)
+            double ty = LLresult.getTy(); // How far up or down the target is (degrees)
+            double ta = LLresult.getTa(); // How big the target looks (0%-100% of the image)
 
             telemetry.addData("Target X", tx);
 //            telemetry.addData("Target Y", ty);
@@ -267,23 +256,25 @@ public class DecodeTeleopMain extends OpMode {
         }
     }
 
-    public void save_and_return_code(){
+    private Pose teleop_remembered_pose = new Pose(0,0,Math.toRadians(0));
+    //run every tick with no arguments for ability to save and return to position in teleop
+    public void teleop_return_to_position(){
         if (gamepad1.aWasPressed()){
             pose_tracker.update();
-            remembered_pose = follower.getPose();
+            teleop_remembered_pose = follower.getPose();
         }
         telemetry.addData("remembered pose information","");
-        telemetry.addData("heading",remembered_pose.getHeading());
-        telemetry.addData("x",remembered_pose.getX());
-        telemetry.addData("y",remembered_pose.getY());
+        telemetry.addData("heading",teleop_remembered_pose.getHeading());
+        telemetry.addData("x",teleop_remembered_pose.getX());
+        telemetry.addData("y",teleop_remembered_pose.getY());
 
         if (gamepad1.bWasPressed()){
-            if (remembered_pose != null){
+            if (teleop_remembered_pose != null){
                 pose_tracker.update();
                 Pose current_pose = follower.getPose();
-                path = follower.pathBuilder()
-                        .addPath(new BezierLine(current_pose, remembered_pose))
-                        .setLinearHeadingInterpolation(current_pose.getHeading(), remembered_pose.getHeading())
+                PathChain path = follower.pathBuilder()
+                        .addPath(new BezierLine(current_pose, teleop_remembered_pose))
+                        .setLinearHeadingInterpolation(current_pose.getHeading(), teleop_remembered_pose.getHeading())
                         .build();
                 follower.followPath(path);
             }
@@ -306,7 +297,7 @@ public class DecodeTeleopMain extends OpMode {
 
         //if we are trying to fire, line up with the goal.
         if ((gamepad1.right_trigger > 0.1)||gamepad2.right_trigger > 0.1) {
-            turn+= 0.03*result.getTx();
+            turn+= 0.03*LLresult.getTx();
         }
 
         //slide recalibrate..
