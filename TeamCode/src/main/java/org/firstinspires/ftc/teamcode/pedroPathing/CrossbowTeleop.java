@@ -2,7 +2,13 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+
+
+// Inside your OpMode
 
 @TeleOp(name="CrossbowTeleop")
 
@@ -43,6 +49,16 @@ public class CrossbowTeleop extends CrossbowMain {
             set_launcher_speed(get_launcher_speed()+40);
         } else if (gamepad1.dpadDownWasPressed()) {//||gamepad1.dpadDownWasPressed()
             set_launcher_speed(get_launcher_speed()-40);
+        }
+
+        LLresult = limelight.getLatestResult();
+        if (LLresult != null && LLresult.isValid()) {
+            Pose3D botpose = LLresult.getBotpose();
+            if (botpose != null) {
+                double x = botpose.getPosition().x;
+                double y = botpose.getPosition().y;
+                telemetry.addData("MT1 Location", "(" + x + ", " + y + ")");
+            }
         }
 
         // Show the elapsed game time and update telemetry so we can see it

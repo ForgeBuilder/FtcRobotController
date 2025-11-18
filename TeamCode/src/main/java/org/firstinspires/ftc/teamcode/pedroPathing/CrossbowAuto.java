@@ -1,4 +1,7 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
+import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -21,18 +24,43 @@ public class CrossbowAuto extends CrossbowMain{
 
     private int fired_artifacts = 0;
     private boolean fired_an_artifact = false;
+    private boolean fire_artifact = false;
+
+    private int step = 0;
 
     @Override public void loop(){
         intake_code();
-        if (fired_artifacts <= 3){
-            fired_an_artifact = launcher_code(true,false);
-            if (fired_an_artifact){
-                fired_artifacts += 1;
-                if (fired_artifacts >= 3){
-                    spin_intake = false;
+        fired_an_artifact = launcher_code(fire_artifact,false);
+
+
+        if (step == 0){
+            Pose startpose = new Pose(0,0,0);
+            Pose endpose = new Pose(20,0,0);
+            PathChain firstpath = follower.pathBuilder()
+                    .addPath(new BezierLine(startpose, endpose))
+                    .setLinearHeadingInterpolation(startpose.getHeading(), endpose.getHeading())
+                    .build();
+            step = 1;
+        } else if (!follower.isBusy() && (step ==1)){
+            //get the limelight to set the pose
+//            follower.setPose()
+            step = 2;
+        } else if (step == 2) {
+            if (fired_artifacts <= 3){
+                if (fired_an_artifact){
+                    fired_artifacts += 1;
+                    if (fired_artifacts >= 3){
+                        spin_intake = false;
+                        fire_artifact = false;
+                    }
                 }
             }
         }
+
+        if (follower.isBusy()) {
+            follower_code(false);
+        }
+
         telemetry.addData("fired artifacts: ",fired_artifacts);
         telemetry.update();
     }
