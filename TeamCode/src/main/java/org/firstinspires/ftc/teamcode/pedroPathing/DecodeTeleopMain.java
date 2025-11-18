@@ -14,8 +14,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 //import com.qualcomm.hardware.limelightvision; //ah you can't do this
 import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 @TeleOp(name="DecodeTeleopMain")
@@ -24,14 +22,8 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 public class DecodeTeleopMain extends OpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-
-    // Initialise motor
-    // variables
     private Servo launchKickServo1;
     private Servo launchKickServo2;
-
-    private double KickerLaunchAngle = 0.35;
-    private double KickerIdleAngle = 0;
 
     private DcMotor rightFront;
     private DcMotor rightBack;
@@ -39,19 +31,14 @@ public class DecodeTeleopMain extends OpMode {
     private DcMotor leftFront;
     private DcMotor leftBack;
 
-    private DcMotorEx launchMotor1;
-    private DcMotorEx launchMotor2;
+    private DcMotorEx rightLaunchMotor;
+    private DcMotorEx leftLaunchMotor;
 
     private DcMotorEx intakeMotor;
     //pedro
     private PathChain path;
     public static Follower follower;
     public static PoseTracker pose_tracker;
-
-    private int launcherSpeed = 900;
-    //ticks per second
-
-    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(200,2,0,0);
 //    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(0,0,0,0);
     /*
      * Code to run ONCE when the driver hits INIT
@@ -71,13 +58,13 @@ public class DecodeTeleopMain extends OpMode {
         launchKickServo1 = hardwareMap.get(Servo.class,"lks1");
         launchKickServo2 = hardwareMap.get(Servo.class,"lks2");
 
-        launchMotor1 = hardwareMap.get(DcMotorEx.class,"lm1");
-        launchMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        launchMotor1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherCoefficients);
+        rightLaunchMotor = hardwareMap.get(DcMotorEx.class,"lm1");
+        rightLaunchMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightLaunchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherCoefficients);
 
-        launchMotor2 = hardwareMap.get(DcMotorEx.class,"lm2");
-        launchMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        launchMotor2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherCoefficients);
+        leftLaunchMotor = hardwareMap.get(DcMotorEx.class,"lm2");
+        leftLaunchMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftLaunchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherCoefficients);
 
         intakeMotor = hardwareMap.get(DcMotorEx.class,"intake");
 
@@ -124,19 +111,32 @@ public class DecodeTeleopMain extends OpMode {
     public void start() {
         runtime.reset();
         timeSinceShot.reset();
+    }
 
-//        follower.activateDrive();
+    @Override
+    public void loop() {
+        //must run before others or there's a chance of a nil I think
+        limelight_code();
+        launcher_code();
+        intake_code();
+        //handles saving position and making return path to saved position
+        save_and_return_code();
 
-        final Pose startPose = new Pose(0, 0, Math.toRadians(0)); // this is a way to define a pose
-        final Pose endPose = new Pose(10, 2, Math.toRadians(0)); // this is a way to define a pose
-        final Pose nextendPose = new Pose(20, 0, Math.toRadians(90));
+        //drivetrain stuff
+        if (follower.isBusy()) {
+            follower.update();
+            follower_was_just_busy = true;
+            if (gamepad1.x){
+                follower.breakFollowing();
+            }
+        } else {
+            drive_with_teleop();
+        }
 
-//        path = follower.pathBuilder()
-//                .addPath(new BezierLine(startPose, endPose))
-////                .addPath(new BezierLine(endPose, nextendPose))
-//                .setLinearHeadingInterpolation(startPose.getHeading(), nextendPose.getHeading())
-//                .build();
-//        follower.followPath(path);
+        // Show the elapsed game time and update telemetry so we can see it
+        telemetry.addData("Status", "Run Time: " + runtime.toString());
+
+        telemetry.update();
     }
 
     /*
@@ -144,16 +144,11 @@ public class DecodeTeleopMain extends OpMode {
      */
 
     private boolean follower_was_just_busy = true;
-    final Pose endPose = new Pose(10, 2, Math.toRadians(0)); // this is a way to define a pose
-    final Pose nextendPose = new Pose(20, 0, Math.toRadians(90));
-
-    final Pose startPose = new Pose(0, 0, Math.toRadians(0)); // this is a way to define a pose
 
     //the initial remembered pose
     private Pose remembered_pose = new Pose(0,0,Math.toRadians(0));
 
     boolean spin_launcher = true;
-    boolean spin_intake = false;
 
     boolean kick = false;
     private ElapsedTime timeSinceShot = new ElapsedTime();
@@ -161,77 +156,34 @@ public class DecodeTeleopMain extends OpMode {
     private int maxLauncherSpeed = 2200;
     private int minLauncherSpeed = 600;
 
-    private int selector = 0;
-
-    private Double[] PIDFCoefficientsList = {200.0,20.0,0.0,0.0};
-
     //for telemetry - I should really start breaking this stuff into functions so I can init variables near where they are used.
     double left_speed_at_kick = 0.0;
     double right_speed_at_kick = 0.0;
 
-    @Override
-    public void loop() {
-        //limelight stuff
-        LLResult result = limelight.getLatestResult();
-        if (result != null && result.isValid()) {
-            double tx = result.getTx(); // How far left or right the target is (degrees)
-            double ty = result.getTy(); // How far up or down the target is (degrees)
-            double ta = result.getTa(); // How big the target looks (0%-100% of the image)
+    private double KickerLaunchAngle = 0.35;
+    private double KickerIdleAngle = 0;
 
-            telemetry.addData("Target X", tx);
-//            telemetry.addData("Target Y", ty);
-//            telemetry.addData("Target Area", ta);
-        } else {
-            telemetry.addData("Limelight", "No Targets");
-        }
-
-
-
-        if (gamepad2.dpadLeftWasPressed()){
-            selector+=1;
-            if (selector == 4){
-                selector = 0;
-            }
-        }
-        if (gamepad2.dpadRightWasPressed()){
-            selector-=1;
-            if (selector == -1){
-                selector = 3;
-            }
-        }
-        if (gamepad2.dpadUpWasPressed()){
-            PIDFCoefficientsList[selector] += 1.0;
-        }
-        if (gamepad2.dpadDownWasPressed()){
-            PIDFCoefficientsList[selector] -= 1.0;
-        }
-        telemetry.addData("p",PIDFCoefficientsList[0]);
-        telemetry.addData("i",PIDFCoefficientsList[1]/10);
-        telemetry.addData("d",PIDFCoefficientsList[2]);
-        telemetry.addData("f",PIDFCoefficientsList[3]);
-        if (gamepad1.xWasPressed()){
-            launcherCoefficients = new PIDFCoefficients(PIDFCoefficientsList[0],PIDFCoefficientsList[1]/10,PIDFCoefficientsList[2],PIDFCoefficientsList[3]);
-            launchMotor1.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,launcherCoefficients);
-            launchMotor2.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,launcherCoefficients);
-        }
-
-//        telemetry.addData("servo position",gamepad2.left_stick_x);
-//        launchKickServo1.setPosition(gamepad2.left_stick_x);
-//        launchKickServo2.setPosition(1-gamepad2.left_stick_y);
-
+    private int launcherSpeed = 900;
+    //ticks per second
+    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(200,2,0,0);
+    public void launcher_code(){
         if ((gamepad2.right_trigger>0.1)||(gamepad1.right_trigger>0.1)) {
             spin_launcher = true;
             //when the motor's velocity is equal - so when it fires, ball will likley be slightly overshot.
-           if (((launchMotor1.getVelocity() == (launcherSpeed))&&(launchMotor1.getVelocity() == (launcherSpeed)))||gamepad1.right_bumper){
-               if (timeSinceShot.seconds() > 1.5){
-                   kick = true;
-                   timeSinceShot.reset();
-                   //debug information - motor 2 is left, motor 1 is right
-                   //
-                   left_speed_at_kick = launchMotor2.getVelocity();
-                   right_speed_at_kick = launchMotor2.getVelocity();
-               }
-           }
+
+            boolean right_speed_met = rightLaunchMotor.getVelocity() == launcherSpeed;
+            boolean left_speed_met = leftLaunchMotor.getVelocity() == launcherSpeed;
+
+            if ((right_speed_met && left_speed_met) || gamepad1.right_bumper){//the right bumper serves as an override
+                if (timeSinceShot.seconds() > 1.5){
+                    kick = true;
+                    timeSinceShot.reset();
+                    //debug information - motor 2 is left, motor 1 is right
+                    //
+                    left_speed_at_kick = leftLaunchMotor.getVelocity();
+                    right_speed_at_kick = rightLaunchMotor.getVelocity();
+                }
+            }
         } else {
             spin_launcher = false;
         }
@@ -268,23 +220,42 @@ public class DecodeTeleopMain extends OpMode {
         }
 
         if (spin_launcher){
-            launchMotor1.setPower(1);
-            launchMotor1.setVelocity(launcherSpeed); //ticks/s
-            launchMotor2.setPower(1);
-            launchMotor2.setVelocity(-1*launcherSpeed); //ticks/s
+            rightLaunchMotor.setPower(1);
+            rightLaunchMotor.setVelocity(launcherSpeed); //ticks/s
+            leftLaunchMotor.setPower(1);
+            leftLaunchMotor.setVelocity(-1*launcherSpeed); //ticks/s
         } else {
 
-            launchMotor1.setPower(0);
-            launchMotor2.setPower(0);
+            rightLaunchMotor.setPower(0);
+            leftLaunchMotor.setPower(0);
         }
         telemetry.addData("launchmotor targetv", launcherSpeed);
-        telemetry.addData("launchmotor1 velocity", launchMotor1.getVelocity());//ticks/s
-        telemetry.addData("launchmotor2 velocity", launchMotor2.getVelocity());//ticks/s
+        telemetry.addData("launchmotor1 velocity", rightLaunchMotor.getVelocity());//ticks/s
+        telemetry.addData("launchmotor2 velocity", leftLaunchMotor.getVelocity());//ticks/s
+    }
 
+    LLResult result;
+    public void limelight_code(){
+        //limelight stuff
+        result = limelight.getLatestResult();
+        if (result != null && result.isValid()) {
+            double tx = result.getTx(); // How far left or right the target is (degrees)
+            double ty = result.getTy(); // How far up or down the target is (degrees)
+            double ta = result.getTa(); // How big the target looks (0%-100% of the image)
+
+            telemetry.addData("Target X", tx);
+//            telemetry.addData("Target Y", ty);
+//            telemetry.addData("Target Area", ta);
+        } else {
+            telemetry.addData("Limelight", "No Targets");
+        }
+    }
+
+    boolean spin_intake = false;
+    public void intake_code(){
         if (gamepad2.aWasPressed()||gamepad1.leftBumperWasPressed()){
             spin_intake = !spin_intake;
-        }   
-
+        }
 
         //it's a 312 so 537.7 PPR at the Output Shaft. 5.2 RPS (max) would be 2796.04 or about 2800.
         if (spin_intake&&(!kick)){
@@ -294,7 +265,9 @@ public class DecodeTeleopMain extends OpMode {
         } else {
             intakeMotor.setPower(0);
         }
+    }
 
+    public void save_and_return_code(){
         if (gamepad1.aWasPressed()){
             pose_tracker.update();
             remembered_pose = follower.getPose();
@@ -310,67 +283,53 @@ public class DecodeTeleopMain extends OpMode {
                 Pose current_pose = follower.getPose();
                 path = follower.pathBuilder()
                         .addPath(new BezierLine(current_pose, remembered_pose))
-//                .addPath(new BezierLine(endPose, nextendPose))
                         .setLinearHeadingInterpolation(current_pose.getHeading(), remembered_pose.getHeading())
                         .build();
                 follower.followPath(path);
             }
         }
+    }
 
-        if (follower.isBusy()) {
-            follower.update();
-            follower_was_just_busy = true;
-            if (gamepad1.x){
-                follower.breakFollowing();
-            }
-        } else {
-            if (follower_was_just_busy == true){
-                rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            }
-            follower_was_just_busy = false;
-            //manual control for drive, will use user input if pedro is not executing a task.
+    public void drive_with_teleop(){
+        if (follower_was_just_busy == true){
+            rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
+        follower_was_just_busy = false;
+        //manual control for drive, will use user input if pedro is not executing a task.
 
-            double forward = gamepad1.left_stick_y;
-            double Strafe = gamepad1.left_stick_x;
-            double turn = gamepad1.right_stick_x;
+        double forward = gamepad1.left_stick_y;
+        double Strafe = gamepad1.left_stick_x;
+        double turn = gamepad1.right_stick_x;
 
-            //if we are trying to fire, line up with the goal.
-            if ((gamepad1.right_trigger > 0.1)||gamepad2.right_trigger > 0.1) {
-                turn+= 0.03*result.getTx();
-            }
-
-            //slide recalibrate..
-
-            //power slides so they retract and stop/reset encoders with the top bumpers
-
-            //driver 1's slowmode
-
-            double slowdown = 1 - (gamepad1.left_trigger * .75);
-
-
-            forward = forward * slowdown;
-            Strafe = Strafe * slowdown;
-            turn = turn * slowdown;
-
-            //thiz iz giving me null pointer exzecptionz for zome reazon vvv it zayz the referencez to the motorz are null objectz.. what??
-
-            //setpower for drive
-
-            leftFront.setPower(forward - Strafe + turn);
-            leftBack.setPower(forward + Strafe + turn);
-            rightFront.setPower(forward + Strafe - turn);
-            rightBack.setPower(forward - Strafe - turn);
+        //if we are trying to fire, line up with the goal.
+        if ((gamepad1.right_trigger > 0.1)||gamepad2.right_trigger > 0.1) {
+            turn+= 0.03*result.getTx();
         }
 
+        //slide recalibrate..
+
+        //power slides so they retract and stop/reset encoders with the top bumpers
+
+        //driver 1's slowmode
+
+        double slowdown = 1 - (gamepad1.left_trigger * .75);
 
 
-        // Show the elapsed game time and update telemetry so we can see it
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        forward = forward * slowdown;
+        Strafe = Strafe * slowdown;
+        turn = turn * slowdown;
 
-        telemetry.update();
+        //thiz iz giving me null pointer exzecptionz for zome reazon vvv it zayz the referencez to the motorz are null objectz.. what??
+
+        //setpower for drive
+
+        leftFront.setPower(forward - Strafe + turn);
+        leftBack.setPower(forward + Strafe + turn);
+        rightFront.setPower(forward + Strafe - turn);
+        rightBack.setPower(forward - Strafe - turn);
     }
 
     /*
