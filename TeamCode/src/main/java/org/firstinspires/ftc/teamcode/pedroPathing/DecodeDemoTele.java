@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name="DecodeDemoTele")
+@TeleOp(name="Z_DecodeDemoTele")
 
 public class DecodeDemoTele extends OpMode {
     // Declare OpMode members.
