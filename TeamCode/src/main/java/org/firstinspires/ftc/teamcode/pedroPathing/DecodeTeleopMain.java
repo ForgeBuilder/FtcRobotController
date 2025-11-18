@@ -165,6 +165,10 @@ public class DecodeTeleopMain extends OpMode {
 
     private Double[] PIDFCoefficientsList = {200.0,20.0,0.0,0.0};
 
+    //for telemetry - I should really start breaking this stuff into functions so I can init variables near where they are used.
+    double left_speed_at_kick = 0.0;
+    double right_speed_at_kick = 0.0;
+
     @Override
     public void loop() {
         //limelight stuff
@@ -175,8 +179,8 @@ public class DecodeTeleopMain extends OpMode {
             double ta = result.getTa(); // How big the target looks (0%-100% of the image)
 
             telemetry.addData("Target X", tx);
-            telemetry.addData("Target Y", ty);
-            telemetry.addData("Target Area", ta);
+//            telemetry.addData("Target Y", ty);
+//            telemetry.addData("Target Area", ta);
         } else {
             telemetry.addData("Limelight", "No Targets");
         }
@@ -222,11 +226,17 @@ public class DecodeTeleopMain extends OpMode {
                if (timeSinceShot.seconds() > 1.5){
                    kick = true;
                    timeSinceShot.reset();
+                   //debug information - motor 2 is left, motor 1 is right
+                   //
+                   left_speed_at_kick = launchMotor2.getVelocity();
+                   right_speed_at_kick = launchMotor2.getVelocity();
                }
            }
         } else {
             spin_launcher = false;
         }
+        telemetry.addData("left_speed_at_kick",left_speed_at_kick);
+        telemetry.addData("right_speed_at_kick",right_speed_at_kick);
 
         if (timeSinceShot.seconds() > 0.5) {
             kick = false;
@@ -324,14 +334,12 @@ public class DecodeTeleopMain extends OpMode {
             //manual control for drive, will use user input if pedro is not executing a task.
 
             double forward = gamepad1.left_stick_y;
-            double Strafe = -gamepad1.left_stick_x;
+            double Strafe = gamepad1.left_stick_x;
             double turn = gamepad1.right_stick_x;
 
-            //limelight camera tracking
-            if (gamepad2.b){
-                forward = 0.0;
-                Strafe = 0.0;
-                turn = result.getTx(); // How far left or right the target is (degrees); // How far left or right the target is (degrees);
+            //if we are trying to fire, line up with the goal.
+            if ((gamepad1.right_trigger > 0.1)||gamepad2.right_trigger > 0.1) {
+                turn+= 0.03*result.getTx();
             }
 
             //slide recalibrate..
@@ -351,10 +359,10 @@ public class DecodeTeleopMain extends OpMode {
 
             //setpower for drive
 
-            leftFront.setPower(forward + Strafe + turn);
-            leftBack.setPower(forward - (Strafe - turn));
-            rightFront.setPower(forward - (Strafe + turn));
-            rightBack.setPower(forward + (Strafe - turn));
+            leftFront.setPower(forward - Strafe + turn);
+            leftBack.setPower(forward + Strafe + turn);
+            rightFront.setPower(forward + Strafe - turn);
+            rightBack.setPower(forward - Strafe - turn);
         }
 
 
