@@ -12,8 +12,14 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+//import com.qualcomm.hardware.limelightvision; //ah you can't do this
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.LLStatus;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 @TeleOp(name="DecodeTeleopMain")
+
 
 public class DecodeTeleopMain extends OpMode {
     // Declare OpMode members.
@@ -24,7 +30,8 @@ public class DecodeTeleopMain extends OpMode {
     private Servo launchKickServo1;
     private Servo launchKickServo2;
 
-    private double LaunchServoAngle = 0.35;
+    private double KickerLaunchAngle = 0.35;
+    private double KickerIdleAngle = 0;
 
     private DcMotor rightFront;
     private DcMotor rightBack;
@@ -49,7 +56,7 @@ public class DecodeTeleopMain extends OpMode {
     /*
      * Code to run ONCE when the driver hits INIT
      */
-
+    Limelight3A limelight;
 
 
 
@@ -96,6 +103,11 @@ public class DecodeTeleopMain extends OpMode {
         launchKickServo1.setPosition(0);
         launchKickServo2.setPosition(1);
 
+        //limelight camera
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
+        limelight.start(); // This tells Limelight to start looking!
+        limelight.pipelineSwitch(9); // Switch to pipeline number 0
     }
 
     /*
@@ -155,6 +167,21 @@ public class DecodeTeleopMain extends OpMode {
 
     @Override
     public void loop() {
+        //limelight stuff
+        LLResult result = limelight.getLatestResult();
+        if (result != null && result.isValid()) {
+            double tx = result.getTx(); // How far left or right the target is (degrees)
+            double ty = result.getTy(); // How far up or down the target is (degrees)
+            double ta = result.getTa(); // How big the target looks (0%-100% of the image)
+
+            telemetry.addData("Target X", tx);
+            telemetry.addData("Target Y", ty);
+            telemetry.addData("Target Area", ta);
+        } else {
+            telemetry.addData("Limelight", "No Targets");
+        }
+
+
 
         if (gamepad2.dpadLeftWasPressed()){
             selector+=1;
@@ -206,11 +233,11 @@ public class DecodeTeleopMain extends OpMode {
         }
 
         if (kick) {
-            launchKickServo1.setPosition(LaunchServoAngle);
-            launchKickServo2.setPosition(1-LaunchServoAngle);
+            launchKickServo1.setPosition(KickerLaunchAngle);
+            launchKickServo2.setPosition(1- KickerLaunchAngle);
         } else {
-            launchKickServo1.setPosition(0);
-            launchKickServo2.setPosition(1);
+            launchKickServo1.setPosition(KickerIdleAngle);
+            launchKickServo2.setPosition(1-KickerIdleAngle);
         }
 
 //        if (gamepad2.yWasPressed()){
@@ -250,7 +277,7 @@ public class DecodeTeleopMain extends OpMode {
 
 
         //it's a 312 so 537.7 PPR at the Output Shaft. 5.2 RPS (max) would be 2796.04 or about 2800.
-        if (spin_intake){
+        if (spin_intake&&(!kick)){
             intakeMotor.setVelocity(2000);
         } else if(gamepad2.a||gamepad1.left_bumper) {
             intakeMotor.setPower(-2000);
@@ -299,6 +326,13 @@ public class DecodeTeleopMain extends OpMode {
             double forward = gamepad1.left_stick_y;
             double Strafe = -gamepad1.left_stick_x;
             double turn = gamepad1.right_stick_x;
+
+            //limelight camera tracking
+            if (gamepad2.b){
+                forward = 0.0;
+                Strafe = 0.0;
+                turn = result.getTx(); // How far left or right the target is (degrees); // How far left or right the target is (degrees);
+            }
 
             //slide recalibrate..
 
