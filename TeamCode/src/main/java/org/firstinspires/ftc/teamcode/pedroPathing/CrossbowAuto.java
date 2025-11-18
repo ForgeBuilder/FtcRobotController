@@ -20,13 +20,28 @@ public class CrossbowAuto extends CrossbowMain{
     }
 
     private int fired_artifacts = 0;
+    private boolean fired_an_artifact = false;
 
     @Override public void loop(){
-        boolean fired_an_artifact = launcher_code(true,false);
-        if (fired_an_artifact){
-            fired_artifacts += 1;
+        intake_code();
+        if (fired_artifacts <= 3){
+            fired_an_artifact = launcher_code(true,false);
+            if (fired_an_artifact){
+                fired_artifacts += 1;
+                if (fired_artifacts >= 3){
+                    spin_intake = false;
+                }
+            }
         }
         telemetry.addData("fired artifacts: ",fired_artifacts);
         telemetry.update();
+    }
+    private boolean spin_intake = true;
+    @Override public void intake_code(){
+        if (spin_intake&&(!kick)){
+            set_intake_speed(2000);
+        } else {
+            set_intake_speed(0);
+        }
     }
 }

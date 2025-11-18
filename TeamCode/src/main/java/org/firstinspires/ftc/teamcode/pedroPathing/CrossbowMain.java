@@ -32,7 +32,7 @@ public class CrossbowMain extends OpMode {
     private DcMotorEx rightLaunchMotor;
     private DcMotorEx leftLaunchMotor;
 
-    private DcMotorEx intakeMotor;
+    public DcMotorEx intakeMotor;
 
     Limelight3A limelight;
 
@@ -164,10 +164,10 @@ public class CrossbowMain extends OpMode {
         boolean fired_this_tick = false;
         if (fire) {
             spin_launcher = true;
-            //when the motor's velocity is equal - so when it fires, ball will likley be slightly overshot.
+            //when the motor's velocity is equal - so when it fires, ball                will likley be slightly overshot.
 
-            boolean right_speed_met = rightLaunchMotor.getVelocity() == launcherSpeed;
-            boolean left_speed_met = leftLaunchMotor.getVelocity() == launcherSpeed;
+            boolean right_speed_met = rightLaunchMotor.getVelocity() - launcherSpeed < 20;
+            boolean left_speed_met = leftLaunchMotor.getVelocity() - launcherSpeed < 20;
 
             if ((right_speed_met && left_speed_met) || override_shot){//the right bumper serves as an override
                 if (timeSinceShot.seconds() > 1.5){
