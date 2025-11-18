@@ -143,13 +143,23 @@ public class CrossbowMain extends OpMode {
     private double KickerIdleAngle = 0;
 
     private int launcherSpeed = 900;
+    public int get_launcher_speed(){
+        return launcherSpeed;
+    }
+
+    public void set_launcher_speed(int new_speed) {
+        launcherSpeed = new_speed;
+        launcherSpeed = Math.max(Math.min(launcherSpeed,maxLauncherSpeed),minLauncherSpeed);
+    }
     //ticks per second
     private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(200,2,0,0);
 
-
     //returns true each time it fires the artifact. indicates when the robot has decided to fire, not when the shot is clear.
     //do not move the instant this function returns true. You may attempt to fire again.
-    public boolean launcher_code(boolean fire){
+    //override shot will kick the artifact and reset the timer reguardless of whether it thinks it is ready
+
+
+    public boolean launcher_code(boolean fire,boolean override_shot){
         //the return value of the function: did the robot fire the artifact
         boolean fired_this_tick = false;
         if (fire) {
@@ -159,7 +169,7 @@ public class CrossbowMain extends OpMode {
             boolean right_speed_met = rightLaunchMotor.getVelocity() == launcherSpeed;
             boolean left_speed_met = leftLaunchMotor.getVelocity() == launcherSpeed;
 
-            if ((right_speed_met && left_speed_met) || gamepad1.right_bumper){//the right bumper serves as an override
+            if ((right_speed_met && left_speed_met) || override_shot){//the right bumper serves as an override
                 if (timeSinceShot.seconds() > 1.5){
                     kick = true;
                     timeSinceShot.reset();
@@ -187,23 +197,6 @@ public class CrossbowMain extends OpMode {
         } else {
             launchKickServo1.setPosition(KickerIdleAngle);
             launchKickServo2.setPosition(1-KickerIdleAngle);
-        }
-
-//        if (gamepad2.yWasPressed()){
-//            spin_launcher = !spin_launcher;
-//        }
-
-        //range change code
-
-        //replace the max and mins of 1000 and 600 with variablez later
-
-        //Still need a way to visually show this besides telemetry
-        if (gamepad1.dpadUpWasPressed()){//||gamepad1.dpadUpWasPressed()
-            launcherSpeed += 40;
-            launcherSpeed = Math.max(Math.min(launcherSpeed,maxLauncherSpeed),minLauncherSpeed);
-        } else if (gamepad1.dpadDownWasPressed()) {//||gamepad1.dpadDownWasPressed()
-            launcherSpeed -= 40;
-            launcherSpeed = Math.max(Math.min(launcherSpeed,maxLauncherSpeed),minLauncherSpeed);
         }
 
         if (spin_launcher){
@@ -239,21 +232,11 @@ public class CrossbowMain extends OpMode {
             telemetry.addData("Limelight", "No Targets");
         }
     }
-
-    boolean spin_intake = false;
     public void intake_code(){
-        if (gamepad2.aWasPressed()||gamepad1.leftBumperWasPressed()){
-            spin_intake = !spin_intake;
-        }
+    }
 
-        //it's a 312 so 537.7 PPR at the Output Shaft. 5.2 RPS (max) would be 2796.04 or about 2800.
-        if (spin_intake&&(!kick)){
-            intakeMotor.setVelocity(2000);
-        } else if(gamepad2.a||gamepad1.left_bumper) {
-            intakeMotor.setPower(-2000);
-        } else {
-            intakeMotor.setPower(0);
-        }
+    public void set_intake_speed(int speed){
+        intakeMotor.setPower(speed);
     }
 
     private Pose teleop_remembered_pose = new Pose(0,0,Math.toRadians(0));
@@ -281,7 +264,7 @@ public class CrossbowMain extends OpMode {
         }
     }
 
-    public void drive_with_teleop(){
+    public void drive_with_teleop(double forward,double strafe,double turn,double slowdown,boolean fire){
         if (follower_was_just_busy == true){
             rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -291,12 +274,8 @@ public class CrossbowMain extends OpMode {
         follower_was_just_busy = false;
         //manual control for drive, will use user input if pedro is not executing a task.
 
-        double forward = gamepad1.left_stick_y;
-        double Strafe = gamepad1.left_stick_x;
-        double turn = gamepad1.right_stick_x;
-
         //if we are trying to fire, line up with the goal.
-        if ((gamepad1.right_trigger > 0.1)||gamepad2.right_trigger > 0.1) {
+        if (fire) {
             turn+= 0.03*LLresult.getTx();
         }
 
@@ -306,21 +285,21 @@ public class CrossbowMain extends OpMode {
 
         //driver 1's slowmode
 
-        double slowdown = 1 - (gamepad1.left_trigger * .75);
+        double slowdown_multiplier = 1 - (slowdown * .75);
 
 
-        forward = forward * slowdown;
-        Strafe = Strafe * slowdown;
-        turn = turn * slowdown;
+        forward = forward * slowdown_multiplier;
+        strafe = strafe * slowdown_multiplier;
+        turn = turn * slowdown_multiplier;
 
         //thiz iz giving me null pointer exzecptionz for zome reazon vvv it zayz the referencez to the motorz are null objectz.. what??
 
         //setpower for drive
 
-        leftFront.setPower(forward - Strafe + turn);
-        leftBack.setPower(forward + Strafe + turn);
-        rightFront.setPower(forward + Strafe - turn);
-        rightBack.setPower(forward - Strafe - turn);
+        leftFront.setPower(forward - strafe + turn);
+        leftBack.setPower(forward + strafe + turn);
+        rightFront.setPower(forward + strafe - turn);
+        rightBack.setPower(forward - strafe - turn);
     }
 
     /*
