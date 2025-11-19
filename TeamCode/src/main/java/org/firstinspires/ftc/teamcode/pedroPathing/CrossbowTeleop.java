@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -29,6 +30,7 @@ public class CrossbowTeleop extends CrossbowMain {
 
     @Override
     public void loop(){
+        super.loop();
         teleop_limelight_code();
         launcher_code((gamepad2.right_trigger>0.1)||(gamepad1.right_trigger>0.1),gamepad1.right_bumper);
         intake_code();
@@ -37,7 +39,9 @@ public class CrossbowTeleop extends CrossbowMain {
 
         //drivetrain stuff
         if (follower.isBusy()) {
-            follower_code(gamepad1.x);
+            if (gamepad1.x){
+                follower.breakFollowing();
+            }
         } else {
             //this is a little nonsensical. I might as well have just put all the teleop functions in here
             //and made the motors public. It is what it is.. this is how we learn!
@@ -68,9 +72,15 @@ public class CrossbowTeleop extends CrossbowMain {
                 telemetry.addData("MT1 Location", "(" + x*meters_to_inches + ", " + y*meters_to_inches + ")");
             }
         }
+        if (gamepad1.yWasPressed()){
+            limelight_set_pose();
+        }
 
         // Show the elapsed game time and update telemetry so we can see it
         telemetry.addData("Status", "Run Time: " + runtime.toString());
+        Pose current_pose = follower.getPose();
+        telemetry.addData("Follower Pose",current_pose.getX() + ", "+current_pose.getY());
+
         telemetry.update();
     }
 

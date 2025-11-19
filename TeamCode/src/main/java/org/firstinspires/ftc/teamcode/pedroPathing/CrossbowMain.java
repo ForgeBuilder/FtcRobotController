@@ -15,6 +15,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.robotcore.internal.camera.delegating.DelegatingCaptureSequence;
+
 //@TeleOp(name="DecodeTeleopMain")
 
 
@@ -104,22 +109,27 @@ public class CrossbowMain extends OpMode {
 
     @Override
     public void loop() {
+        follower_code();
     }
 
-
-    public void follower_code(boolean break_path){
-        follower.update();
-        follower_was_just_busy = true;
-        if (break_path){
-            follower.breakFollowing();
+    //exists purely for organisation, part of loop.
+    private boolean follower_was_just_busy = true; //true if follower is not busy and it just was
+    public void follower_code(){
+        if (follower.isBusy()){
+            follower_was_just_busy = true;
+            follower.update();
+        } else {
+            pose_tracker.update();
         }
+        Pose current_pose = follower.getPose();
+        double x = current_pose.getX();//inches I think
+        double y = current_pose.getY();
+        double yaw = current_pose.getHeading(); //radians
+        telemetry.addData("follower current pose","("+x+","+y+","+yaw+")");
     }
-
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
      */
-
-    private boolean follower_was_just_busy = true;
 
     //the initial remembered pose
 
@@ -243,10 +253,11 @@ public class CrossbowMain extends OpMode {
             pose_tracker.update();
             teleop_remembered_pose = follower.getPose();
         }
-        telemetry.addData("remembered pose information","");
-        telemetry.addData("heading",teleop_remembered_pose.getHeading());
-        telemetry.addData("x",teleop_remembered_pose.getX());
-        telemetry.addData("y",teleop_remembered_pose.getY());
+        double x = teleop_remembered_pose.getX();//inches I think
+        double y = teleop_remembered_pose.getY();
+        double yaw = teleop_remembered_pose.getHeading(); //radians
+
+        telemetry.addData("saved pose x,y,yaw","("+x+","+y+","+yaw+")");
 
         if (gamepad1.bWasPressed()){
             if (teleop_remembered_pose != null){
@@ -260,38 +271,54 @@ public class CrossbowMain extends OpMode {
             }
         }
     }
+    public void limelight_set_pose(){
+        LLresult = limelight.getLatestResult();
+        if (LLresult != null && LLresult.isValid()) {
+            Pose3D limelight_botpose = LLresult.getBotpose();
+            if (limelight_botpose != null) {
+                double x = limelight_botpose.getPosition().x;
+                double y = limelight_botpose.getPosition().y;
+                YawPitchRollAngles limelight_orientation = limelight_botpose.getOrientation();
+                double yaw = limelight_orientation.getYaw(AngleUnit.RADIANS);
+                double meters_to_inches = 39.3701;
+//                telemetry.addData("MT1 Location", "(" + x*meters_to_inches + ", " + y*meters_to_inches + ")");
+//                telemetry.addData("MT1 Yaw", yaw);
 
+                //this will likley be very off becasue the limelight is backwards..
+                //the negitives and math.pi are to reverse the pose
+                Pose limelight_pose = new Pose(-x*meters_to_inches,y*meters_to_inches,yaw);
+                follower.setPose(limelight_pose);
+
+                x = limelight_pose.getX();//inches I think
+                y = limelight_pose.getY();
+                yaw = limelight_pose.getHeading(); //radians
+                telemetry.addData("limelight pose x,y,yaw","("+x+","+y+","+yaw+")");
+            }
+        } else {
+            telemetry.addData("Limelight", "No Targets");
+        }
+    }
+
+    //manual control for drive, will use user input if pedro is not executing a task.
     public void drive_with_teleop(double forward,double strafe,double turn,double slowdown,boolean fire){
-        if (follower_was_just_busy == true){
+        if (follower_was_just_busy){
             rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            follower_was_just_busy = false;
         }
-        follower_was_just_busy = false;
-        //manual control for drive, will use user input if pedro is not executing a task.
 
         //if we are trying to fire, line up with the goal.
         if (fire) {
-            turn+= 0.05*LLresult.getTx();
+            turn+= 0.03*LLresult.getTx(); //This could be a PID and it would be better
         }
 
-        //slide recalibrate..
-
-        //power slides so they retract and stop/reset encoders with the top bumpers
-
-        //driver 1's slowmode
-
         double slowdown_multiplier = 1 - (slowdown * .75);
-
 
         forward = forward * slowdown_multiplier;
         strafe = strafe * slowdown_multiplier;
         turn = turn * slowdown_multiplier;
-
-        //thiz iz giving me null pointer exzecptionz for zome reazon vvv it zayz the referencez to the motorz are null objectz.. what??
-
-        //setpower for drive
 
         leftFront.setPower(forward - strafe + turn);
         leftBack.setPower(forward + strafe + turn);

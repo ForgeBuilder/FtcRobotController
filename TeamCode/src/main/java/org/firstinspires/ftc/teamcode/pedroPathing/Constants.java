@@ -17,6 +17,8 @@ public class Constants {
             .mass(12.7)
             .forwardZeroPowerAcceleration(-35.65)
             .lateralZeroPowerAcceleration(-75.26);
+    //I think I need to tune path constraints so pedro stops overshooting the target position.
+    //I want final position and final rotation to be more reliable.
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
     public static PinpointConstants localizerConstants = new PinpointConstants()
             .forwardPodY(120) //these may or may not be accurate. I did them very roughly counting hold distance as 24 mm.

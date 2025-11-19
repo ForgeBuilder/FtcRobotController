@@ -3,13 +3,7 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 
 //This is the auto program. a few values will be able to be change to make it work for red/blue
@@ -37,6 +31,7 @@ public class CrossbowAuto extends CrossbowMain{
     private int step = 0;
 
     @Override public void loop(){
+        super.loop();
         intake_code();
         fired_an_artifact = launcher_code(fire_artifact,false);
 
@@ -58,7 +53,7 @@ public class CrossbowAuto extends CrossbowMain{
             set_limelight_enabled(true);
         } else if (step == 2) {
 
-            limelight_set_botpose();
+            limelight_set_pose();
 
             if (fired_artifacts <= 3){
                 if (fired_an_artifact){
@@ -81,10 +76,6 @@ public class CrossbowAuto extends CrossbowMain{
 
         }
 
-        if (true) { //follower.isBusy()
-            follower_code(false);
-        }
-
         telemetry.addData("fired artifacts: ",fired_artifacts);
         telemetry.addData("step",step);
         telemetry.update();
@@ -95,32 +86,9 @@ public class CrossbowAuto extends CrossbowMain{
         if (enabled){
             limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
             limelight.start(); // This tells Limelight to start looking!
-            limelight.pipelineSwitch(9); // Switch to pipeline number 0
+            limelight.pipelineSwitch(0); // Switch to pipeline number 0
         } else {
             limelight.stop(); // This tells Limelight to stop looking.
-        }
-    }
-
-    public void limelight_set_botpose(){
-        LLresult = limelight.getLatestResult();
-        if (LLresult != null && LLresult.isValid()) {
-            Pose3D limelight_botpose = LLresult.getBotpose();
-            if (limelight_botpose != null) {
-                double x = limelight_botpose.getPosition().x;
-                double y = limelight_botpose.getPosition().y;
-                YawPitchRollAngles limelight_orientation = limelight_botpose.getOrientation();
-                double yaw = limelight_orientation.getYaw(AngleUnit.RADIANS);
-                double meters_to_inches = 39.3701;
-                telemetry.addData("MT1 Location", "(" + x*meters_to_inches + ", " + y*meters_to_inches + ")");
-                telemetry.addData("MT1 Yaw", yaw);
-
-                //this will likley be very off becasue the limelight is backwards..
-                //the negitives and math.pi are to reverse the pose
-                Pose limelight_pose = new Pose(-x*meters_to_inches,y*meters_to_inches,yaw-Math.PI);
-                follower.setPose(limelight_pose);
-            }
-        } else {
-            telemetry.addData("Limelight", "No Targets");
         }
     }
 
