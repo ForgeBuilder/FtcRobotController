@@ -74,8 +74,8 @@ public class CrossbowMain extends OpMode {
 
         telemetry.addData("Status", "Initialized");
 
-        leftFront.setDirection(DcMotor.Direction.REVERSE);
-        leftBack.setDirection(DcMotor.Direction.REVERSE);
+        rightFront.setDirection(DcMotor.Direction.REVERSE);
+        rightBack.setDirection(DcMotor.Direction.REVERSE);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -320,10 +320,10 @@ public class CrossbowMain extends OpMode {
         strafe = strafe * slowdown_multiplier;
         turn = turn * slowdown_multiplier;
 
-        leftFront.setPower(forward - strafe + turn);
-        leftBack.setPower(forward + strafe + turn);
-        rightFront.setPower(forward + strafe - turn);
-        rightBack.setPower(forward - strafe - turn);
+        leftFront.setPower(forward - strafe - turn);
+        leftBack.setPower(forward + strafe - turn);
+        rightFront.setPower(forward + strafe + turn);
+        rightBack.setPower(forward - strafe + turn);
     }
 
     /*
