@@ -85,9 +85,6 @@ public class CrossbowMain extends OpMode {
 
         //limelight camera
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
-        limelight.start(); // This tells Limelight to start looking!
-        limelight.pipelineSwitch(9); // Switch to pipeline number 0
     }
 
     /*
@@ -276,7 +273,7 @@ public class CrossbowMain extends OpMode {
 
         //if we are trying to fire, line up with the goal.
         if (fire) {
-            turn+= 0.03*LLresult.getTx();
+            turn+= 0.05*LLresult.getTx();
         }
 
         //slide recalibrate..

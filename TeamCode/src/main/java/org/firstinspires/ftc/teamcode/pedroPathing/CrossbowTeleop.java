@@ -20,6 +20,13 @@ public class CrossbowTeleop extends CrossbowMain {
         runtime.reset();
     }
 
+    @Override public void init(){
+        super.init();
+        limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
+        limelight.start(); // This tells Limelight to start looking!
+        limelight.pipelineSwitch(9); // Switch to pipeline number 0
+    }
+
     @Override
     public void loop(){
         teleop_limelight_code();
@@ -57,7 +64,8 @@ public class CrossbowTeleop extends CrossbowMain {
             if (botpose != null) {
                 double x = botpose.getPosition().x;
                 double y = botpose.getPosition().y;
-                telemetry.addData("MT1 Location", "(" + x + ", " + y + ")");
+                double meters_to_inches = 39.3701;
+                telemetry.addData("MT1 Location", "(" + x*meters_to_inches + ", " + y*meters_to_inches + ")");
             }
         }
 
