@@ -162,31 +162,26 @@ public class CrossbowMain extends OpMode {
 
 
 
+    double left_speed_average = 0.0;
+    double right_speed_average = 0.0;
 
+    double launchspeed_average_range = 5.0;
     public boolean launcher_code(boolean fire,boolean override_shot){
         //the return value of the function: did the robot fire the artifact
         boolean fired_this_tick = false;
+        telemetry.addData("Launcher Target Velocity:", "\n"+launcherSpeed); // \n makes the text go down a line
         if (fire) {
             spin_launcher = true;
-            //when the motor's velocity is equal - so when it fires, ball                will likley be slightly overshot.
+            //add a visualiser to the robot to show the launch angle?? (unless we just do range estimation first)
 
+            left_speed_average = left_speed_average/(1-launchspeed_average_range)+leftLaunchMotor.getVelocity()/launchspeed_average_range;
+            right_speed_average = right_speed_average/(1-launchspeed_average_range)+rightLaunchMotor.getVelocity()/launchspeed_average_range;
 
-            //TO BE IMPLEMENTED:
+            telemetry.addData("left_speed_average",left_speed_average);
+            telemetry.addData("right_speed_average",right_speed_average);
 
-            //estimation for the launcher speed thingy
-
-            //range = <how many ticks of speed you want to average>
-
-            //average_speed = average_speed*1/(1-range) + current_speed(1/range)
-
-            //also, add a visualiser to the robot to show the launch angle?? (unless we just do range estimation first)
-
-            boolean right_speed_met = (launcherSpeed - rightLaunchMotor.getVelocity()) < 20.0;
-            boolean left_speed_met = (launcherSpeed + leftLaunchMotor.getVelocity()) < 20.0;
-
-//            telemetry.addData("right_speed_met",(rightLaunchMotor.getVelocity() - launcherSpeed));
-//            telemetry.addData("left_speed_met",(-1*leftLaunchMotor.getVelocity() - launcherSpeed));
-//            telemetry.addData("override shot",override_shot);
+            boolean right_speed_met = Math.abs(launcherSpeed - right_speed_average) < 20.0;
+            boolean left_speed_met = Math.abs(launcherSpeed + left_speed_average) < 20.0;
 
             if ((right_speed_met && left_speed_met)|| override_shot){  // //the right bumper serves as an override
                 if (timeSinceShot.seconds() > 1.5){
@@ -227,7 +222,7 @@ public class CrossbowMain extends OpMode {
             rightLaunchMotor.setPower(0);
             leftLaunchMotor.setPower(0);
         }
-        telemetry.addData("Launcher Target Velocity:", "\n"+launcherSpeed); // \n makes the text go down a line
+
 //        telemetry.addData("launchmotor1 velocity", rightLaunchMotor.getVelocity());//ticks/s
 //        telemetry.addData("launchmotor2 velocity", leftLaunchMotor.getVelocity());//ticks/s
 
