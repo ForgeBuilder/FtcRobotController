@@ -173,10 +173,16 @@ public class CrossbowMain extends OpMode {
             spin_launcher = true;
             //when the motor's velocity is equal - so when it fires, ball                will likley be slightly overshot.
 
-            boolean right_speed_met = rightLaunchMotor.getVelocity() - launcherSpeed < 20;
-            boolean left_speed_met = leftLaunchMotor.getVelocity() - launcherSpeed < 20;
 
-            if ((right_speed_met && left_speed_met) || override_shot){//the right bumper serves as an override
+
+            boolean right_speed_met = (launcherSpeed - rightLaunchMotor.getVelocity()) < 20.0;
+            boolean left_speed_met = (launcherSpeed + leftLaunchMotor.getVelocity()) < 20.0;
+
+//            telemetry.addData("right_speed_met",(rightLaunchMotor.getVelocity() - launcherSpeed));
+//            telemetry.addData("left_speed_met",(-1*leftLaunchMotor.getVelocity() - launcherSpeed));
+//            telemetry.addData("override shot",override_shot);
+
+            if ((right_speed_met && left_speed_met)|| override_shot){  // //the right bumper serves as an override
                 if (timeSinceShot.seconds() > 1.5){
                     kick = true;
                     timeSinceShot.reset();
@@ -189,7 +195,6 @@ public class CrossbowMain extends OpMode {
             }
         } else {
             spin_launcher = false;
-            fired_this_tick = false;
         }
         telemetry.addData("left_speed_at_kick",left_speed_at_kick);
         telemetry.addData("right_speed_at_kick",right_speed_at_kick);
