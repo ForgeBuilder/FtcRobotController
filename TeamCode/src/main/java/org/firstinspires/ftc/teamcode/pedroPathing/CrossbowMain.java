@@ -121,11 +121,6 @@ public class CrossbowMain extends OpMode {
         } else {
             pose_tracker.update();
         }
-        Pose current_pose = follower.getPose();
-        double x = current_pose.getX();//inches I think
-        double y = current_pose.getY();
-        double yaw = current_pose.getHeading(); //radians
-        telemetry.addData("follower current pose","("+x+","+y+","+yaw+")");
     }
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
@@ -149,7 +144,7 @@ public class CrossbowMain extends OpMode {
     private double KickerLaunchAngle = 0.35;
     private double KickerIdleAngle = 0;
 
-    private int launcherSpeed = 900;
+    private int launcherSpeed = 760;
     public int get_launcher_speed(){
         return launcherSpeed;
     }
@@ -177,12 +172,14 @@ public class CrossbowMain extends OpMode {
 
 
             //TO BE IMPLEMENTED:
-            
+
             //estimation for the launcher speed thingy
 
             //range = <how many ticks of speed you want to average>
 
             //average_speed = average_speed*1/(1-range) + current_speed(1/range)
+
+            //also, add a visualiser to the robot to show the launch angle?? (unless we just do range estimation first)
 
             boolean right_speed_met = (launcherSpeed - rightLaunchMotor.getVelocity()) < 20.0;
             boolean left_speed_met = (launcherSpeed + leftLaunchMotor.getVelocity()) < 20.0;
@@ -230,9 +227,9 @@ public class CrossbowMain extends OpMode {
             rightLaunchMotor.setPower(0);
             leftLaunchMotor.setPower(0);
         }
-        telemetry.addData("launchmotor targetv", launcherSpeed);
-        telemetry.addData("launchmotor1 velocity", rightLaunchMotor.getVelocity());//ticks/s
-        telemetry.addData("launchmotor2 velocity", leftLaunchMotor.getVelocity());//ticks/s
+        telemetry.addData("Launcher Target Velocity:", "\n"+launcherSpeed); // \n makes the text go down a line
+//        telemetry.addData("launchmotor1 velocity", rightLaunchMotor.getVelocity());//ticks/s
+//        telemetry.addData("launchmotor2 velocity", leftLaunchMotor.getVelocity());//ticks/s
 
         return fired_this_tick;
     }
@@ -243,12 +240,11 @@ public class CrossbowMain extends OpMode {
         LLresult = limelight.getLatestResult();
         if (LLresult != null && LLresult.isValid()) {
             double tx = LLresult.getTx(); // How far left or right the target is (degrees)
-            double ty = LLresult.getTy(); // How far up or down the target is (degrees)
             double ta = LLresult.getTa(); // How big the target looks (0%-100% of the image)
 
-            telemetry.addData("Target X", tx);
-//            telemetry.addData("Target Y", ty);
-//            telemetry.addData("Target Area", ta);
+            // gives the x offset from the limelight
+//            telemetry.addData("Target X", tx);
+//
         } else {
             telemetry.addData("Limelight", "No Targets");
         }
@@ -300,12 +296,13 @@ public class CrossbowMain extends OpMode {
 
                 //this will likley be very off becasue the limelight is backwards..
                 //the negitives and math.pi are to reverse the pose
-                Pose limelight_pose = new Pose(-x*meters_to_inches,y*meters_to_inches,yaw);
+                Pose limelight_pose = new Pose(x*meters_to_inches,y*meters_to_inches,yaw);
                 follower.setPose(limelight_pose);
 
                 x = limelight_pose.getX();//inches I think
                 y = limelight_pose.getY();
                 yaw = limelight_pose.getHeading(); //radians
+
                 telemetry.addData("limelight pose x,y,yaw","("+x+","+y+","+yaw+")");
             }
         } else {
