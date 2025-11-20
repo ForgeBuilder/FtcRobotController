@@ -174,8 +174,8 @@ public class CrossbowMain extends OpMode {
             spin_launcher = true;
             //add a visualiser to the robot to show the launch angle?? (unless we just do range estimation first)
 
-            left_speed_average = left_speed_average/(1-launchspeed_average_range)+leftLaunchMotor.getVelocity()/launchspeed_average_range;
-            right_speed_average = right_speed_average/(1-launchspeed_average_range)+rightLaunchMotor.getVelocity()/launchspeed_average_range;
+            left_speed_average = (left_speed_average*((1-launchspeed_average_range)/launchspeed_average_range)+leftLaunchMotor.getVelocity()/launchspeed_average_range);
+            right_speed_average = (right_speed_average*((1-launchspeed_average_range)/launchspeed_average_range)+rightLaunchMotor.getVelocity()/launchspeed_average_range);
 
             telemetry.addData("left_speed_average",left_speed_average);
             telemetry.addData("right_speed_average",right_speed_average);
