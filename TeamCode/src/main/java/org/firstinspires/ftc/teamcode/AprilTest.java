@@ -24,7 +24,6 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.opencv.core.Mat;
 import java.util.ArrayList;
 
-
 @TeleOp(name="AprilTest", group="Iterative OpMode")
 
 public class AprilTest extends OpMode

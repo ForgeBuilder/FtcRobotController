@@ -159,11 +159,13 @@ public class CrossbowMain extends OpMode {
         launcherSpeed = Math.max(Math.min(launcherSpeed,maxLauncherSpeed),minLauncherSpeed);
     }
     //ticks per second
-    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(200,2,0,0);
+    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(250,2,0,0); //was 200 p before flywheel
 
     //returns true each time it fires the artifact. indicates when the robot has decided to fire, not when the shot is clear.
     //do not move the instant this function returns true. You may attempt to fire again.
     //override shot will kick the artifact and reset the timer reguardless of whether it thinks it is ready
+
+
 
 
     public boolean launcher_code(boolean fire,boolean override_shot){
@@ -174,6 +176,13 @@ public class CrossbowMain extends OpMode {
             //when the motor's velocity is equal - so when it fires, ball                will likley be slightly overshot.
 
 
+            //TO BE IMPLEMENTED:
+            
+            //estimation for the launcher speed thingy
+
+            //range = <how many ticks of speed you want to average>
+
+            //average_speed = average_speed*1/(1-range) + current_speed(1/range)
 
             boolean right_speed_met = (launcherSpeed - rightLaunchMotor.getVelocity()) < 20.0;
             boolean left_speed_met = (launcherSpeed + leftLaunchMotor.getVelocity()) < 20.0;
