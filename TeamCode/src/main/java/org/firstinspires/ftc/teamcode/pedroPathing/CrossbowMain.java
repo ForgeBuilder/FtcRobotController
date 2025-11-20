@@ -160,30 +160,42 @@ public class CrossbowMain extends OpMode {
     //do not move the instant this function returns true. You may attempt to fire again.
     //override shot will kick the artifact and reset the timer reguardless of whether it thinks it is ready
 
+    int left_speed_met_count = 1;
+    int right_speed_met_count = 1;
 
-
-    double left_speed_average = 0.0;
-    double right_speed_average = 0.0;
-
-    double launchspeed_average_range = 5.0;
+    int desired_met_count = 10;
     public boolean launcher_code(boolean fire,boolean override_shot){
         //the return value of the function: did the robot fire the artifact
         boolean fired_this_tick = false;
         telemetry.addData("Launcher Target Velocity:", "\n"+launcherSpeed); // \n makes the text go down a line
+
+        telemetry.addData("left_speed",leftLaunchMotor.getVelocity());
+        telemetry.addData("right_speed",rightLaunchMotor.getVelocity());
+
+        telemetry.addData("left_speed_met_count",left_speed_met_count);
+        telemetry.addData("right_speed_met_count",right_speed_met_count);
+
         if (fire) {
             spin_launcher = true;
             //add a visualiser to the robot to show the launch angle?? (unless we just do range estimation first)
 
-            left_speed_average = (left_speed_average*((1-launchspeed_average_range)/launchspeed_average_range)+leftLaunchMotor.getVelocity()/launchspeed_average_range);
-            right_speed_average = (right_speed_average*((1-launchspeed_average_range)/launchspeed_average_range)+rightLaunchMotor.getVelocity()/launchspeed_average_range);
+            boolean right_speed_met = Math.abs(launcherSpeed - rightLaunchMotor.getVelocity()) < 20.0;
+            if (right_speed_met){
+                right_speed_met_count++;
+            } else {
+                right_speed_met_count--;
+            }
+            right_speed_met_count = int_clamp(right_speed_met_count,0,desired_met_count);
 
-            telemetry.addData("left_speed_average",left_speed_average);
-            telemetry.addData("right_speed_average",right_speed_average);
+            boolean left_speed_met = Math.abs(launcherSpeed + leftLaunchMotor.getVelocity()) < 20.0;
+            if (left_speed_met){
+                left_speed_met_count++;
+            } else {
+                left_speed_met_count--;
+            }
+            left_speed_met_count = int_clamp(left_speed_met_count,0,desired_met_count);
 
-            boolean right_speed_met = Math.abs(launcherSpeed - right_speed_average) < 20.0;
-            boolean left_speed_met = Math.abs(launcherSpeed + left_speed_average) < 20.0;
-
-            if ((right_speed_met && left_speed_met)|| override_shot){  // //the right bumper serves as an override
+            if (((right_speed_met_count == desired_met_count) && (left_speed_met_count ==desired_met_count))|| override_shot){  // //the right bumper serves as an override
                 if (timeSinceShot.seconds() > 1.5){
                     kick = true;
                     timeSinceShot.reset();
@@ -337,5 +349,9 @@ public class CrossbowMain extends OpMode {
      */
     @Override
     public void stop() {
+    }
+
+    public int int_clamp(int value,int min,int max){
+        return Math.min((Math.max(value,min)),max);
     }
 }
