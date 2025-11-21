@@ -181,7 +181,7 @@ public class CrossbowMain extends OpMode {
     int left_speed_met_count = 1;
     int right_speed_met_count = 1;
 
-    int desired_met_count = 10;
+    int desired_met_count = 5;
     public boolean launcher_code(boolean fire,boolean override_shot){
         //the return value of the function: did the robot fire the artifact
         boolean fired_this_tick = false;
@@ -190,8 +190,8 @@ public class CrossbowMain extends OpMode {
         telemetry.addData("left_speed",leftLaunchMotor.getVelocity());
         telemetry.addData("right_speed",rightLaunchMotor.getVelocity());
 
-        telemetry.addData("left_speed_met_count",left_speed_met_count);
-        telemetry.addData("right_speed_met_count",right_speed_met_count);
+//        telemetry.addData("left_speed_met_count",left_speed_met_count);
+//        telemetry.addData("right_speed_met_count",right_speed_met_count);
 
         if (fire) {
             spin_launcher = true;
@@ -216,6 +216,9 @@ public class CrossbowMain extends OpMode {
             //mabye add some telemetry that tells why the launcher won't fire but only if it's false
             boolean speed_ready = ((right_speed_met_count == desired_met_count) && (left_speed_met_count ==desired_met_count));
             boolean limelight_ready = limelight_x_offset < 1;
+
+            telemetry.addData("speed_ready",speed_ready);
+            telemetry.addData("limelight_ready",limelight_ready);
 
             if (speed_ready && limelight_ready || override_shot){  // //the right bumper serves as an override
                 if (timeSinceShot.seconds() > 1.5){
@@ -269,7 +272,7 @@ public class CrossbowMain extends OpMode {
     public void teleop_limelight_code(){
         //limelight stuff
         LLresult = limelight.getLatestResult();
-        if ((LLresult != null) && LLresult.isValid() && LLresult.) {
+        if ((LLresult != null) && LLresult.isValid()) {
             double tx = LLresult.getTx(); // How far left or right the target is (degrees)
             limelight_x_offset = tx;
             double ta = LLresult.getTa(); // How big the target looks (0%-100% of the image)

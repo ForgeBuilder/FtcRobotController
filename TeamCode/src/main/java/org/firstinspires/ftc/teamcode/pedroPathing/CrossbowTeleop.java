@@ -84,6 +84,8 @@ public class CrossbowTeleop extends CrossbowMain {
     }
 
     private boolean spin_intake = false;
+
+    private ElapsedTime intake_reverse_timer = new ElapsedTime();
     @Override
     public void intake_code(){
         if (gamepad2.aWasPressed()||gamepad1.leftBumperWasPressed()){
@@ -92,7 +94,9 @@ public class CrossbowTeleop extends CrossbowMain {
         //it's a 312 so 537.7 PPR at the Output Shaft. 5.2 RPS (max) would be 2796.04 or about 2800.
         if (spin_intake&&(!kick)){
             set_intake_speed(2000);
-        } else if(gamepad2.a||gamepad1.left_bumper) {
+        } else if(gamepad2.aWasReleased()||gamepad1.leftBumperWasReleased()) {
+            intake_reverse_timer.reset();
+        } else if((gamepad2.a||gamepad1.left_bumper)&&intake_reverse_timer.seconds()>0.5) {
             set_intake_speed(-2000);
         } else {
             set_intake_speed(0);
