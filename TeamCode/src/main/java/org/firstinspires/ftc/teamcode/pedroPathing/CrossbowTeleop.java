@@ -92,7 +92,7 @@ public class CrossbowTeleop extends CrossbowMain {
             spin_intake = !spin_intake;
         }
         //it's a 312 so 537.7 PPR at the Output Shaft. 5.2 RPS (max) would be 2796.04 or about 2800.
-        if (spin_intake&&(!kick)){
+        if ((spin_intake||trying_to_fire)&&(!kick)){
             set_intake_speed(2000);
         } else if(gamepad2.aWasReleased()||gamepad1.leftBumperWasReleased()) {
             intake_reverse_timer.reset();

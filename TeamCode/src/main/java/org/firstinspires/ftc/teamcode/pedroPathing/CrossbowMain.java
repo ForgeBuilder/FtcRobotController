@@ -182,6 +182,8 @@ public class CrossbowMain extends OpMode {
     int right_speed_met_count = 1;
 
     int desired_met_count = 5;
+
+    public boolean trying_to_fire = false;
     public boolean launcher_code(boolean fire,boolean override_shot){
         //the return value of the function: did the robot fire the artifact
         boolean fired_this_tick = false;
@@ -194,6 +196,7 @@ public class CrossbowMain extends OpMode {
 //        telemetry.addData("right_speed_met_count",right_speed_met_count);
 
         if (fire) {
+            trying_to_fire = true;
             spin_launcher = true;
             //add a visualiser to the robot to show the launch angle?? (unless we just do range estimation first)
 
@@ -233,6 +236,7 @@ public class CrossbowMain extends OpMode {
             }
         } else {
             spin_launcher = false;
+            trying_to_fire = false;
         }
         telemetry.addData("left_speed_at_kick",left_speed_at_kick);
         telemetry.addData("right_speed_at_kick",right_speed_at_kick);
@@ -273,8 +277,9 @@ public class CrossbowMain extends OpMode {
         //limelight stuff
         LLresult = limelight.getLatestResult();
         if ((LLresult != null) && LLresult.isValid()) {
-            double tx = LLresult.getTx(); // How far left or right the target is (degrees)
+            double tx = LLresult.getTx()+5.0; // How far left or right the target is (degrees)
             limelight_x_offset = tx;
+            telemetry.addData("tx",tx);
             double ta = LLresult.getTa(); // How big the target looks (0%-100% of the image)
             telemetry.addData("current pipeline",LLresult.getPipelineIndex());
             // gives the x offset from the limelight
@@ -358,7 +363,7 @@ public class CrossbowMain extends OpMode {
 
         //if we are trying to fire, line up with the goal.
         if (fire) {
-            turn+= 0.03*LLresult.getTx(); //This could be a PID and it would be better
+            turn+= 0.03*limelight_x_offset; //This could be a PID and it would be better
         }
 
         double slowdown_multiplier = 1 - (slowdown * .75);
