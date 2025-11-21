@@ -145,7 +145,7 @@ public class CrossbowAuto extends CrossbowMain{
             intake_round = 2;
             step = 0;
         } else if (step == 9 && steptimer.seconds() > 0.5){
-            //go to intake bar 2
+            //go to intake bar 3
             fire_artifact = false;
             Pose next_pose = new Pose(37,-40,Math.PI/-2.0);
             Pose current_pose = follower.getPose();
@@ -167,8 +167,14 @@ public class CrossbowAuto extends CrossbowMain{
                     .build();
             follower.setMaxPower(drivetrain_pickup_speed);
             follower.followPath(center_path);
-            step = 0;
+            step = 11;
             //THE END sort of
+        } else if (step == 11 && !follower.isBusy()){
+            spin_intake = false;
+            follower.setMaxPower(1);
+            fired_artifacts = 0;
+            intake_round = 2;
+            step = 0;
         }
 
         telemetry.addData("fired artifacts: ",fired_artifacts);
