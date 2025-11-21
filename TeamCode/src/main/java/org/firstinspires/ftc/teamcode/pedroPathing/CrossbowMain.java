@@ -201,23 +201,29 @@ public class CrossbowMain extends OpMode {
             //add a visualiser to the robot to show the launch angle?? (unless we just do range estimation first)
 
             boolean right_speed_met = Math.abs(launcherSpeed - rightLaunchMotor.getVelocity()) < 20.0;
-            if (right_speed_met){
-                right_speed_met_count++;
-            } else {
-                right_speed_met_count--;
-            }
-            right_speed_met_count = int_clamp(right_speed_met_count,0,desired_met_count);
-
+//            if (right_speed_met){
+//                right_speed_met_count++;
+//            } else {
+//                right_speed_met_count--;
+//            }
+//            right_speed_met_count = int_clamp(right_speed_met_count,0,desired_met_count);
+//
             boolean left_speed_met = Math.abs(launcherSpeed + leftLaunchMotor.getVelocity()) < 20.0;
-            if (left_speed_met){
-                left_speed_met_count++;
-            } else {
-                left_speed_met_count--;
-            }
-            left_speed_met_count = int_clamp(left_speed_met_count,0,desired_met_count);
 
-            //mabye add some telemetry that tells why the launcher won't fire but only if it's false
-            boolean speed_ready = ((right_speed_met_count == desired_met_count) && (left_speed_met_count ==desired_met_count));
+            //these were just too slow. need to tune the PID or they just slow our cycle too much.
+            //better to miss than wait 30 sec to make a shot.
+
+//            if (left_speed_met){
+//                left_speed_met_count++;
+//            } else {
+//                left_speed_met_count--;
+//            }
+//            left_speed_met_count = int_clamp(left_speed_met_count,0,desired_met_count);
+//
+//            //mabye add some telemetry that tells why the launcher won't fire but only if it's false
+//            boolean speed_ready = ((right_speed_met_count == desired_met_count) && (left_speed_met_count ==desired_met_count));
+
+            boolean speed_ready = right_speed_met && left_speed_met;
             boolean limelight_ready = limelight_x_offset < 1;
 
             telemetry.addData("speed_ready",speed_ready);
