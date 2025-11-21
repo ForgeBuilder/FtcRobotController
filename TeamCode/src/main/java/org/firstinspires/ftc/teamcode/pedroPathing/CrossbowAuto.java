@@ -17,6 +17,7 @@ public class CrossbowAuto extends CrossbowMain{
 
     @Override public void init(){
         super.init();
+        follower.setPose(new Pose(111,-15,0.9));
     }
 
     @Override public void start(){
@@ -62,11 +63,11 @@ public class CrossbowAuto extends CrossbowMain{
                         spin_intake = false;
                         fire_artifact = false;
                         step = 3;
-                        Pose center_pose = new Pose(0,0,0);
+                        Pose second_pose = new Pose(86,-50,1);
                         Pose current_pose = follower.getPose();
                         PathChain center_path = follower.pathBuilder()
-                                .addPath(new BezierLine(current_pose, center_pose))
-                                .setLinearHeadingInterpolation(current_pose.getHeading(), center_pose.getHeading())
+                                .addPath(new BezierLine(current_pose, second_pose))
+                                .setLinearHeadingInterpolation(current_pose.getHeading(), second_pose.getHeading())
                                 .build();
                         follower.followPath(center_path);
                     }

@@ -92,8 +92,8 @@ public class CrossbowMain extends OpMode {
 
         telemetry.addData("Status", "Initialized");
 
-        rightFront.setDirection(DcMotor.Direction.REVERSE);
-        rightBack.setDirection(DcMotor.Direction.REVERSE);
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftBack.setDirection(DcMotor.Direction.REVERSE);
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
@@ -277,7 +277,7 @@ public class CrossbowMain extends OpMode {
         //limelight stuff
         LLresult = limelight.getLatestResult();
         if ((LLresult != null) && LLresult.isValid()) {
-            double tx = LLresult.getTx()+5.0; // How far left or right the target is (degrees)
+            double tx = LLresult.getTx()-3.0; // How far left or right the target is (degrees)
             limelight_x_offset = tx;
             telemetry.addData("tx",tx);
             double ta = LLresult.getTa(); // How big the target looks (0%-100% of the image)
@@ -368,9 +368,11 @@ public class CrossbowMain extends OpMode {
 
         double slowdown_multiplier = 1 - (slowdown * .75);
 
-        forward = forward * slowdown_multiplier;
-        strafe = strafe * slowdown_multiplier;
-        turn = turn * slowdown_multiplier;
+
+        //had to make it negitive for now to account for weird pedro reversal stuff. figure this out more later.
+        forward = -forward * slowdown_multiplier;
+        strafe = -strafe * slowdown_multiplier;
+        turn = -turn * slowdown_multiplier;
 
         leftFront.setPower(forward - strafe - turn);
         leftBack.setPower(forward + strafe - turn);
