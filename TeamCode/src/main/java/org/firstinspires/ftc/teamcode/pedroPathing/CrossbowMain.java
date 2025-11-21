@@ -149,7 +149,7 @@ public class CrossbowMain extends OpMode {
 
     boolean spin_launcher = true;
 
-    boolean kick = false;
+    public boolean kick = false;
     private ElapsedTime timeSinceShot = new ElapsedTime();
 
     private int maxLauncherSpeed = 2200;
@@ -172,7 +172,7 @@ public class CrossbowMain extends OpMode {
         launcherSpeed = Math.max(Math.min(launcherSpeed,maxLauncherSpeed),minLauncherSpeed);
     }
     //ticks per second
-    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(250,2,0,0); //was 200 p before flywheel
+    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(290,3,0,0); //was 200 p before flywheel
 
     //returns true each time it fires the artifact. indicates when the robot has decided to fire, not when the shot is clear.
     //do not move the instant this function returns true. You may attempt to fire again.

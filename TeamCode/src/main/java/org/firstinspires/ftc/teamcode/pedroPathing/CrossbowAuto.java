@@ -17,7 +17,8 @@ public class CrossbowAuto extends CrossbowMain{
 
     @Override public void init(){
         super.init();
-        follower.setPose(new Pose(111,-15,0.9));
+        follower.setPose(new Pose(101,-7.5,Math.PI/2));
+        set_launcher_speed(620);
     }
 
     @Override public void start(){
@@ -31,18 +32,26 @@ public class CrossbowAuto extends CrossbowMain{
 
     private int step = 0;
 
+    private int intake_round = 0;
+
+    private ElapsedTime steptimer = new ElapsedTime();
+
     @Override public void loop(){
         super.loop();
         intake_code();
         fired_an_artifact = launcher_code(fire_artifact,false);
 
+        Pose current_posee = follower.getPose();
+        telemetry.addData("Pedro Pose: ",current_posee.getX()+", "+current_posee.getY()+", "+current_posee.getHeading());
 
         if (step == 0){
-            Pose startpose = new Pose(0,0,0);
-            Pose endpose = new Pose(40,0,0);
+            //go to the launching position
+            Pose current_pose = follower.getPose();
+
+            Pose next_pose = new Pose(90,-45,1);
             PathChain firstpath = follower.pathBuilder()
-                    .addPath(new BezierLine(startpose, endpose))
-                    .setLinearHeadingInterpolation(startpose.getHeading(), endpose.getHeading())
+                    .addPath(new BezierLine(current_pose, next_pose))
+                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
                     .build();
             follower.followPath(firstpath);
             step = 1;
@@ -51,30 +60,80 @@ public class CrossbowAuto extends CrossbowMain{
 //            follower.setPose()
             step = 2;
             fire_artifact = true;
+            spin_intake = true;
             set_limelight_enabled(true);
         } else if (step == 2) {
 
-            limelight_set_pose();
+//            limelight_set_pose();
 
             if (fired_artifacts <= 3){
                 if (fired_an_artifact){
                     fired_artifacts += 1;
                     if (fired_artifacts >= 3){
                         spin_intake = false;
-                        fire_artifact = false;
-                        step = 3;
-                        Pose second_pose = new Pose(86,-50,1);
-                        Pose current_pose = follower.getPose();
-                        PathChain center_path = follower.pathBuilder()
-                                .addPath(new BezierLine(current_pose, second_pose))
-                                .setLinearHeadingInterpolation(current_pose.getHeading(), second_pose.getHeading())
-                                .build();
-                        follower.followPath(center_path);
+                        if (intake_round == 0){
+                            step = 3;
+                        } else if (intake_round == 2){
+                            step = 6;
+                        }
+                        steptimer.reset();
                     }
                 }
             }
-        } else if (step == 3 ) {
-
+        } else if (step == 3 && steptimer.seconds() > 0.5) {
+            //go to intake bar 1
+            fire_artifact = false;
+            Pose next_pose = new Pose(73,-40,Math.PI/-2.0);
+            Pose current_pose = follower.getPose();
+            PathChain center_path = follower.pathBuilder()
+                    .addPath(new BezierLine(current_pose, next_pose))
+                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
+                    .setHeadingConstraint(0)
+                    .build();
+            follower.followPath(center_path);
+            step = 4;
+        } else if (step == 4 && !follower.isBusy()){
+            //slowly roll over to pickup balls
+            spin_intake = true;
+            Pose next_pose = new Pose(73,-12,Math.PI/-2.0);
+            Pose current_pose = follower.getPose();
+            PathChain center_path = follower.pathBuilder()
+                    .addPath(new BezierLine(current_pose, next_pose))
+                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
+                    .build();
+            follower.setMaxPower(0.3);
+            follower.followPath(center_path);
+            step = 5;
+        } else if ((step == 5) && !follower.isBusy()){
+            spin_intake = false;
+            follower.setMaxPower(1);
+            fired_artifacts = 0;
+            intake_round = 1;
+            step = 0;
+        } else if (step == 6){
+            //go to intake bar 2
+            fire_artifact = false;
+            Pose next_pose = new Pose(49,-40,Math.PI/-2.0);
+            Pose current_pose = follower.getPose();
+            PathChain center_path = follower.pathBuilder()
+                    .addPath(new BezierLine(current_pose, next_pose))
+                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
+                    .setHeadingConstraint(0)
+                    .build();
+            follower.followPath(center_path);
+            step = 7;
+        } else if (step == 7 && !follower.isBusy()){
+            //slowly roll over to pickup balls
+            spin_intake = true;
+            Pose next_pose = new Pose(49,-12,Math.PI/-2.0);
+            Pose current_pose = follower.getPose();
+            PathChain center_path = follower.pathBuilder()
+                    .addPath(new BezierLine(current_pose, next_pose))
+                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
+                    .build();
+            follower.setMaxPower(0.3);
+            follower.followPath(center_path);
+            step = 8;
         }
 
         telemetry.addData("fired artifacts: ",fired_artifacts);
