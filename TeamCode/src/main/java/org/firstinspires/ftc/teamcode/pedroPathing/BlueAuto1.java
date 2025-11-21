@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="BlueAuto1",preselectTeleOp = "DecodeTeleopMain")
+@Autonomous(name="Z_BlueAuto1",preselectTeleOp = "DecodeTeleopMain")
 
 
 

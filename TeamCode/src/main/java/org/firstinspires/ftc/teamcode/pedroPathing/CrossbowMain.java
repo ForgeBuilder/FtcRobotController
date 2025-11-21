@@ -18,7 +18,6 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import org.firstinspires.ftc.robotcore.internal.camera.delegating.DelegatingCaptureSequence;
 
 //@TeleOp(name="DecodeTeleopMain")
 
@@ -50,6 +49,19 @@ public class CrossbowMain extends OpMode {
      * Code to run ONCE when the driver hits INIT
      */
 
+    public int backboard_pipeline = 0;
+
+    public String team = "blue";
+
+    public void set_team(String team){
+        if (team == "red"){
+            backboard_pipeline = 1;
+            limelight.pipelineSwitch(backboard_pipeline);
+        } else if (team == "blue"){
+            backboard_pipeline = 0;
+            limelight.pipelineSwitch(backboard_pipeline);
+        }
+    }
 
     @Override
     public void init() {
