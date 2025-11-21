@@ -51,14 +51,20 @@ public class CrossbowMain extends OpMode {
 
     public int backboard_pipeline = 0;
 
+    public int backboard_id = 20;
+
     public String team = "blue";
+
+    double limelight_x_offset = 0.0;
 
     public void set_team(String team){
         if (team == "red"){
             backboard_pipeline = 1;
+            backboard_id = 24;
             limelight.pipelineSwitch(backboard_pipeline);
         } else if (team == "blue"){
             backboard_pipeline = 0;
+            backboard_id = 20;
             limelight.pipelineSwitch(backboard_pipeline);
         }
     }
@@ -207,7 +213,11 @@ public class CrossbowMain extends OpMode {
             }
             left_speed_met_count = int_clamp(left_speed_met_count,0,desired_met_count);
 
-            if (((right_speed_met_count == desired_met_count) && (left_speed_met_count ==desired_met_count))|| override_shot){  // //the right bumper serves as an override
+            //mabye add some telemetry that tells why the launcher won't fire but only if it's false
+            boolean speed_ready = ((right_speed_met_count == desired_met_count) && (left_speed_met_count ==desired_met_count));
+            boolean limelight_ready = limelight_x_offset < 1;
+
+            if (speed_ready && limelight_ready || override_shot){  // //the right bumper serves as an override
                 if (timeSinceShot.seconds() > 1.5){
                     kick = true;
                     timeSinceShot.reset();
@@ -254,18 +264,22 @@ public class CrossbowMain extends OpMode {
     }
 
     LLResult LLresult;
+
+    double tx = 0.0;
     public void teleop_limelight_code(){
         //limelight stuff
         LLresult = limelight.getLatestResult();
-        if (LLresult != null && LLresult.isValid()) {
+        if ((LLresult != null) && LLresult.isValid() && LLresult.) {
             double tx = LLresult.getTx(); // How far left or right the target is (degrees)
+            limelight_x_offset = tx;
             double ta = LLresult.getTa(); // How big the target looks (0%-100% of the image)
-
+            telemetry.addData("current pipeline",LLresult.getPipelineIndex());
             // gives the x offset from the limelight
 //            telemetry.addData("Target X", tx);
 //
         } else {
             telemetry.addData("Limelight", "No Targets");
+            limelight_x_offset = 0.0;
         }
     }
     public void intake_code(){

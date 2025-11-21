@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class CrossbowTeleopRed extends CrossbowTeleop{
     @Override
     public void init(){
-        set_team("red");
         super.init();
+        set_team("red");
     }
 }
