@@ -298,7 +298,7 @@ public class CrossbowMain extends OpMode {
 //            telemetry.addData("Target X", tx);
 //
         } else {
-            telemetry.addData("Limelight", "No Targets");
+            telemetry.addData("Limelight", "No Targets\n----");
             limelight_x_offset = 0.0;
         }
     }
