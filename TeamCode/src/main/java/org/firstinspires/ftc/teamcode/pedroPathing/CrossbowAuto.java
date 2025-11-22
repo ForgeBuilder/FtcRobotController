@@ -26,12 +26,12 @@ public class CrossbowAuto extends CrossbowMain{
 
     @Override public void init(){
         super.init();
-        follower.setPose(new Pose(101,-7.5*apm, apm*(Math.PI/2)));
         set_launcher_speed(620);
     }
 
     @Override public void start(){
         super.start();
+        follower.setPose(new Pose(101,-7.5*apm, apm*(Math.PI/2)));
         runtime.reset();
     }
 
@@ -59,7 +59,7 @@ public class CrossbowAuto extends CrossbowMain{
             //go to the launching position
             Pose current_pose = follower.getPose();
 
-            Pose next_pose = new Pose(90,-45* apm,1*apm);
+            Pose next_pose = new Pose(90,-45*apm,1*apm);
             PathChain firstpath = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
                     .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
