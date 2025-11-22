@@ -247,6 +247,8 @@ public class CrossbowMain extends OpMode {
         } else {
             spin_launcher = false;
             trying_to_fire = false;
+            telemetry.addData("speed_ready"," -N/A-");
+            telemetry.addData("limelight_ready"," -N/A-");
         }
         telemetry.addData("left_speed_at_kick",left_speed_at_kick);
         telemetry.addData("right_speed_at_kick",right_speed_at_kick);
