@@ -57,15 +57,19 @@ public class CrossbowMain extends OpMode {
 
     double limelight_x_offset = 0.0;
 
+    Pose backboard_pose;
+
     public void set_team(String team){
         if (team == "red"){
             backboard_pipeline = 1;
             backboard_id = 24;
             limelight.pipelineSwitch(backboard_pipeline);
+            backboard_pose = new Pose(121.35, -7.37,0);
         } else if (team == "blue"){
             backboard_pipeline = 0;
             backboard_id = 20;
             limelight.pipelineSwitch(backboard_pipeline);
+            backboard_pose = new Pose(121.35, 7.37,0);
         }
     }
 
