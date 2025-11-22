@@ -2,22 +2,31 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 //This is the auto program. a few values will be able to be change to make it work for red/blue
 //or near/far. near/far might be completley different programs based on how much crossbowMain allready abstracts
 //but I allways could inherit the class bwahaha
-
-@Autonomous(name="CrossbowAutoBlue",preselectTeleOp = "CrossbowTeleop")
-
 public class CrossbowAuto extends CrossbowMain{
     private ElapsedTime runtime = new ElapsedTime();
 
+    //auto position multiplier. flips the auto for red and blue. //Should only be 1 or -1
+    private double apm;
+    //It's a double so the rotation plays nice.
+    @Override
+    public void set_team(String team) {
+        super.set_team(team);
+        if (team == "red"){
+            apm = -1.0;
+        } else if (team == "blue"){
+            apm = 1.0;
+        }
+    }
+
     @Override public void init(){
         super.init();
-        follower.setPose(new Pose(101,-7.5,Math.PI/2));
+        follower.setPose(new Pose(101,-7.5*apm, apm*(Math.PI/2)));
         set_launcher_speed(620);
     }
 
@@ -50,7 +59,7 @@ public class CrossbowAuto extends CrossbowMain{
             //go to the launching position
             Pose current_pose = follower.getPose();
 
-            Pose next_pose = new Pose(90,-45,1);
+            Pose next_pose = new Pose(90,-45* apm,1*apm);
             PathChain firstpath = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
                     .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
@@ -87,7 +96,7 @@ public class CrossbowAuto extends CrossbowMain{
         } else if (step == 3 && steptimer.seconds() > 0.5) {
             //go to intake bar 1
             fire_artifact = false;
-            Pose next_pose = new Pose(73,-40,Math.PI/-2.0);
+            Pose next_pose = new Pose(73,-40*apm,apm*(Math.PI/-2.0));
             Pose current_pose = follower.getPose();
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
@@ -99,7 +108,7 @@ public class CrossbowAuto extends CrossbowMain{
         } else if (step == 4 && !follower.isBusy()){
             //slowly roll over to pickup balls
             spin_intake = true;
-            Pose next_pose = new Pose(73,-12,Math.PI/-2.0);
+            Pose next_pose = new Pose(73,-12*apm,apm*(Math.PI/-2.0));
             Pose current_pose = follower.getPose();
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
@@ -117,7 +126,7 @@ public class CrossbowAuto extends CrossbowMain{
         } else if (step == 6 && steptimer.seconds() > 0.5){
             //go to intake bar 2
             fire_artifact = false;
-            Pose next_pose = new Pose(51,-40,Math.PI/-2.0);
+            Pose next_pose = new Pose(51,-40*apm,apm*(Math.PI/-2.0));
             Pose current_pose = follower.getPose();
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
@@ -129,7 +138,7 @@ public class CrossbowAuto extends CrossbowMain{
         } else if (step == 7 && !follower.isBusy()){
             //slowly roll over to pickup balls
             spin_intake = true;
-            Pose next_pose = new Pose(51,-12,Math.PI/-2.0);
+            Pose next_pose = new Pose(51,-12*apm,apm*(Math.PI/-2.0));
             Pose current_pose = follower.getPose();
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
@@ -147,7 +156,7 @@ public class CrossbowAuto extends CrossbowMain{
         } else if (step == 9 && steptimer.seconds() > 0.5){
             //go to intake bar 3
             fire_artifact = false;
-            Pose next_pose = new Pose(37,-40,Math.PI/-2.0);
+            Pose next_pose = new Pose(37,-40*apm,apm*(Math.PI/-2.0));
             Pose current_pose = follower.getPose();
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
@@ -159,7 +168,7 @@ public class CrossbowAuto extends CrossbowMain{
         } else if (step == 10 && !follower.isBusy()){
             //slowly roll over to pickup balls
             spin_intake = true;
-            Pose next_pose = new Pose(37,-12,Math.PI/-2.0);
+            Pose next_pose = new Pose(37,-12*apm,apm*(Math.PI/-2.0));
             Pose current_pose = follower.getPose();
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))

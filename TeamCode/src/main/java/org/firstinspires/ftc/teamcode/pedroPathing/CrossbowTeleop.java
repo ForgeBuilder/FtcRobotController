@@ -11,8 +11,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 // Inside your OpMode
 
-@TeleOp(name="CrossbowTeleopBlue")
-
 public class CrossbowTeleop extends CrossbowMain {
     private ElapsedTime runtime = new ElapsedTime();
 
