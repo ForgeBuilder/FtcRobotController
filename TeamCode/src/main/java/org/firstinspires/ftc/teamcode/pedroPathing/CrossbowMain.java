@@ -166,7 +166,7 @@ public class CrossbowMain extends OpMode {
     private double KickerLaunchAngle = 0.35;
     private double KickerIdleAngle = 0;
 
-    private int launcherSpeed = 760;
+    private int launcherSpeed = 620;
     public int get_launcher_speed(){
         return launcherSpeed;
     }
