@@ -20,7 +20,7 @@ public class Crossbow_launcher_PID_Tuner extends CrossbowTeleop{
     private DcMotorEx leftLaunchMotor;
     private DcMotorEx rightLaunchMotor;
 
-    private Double[] PIDFCoefficientsList = {250.0,20.0,0.0,0.0};
+    private Double[] PIDFCoefficientsList = {25.0,20.0,0.0,0.0};
 
     @Override
     public void init(){
@@ -55,12 +55,16 @@ public class Crossbow_launcher_PID_Tuner extends CrossbowTeleop{
         if (gamepad1.dpadDownWasPressed()){
             PIDFCoefficientsList[selector] -= 1.0;
         }
-        telemetry.addData("p",PIDFCoefficientsList[0]);
+        telemetry.addData("p",PIDFCoefficientsList[0]*10);
+        if (selector == 0){telemetry.addData("^","");}
         telemetry.addData("i",PIDFCoefficientsList[1]/10);
+        if (selector == 1){telemetry.addData("^","");}
         telemetry.addData("d",PIDFCoefficientsList[2]);
+        if (selector == 2){telemetry.addData("^","");}
         telemetry.addData("f",PIDFCoefficientsList[3]);
+        if (selector == 3){telemetry.addData("^","");}
         if (gamepad1.xWasPressed()){
-            launcherCoefficients = new PIDFCoefficients(PIDFCoefficientsList[0],PIDFCoefficientsList[1]/10,PIDFCoefficientsList[2],PIDFCoefficientsList[3]);
+            launcherCoefficients = new PIDFCoefficients(PIDFCoefficientsList[0]*10,PIDFCoefficientsList[1]/10,PIDFCoefficientsList[2],PIDFCoefficientsList[3]);
             leftLaunchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,launcherCoefficients);
             rightLaunchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,launcherCoefficients);
         }

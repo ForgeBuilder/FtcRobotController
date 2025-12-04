@@ -176,7 +176,12 @@ public class CrossbowMain extends OpMode {
         launcherSpeed = Math.max(Math.min(launcherSpeed,maxLauncherSpeed),minLauncherSpeed);
     }
     //ticks per second
-    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(290,3,0,0); //was 200 p before flywheel
+
+    //pre 12/4/2025
+//    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(290,3,0,0); //was 200 p before flywheel
+
+   // 12/4/2025 -- I really need to be able to graph the zpeed.. tiz unfortunate.
+   private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(100,1,1,10); //was 200 p before flywheel
 
     //returns true each time it fires the artifact. indicates when the robot has decided to fire, not when the shot is clear.
     //do not move the instant this function returns true. You may attempt to fire again.
@@ -234,7 +239,7 @@ public class CrossbowMain extends OpMode {
             telemetry.addData("limelight_ready",limelight_ready);
 
             if (speed_ready && limelight_ready || override_shot){  // //the right bumper serves as an override
-                if (timeSinceShot.seconds() > 1.0){
+                if (timeSinceShot.seconds() > 1.5){
                     kick = true;
                     timeSinceShot.reset();
                     //debug information - motor 2 is left, motor 1 is right
@@ -273,7 +278,6 @@ public class CrossbowMain extends OpMode {
             leftLaunchMotor.setPower(1);
             leftLaunchMotor.setVelocity(-1*launcherSpeed); //ticks/s
         } else {
-
             rightLaunchMotor.setPower(0);
             leftLaunchMotor.setPower(0);
         }

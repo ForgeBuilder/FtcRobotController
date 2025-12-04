@@ -141,9 +141,11 @@ public class CrossbowAuto extends CrossbowMain{
             spin_intake = true;
             Pose next_pose = new Pose(51.5,-12*apm,apm*(Math.PI/-2.0));
             Pose current_pose = follower.getPose();
+            Pose avoid_gate_pose = new Pose(51.5,-30*apm,apm*(Math.PI/-2.0));
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
                     .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
+                    .addPath(new BezierLine(next_pose, avoid_gate_pose))
                     .build();
             follower.setMaxPower(drivetrain_pickup_speed);
             follower.followPath(center_path);
@@ -169,7 +171,7 @@ public class CrossbowAuto extends CrossbowMain{
         } else if (step == 10 && !follower.isBusy()){
             //slowly roll over to pickup balls
             spin_intake = true;
-            Pose next_pose = new Pose(28,-13*apm,apm*(Math.PI/-2.0));
+            Pose next_pose = new Pose(28,-12*apm,apm*(Math.PI/-2.0));
             Pose current_pose = follower.getPose();
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
