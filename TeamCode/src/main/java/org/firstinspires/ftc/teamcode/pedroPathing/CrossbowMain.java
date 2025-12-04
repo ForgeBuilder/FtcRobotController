@@ -234,7 +234,7 @@ public class CrossbowMain extends OpMode {
             telemetry.addData("limelight_ready",limelight_ready);
 
             if (speed_ready && limelight_ready || override_shot){  // //the right bumper serves as an override
-                if (timeSinceShot.seconds() > 1.5){
+                if (timeSinceShot.seconds() > 1.0){
                     kick = true;
                     timeSinceShot.reset();
                     //debug information - motor 2 is left, motor 1 is right
@@ -253,7 +253,9 @@ public class CrossbowMain extends OpMode {
         telemetry.addData("left_speed_at_kick",left_speed_at_kick);
         telemetry.addData("right_speed_at_kick",right_speed_at_kick);
 
-        if (timeSinceShot.seconds() > 0.5) {
+
+        double inbetween_shot_timer_length = 0.3;
+        if (timeSinceShot.seconds() > inbetween_shot_timer_length) {
             kick = false;
         }
 
