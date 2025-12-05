@@ -223,6 +223,8 @@ public class CrossbowMain extends OpMode {
         } else {
             panelsTelemetry.addData("kick", 0.0);
         }
+        panelsTelemetry.addData("right_target_speed", launcherSpeed);
+        panelsTelemetry.addData("left_target_speed", -launcherSpeed);
 
 
         if (fire) {
