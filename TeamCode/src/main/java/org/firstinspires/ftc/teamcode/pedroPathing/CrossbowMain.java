@@ -42,7 +42,7 @@ public class CrossbowMain extends OpMode {
     private DcMotorEx rightLaunchMotor;
     private DcMotorEx leftLaunchMotor;
 
-    public PIDFCoefficients launcherCoefficients = new PIDFCoefficients(100,1,1,10);
+    public PIDFCoefficients launcherCoefficients = new PIDFCoefficients(50,1,1,12);
 
     public DcMotorEx intakeMotor;
 
@@ -83,6 +83,9 @@ public class CrossbowMain extends OpMode {
 
     @Override
     public void init() {
+
+
+
         rightFront = hardwareMap.get(DcMotor.class, "rf");
         rightBack = hardwareMap.get(DcMotor.class, "rb");
 
@@ -201,6 +204,8 @@ public class CrossbowMain extends OpMode {
     int desired_met_count = 5;
 
     public boolean trying_to_fire = false;
+
+    private MovingAverage left_speed_average = new MovingAverage(10); //this class was written by AI
     public boolean launcher_code(boolean fire,boolean override_shot){
         //the return value of the function: did the robot fire the artifact
         boolean fired_this_tick = false;
@@ -208,6 +213,8 @@ public class CrossbowMain extends OpMode {
 
         double right_current_speed = rightLaunchMotor.getVelocity();
         double left_current_speed = leftLaunchMotor.getVelocity();
+
+        left_speed_average.addValue(left_current_speed);
 
         telemetry.addData("right_speed",right_current_speed);
         telemetry.addData("left_speed",left_current_speed);
@@ -219,7 +226,7 @@ public class CrossbowMain extends OpMode {
         panelsTelemetry.addData("right_current_speed", right_current_speed);
         panelsTelemetry.addData("left_current_speed", left_current_speed);
         if (kick) {
-            panelsTelemetry.addData("kick", 1.0);
+            panelsTelemetry.addData("kick", 1.0*launcherSpeed);
         } else {
             panelsTelemetry.addData("kick", 0.0);
         }
@@ -321,10 +328,30 @@ public class CrossbowMain extends OpMode {
             double tx = LLresult.getTx()-3.0; // How far left or right the target is (degrees)
             limelight_x_offset = tx;
             telemetry.addData("tx",tx);
+
+
+            //https://docs.limelightvision.io/docs/docs-limelight/tutorials/tutorial-estimating-distance
+            //how I made this.. I should just use megatag 2..
+
+            //after some testing this looks pretty stable! gonna keep it for this comp
+
+            double ty = LLresult.getTy();
             double ta = LLresult.getTa(); // How big the target looks (0%-100% of the image)
+            double limelightMountAngleDegrees = 19.0;
+            double targetOffsetAngle_Vertical = ty;
+            double limelight_height = 11.5;
+            double goal_tag_height = 29.5;
+
+            double angleToGoalDegrees = targetOffsetAngle_Vertical+limelightMountAngleDegrees;
+            double angleToGoalRadians = Math.toRadians(angleToGoalDegrees);
+            double estimated_distance = (goal_tag_height-limelight_height) / Math.tan(angleToGoalRadians);
+            telemetry.addData("estimated distance w/ angles",estimated_distance);
+
             telemetry.addData("current pipeline",LLresult.getPipelineIndex());
             // gives the x offset from the limelight
 //            telemetry.addData("Target X", tx);
+
+
 //
         } else {
             telemetry.addData("Limelight", "No Targets\n----");

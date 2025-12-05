@@ -36,8 +36,14 @@ public class Crossbow_launcher_PID_Tuner extends CrossbowTeleop{
 
     @Override
     public void loop(){
-        launcher_code(gamepad1.left_trigger > 0.1,gamepad1.left_bumper);
+        launcher_code(gamepad1.right_trigger > 0.1,gamepad1.left_bumper);
         intake_code();
+
+        if (gamepad1.dpadUpWasPressed()){
+            set_launcher_speed(get_launcher_speed()+40);
+        } else if (gamepad1.dpadDownWasPressed()) {//||gamepad1.dpadDownWasPressed()
+            set_launcher_speed(get_launcher_speed()-40);
+        }
 //        if (gamepad1.dpadLeftWasPressed()){
 //            selector+=1;
 //            if (selector == 4){
@@ -69,6 +75,25 @@ public class Crossbow_launcher_PID_Tuner extends CrossbowTeleop{
             leftLaunchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,launcherCoefficients);
             rightLaunchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,launcherCoefficients);
         }
+
+        if (follower.isBusy()) {
+            if (gamepad1.x){
+                follower.breakFollowing();
+            }
+        } else {
+            //this is a little nonsensical. I might as well have just put all the teleop functions in here
+            //and made the motors public. It is what it is.. this is how we learn!
+
+            //For the teleop functions I could just have them in here and give them refrences to what they need.
+            drive_with_teleop(
+                    gamepad1.left_stick_y,
+                    gamepad1.left_stick_x,
+                    gamepad1.right_stick_x,
+                    gamepad1.left_trigger,
+                    ((gamepad1.right_trigger > 0.1)||(gamepad2.right_trigger > 0.1))
+            );
+        }
+
         telemetry.update();
         panelsTelemetry.update(telemetry);
     }
