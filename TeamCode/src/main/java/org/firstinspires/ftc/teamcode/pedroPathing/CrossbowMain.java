@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+import com.bylazar.panels.Panels;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -11,7 +12,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-//import com.qualcomm.hardware.limelightvision; //ah you can't do this
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
@@ -19,11 +19,17 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
+import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
+
+
 //@TeleOp(name="DecodeTeleopMain")
 
-
+@Configurable
 public class CrossbowMain extends OpMode {
     // Declare OpMode members.
+    private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
     private Servo launchKickServo1;
     private Servo launchKickServo2;
 
@@ -163,6 +169,7 @@ public class CrossbowMain extends OpMode {
     double left_speed_at_kick = 0.0;
     double right_speed_at_kick = 0.0;
 
+
     private double KickerLaunchAngle = 0.35;
     private double KickerIdleAngle = 0;
 
@@ -198,8 +205,11 @@ public class CrossbowMain extends OpMode {
         boolean fired_this_tick = false;
         telemetry.addData("Launcher Target Velocity:", "\n"+launcherSpeed); // \n makes the text go down a line
 
-        telemetry.addData("left_speed",leftLaunchMotor.getVelocity());
-        telemetry.addData("right_speed",rightLaunchMotor.getVelocity());
+        double right_current_speed = rightLaunchMotor.getVelocity();
+        double left_current_speed = leftLaunchMotor.getVelocity();
+
+        telemetry.addData("right_speed",right_current_speed);
+        telemetry.addData("left_speed",left_current_speed);
 
 //        telemetry.addData("left_speed_met_count",left_speed_met_count);
 //        telemetry.addData("right_speed_met_count",right_speed_met_count);
@@ -209,7 +219,11 @@ public class CrossbowMain extends OpMode {
             spin_launcher = true;
             //add a visualiser to the robot to show the launch angle?? (unless we just do range estimation first)
 
-            boolean right_speed_met = Math.abs(launcherSpeed - rightLaunchMotor.getVelocity()) < 20.0;
+            panelsTelemetry.addData("sin", right_current_speed);
+            panelsTelemetry.addData("sin", left_current_speed);
+
+
+            boolean right_speed_met = Math.abs(launcherSpeed - right_current_speed) < 20.0;
 //            if (right_speed_met){
 //                right_speed_met_count++;
 //            } else {
@@ -217,7 +231,7 @@ public class CrossbowMain extends OpMode {
 //            }
 //            right_speed_met_count = int_clamp(right_speed_met_count,0,desired_met_count);
 //
-            boolean left_speed_met = Math.abs(launcherSpeed + leftLaunchMotor.getVelocity()) < 20.0;
+            boolean left_speed_met = Math.abs(launcherSpeed + left_current_speed) < 20.0;
 
             //these were just too slow. need to tune the PID or they just slow our cycle too much.
             //better to miss than wait 30 sec to make a shot.
@@ -244,8 +258,8 @@ public class CrossbowMain extends OpMode {
                     timeSinceShot.reset();
                     //debug information - motor 2 is left, motor 1 is right
                     //
-                    left_speed_at_kick = leftLaunchMotor.getVelocity();
-                    right_speed_at_kick = rightLaunchMotor.getVelocity();
+                    left_speed_at_kick = left_current_speed;
+                    right_speed_at_kick = right_current_speed;
                     fired_this_tick = true;
                 }
             }
@@ -259,8 +273,8 @@ public class CrossbowMain extends OpMode {
         telemetry.addData("right_speed_at_kick",right_speed_at_kick);
 
 
-        double inbetween_shot_timer_length = 0.3;
-        if (timeSinceShot.seconds() > inbetween_shot_timer_length) {
+        double kicker_extension_time = 0.3;
+        if (timeSinceShot.seconds() > kicker_extension_time) {
             kick = false;
         }
 
