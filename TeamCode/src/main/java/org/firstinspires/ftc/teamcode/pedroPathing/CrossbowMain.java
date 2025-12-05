@@ -26,7 +26,7 @@ import com.bylazar.telemetry.TelemetryManager;
 
 //@TeleOp(name="DecodeTeleopMain")
 
-@Configurable
+
 public class CrossbowMain extends OpMode {
     // Declare OpMode members.
     public TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
@@ -42,6 +42,8 @@ public class CrossbowMain extends OpMode {
     private DcMotorEx rightLaunchMotor;
     private DcMotorEx leftLaunchMotor;
 
+    public PIDFCoefficients launcherCoefficients = new PIDFCoefficients(100,1,1,10);
+
     public DcMotorEx intakeMotor;
 
     Limelight3A limelight;
@@ -50,7 +52,7 @@ public class CrossbowMain extends OpMode {
 
     public static Follower follower;
     public static PoseTracker pose_tracker;
-//    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(0,0,0,0);
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -188,7 +190,6 @@ public class CrossbowMain extends OpMode {
 //    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(290,3,0,0); //was 200 p before flywheel
 
    // 12/4/2025 -- I really need to be able to graph the zpeed.. tiz unfortunate.
-   private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(100,1,1,10); //was 200 p before flywheel
 
     //returns true each time it fires the artifact. indicates when the robot has decided to fire, not when the shot is clear.
     //do not move the instant this function returns true. You may attempt to fire again.
@@ -214,14 +215,20 @@ public class CrossbowMain extends OpMode {
 //        telemetry.addData("left_speed_met_count",left_speed_met_count);
 //        telemetry.addData("right_speed_met_count",right_speed_met_count);
 
+        //This allows us to see the speeds of the left and right motor and tune the PIDs
+        panelsTelemetry.addData("right_current_speed", right_current_speed);
+        panelsTelemetry.addData("left_current_speed", left_current_speed);
+        if (kick) {
+            panelsTelemetry.addData("kick", 1.0);
+        } else {
+            panelsTelemetry.addData("kick", 0.0);
+        }
+
+
         if (fire) {
             trying_to_fire = true;
             spin_launcher = true;
             //add a visualiser to the robot to show the launch angle?? (unless we just do range estimation first)
-
-            panelsTelemetry.addData("sin", right_current_speed);
-            panelsTelemetry.addData("sin", left_current_speed);
-
 
             boolean right_speed_met = Math.abs(launcherSpeed - right_current_speed) < 20.0;
 //            if (right_speed_met){
