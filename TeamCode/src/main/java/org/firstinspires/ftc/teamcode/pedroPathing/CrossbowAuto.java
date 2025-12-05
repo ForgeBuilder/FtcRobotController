@@ -210,6 +210,7 @@ public class CrossbowAuto extends CrossbowMain{
         telemetry.addData("fired artifacts: ",fired_artifacts);
         telemetry.addData("step",step);
         telemetry.update();
+        panelsTelemetry.update(telemetry);
     }
     private boolean spin_intake = true;
 

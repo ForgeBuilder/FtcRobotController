@@ -29,7 +29,7 @@ import com.bylazar.telemetry.TelemetryManager;
 @Configurable
 public class CrossbowMain extends OpMode {
     // Declare OpMode members.
-    private TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
+    public TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
     private Servo launchKickServo1;
     private Servo launchKickServo2;
 

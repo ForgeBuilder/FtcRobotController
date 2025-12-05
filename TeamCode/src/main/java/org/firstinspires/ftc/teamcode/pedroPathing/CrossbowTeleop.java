@@ -79,6 +79,7 @@ public class CrossbowTeleop extends CrossbowMain {
         telemetry.addData("Follower Pose",current_pose.getX() + ", "+current_pose.getY());
 
         telemetry.update();
+        panelsTelemetry.update(telemetry);
     }
 
     private boolean spin_intake = false;
