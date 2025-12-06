@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+import com.bylazar.panels.Panels;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -11,7 +12,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-//import com.qualcomm.hardware.limelightvision; //ah you can't do this
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
@@ -19,11 +19,17 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
+import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
+
+
 //@TeleOp(name="DecodeTeleopMain")
 
 
 public class CrossbowMain extends OpMode {
     // Declare OpMode members.
+    public TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
     private Servo launchKickServo1;
     private Servo launchKickServo2;
 
@@ -36,6 +42,8 @@ public class CrossbowMain extends OpMode {
     private DcMotorEx rightLaunchMotor;
     private DcMotorEx leftLaunchMotor;
 
+    public PIDFCoefficients launcherCoefficients = new PIDFCoefficients(50,1,1,12);
+
     public DcMotorEx intakeMotor;
 
     Limelight3A limelight;
@@ -44,7 +52,7 @@ public class CrossbowMain extends OpMode {
 
     public static Follower follower;
     public static PoseTracker pose_tracker;
-//    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(0,0,0,0);
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -75,6 +83,9 @@ public class CrossbowMain extends OpMode {
 
     @Override
     public void init() {
+
+
+
         rightFront = hardwareMap.get(DcMotor.class, "rf");
         rightBack = hardwareMap.get(DcMotor.class, "rb");
 
@@ -163,10 +174,11 @@ public class CrossbowMain extends OpMode {
     double left_speed_at_kick = 0.0;
     double right_speed_at_kick = 0.0;
 
+
     private double KickerLaunchAngle = 0.35;
     private double KickerIdleAngle = 0;
 
-    private int launcherSpeed = 760;
+    private int launcherSpeed = 620;
     public int get_launcher_speed(){
         return launcherSpeed;
     }
@@ -176,7 +188,11 @@ public class CrossbowMain extends OpMode {
         launcherSpeed = Math.max(Math.min(launcherSpeed,maxLauncherSpeed),minLauncherSpeed);
     }
     //ticks per second
-    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(290,3,0,0); //was 200 p before flywheel
+
+    //pre 12/4/2025
+//    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(290,3,0,0); //was 200 p before flywheel
+
+   // 12/4/2025 -- I really need to be able to graph the zpeed.. tiz unfortunate.
 
     //returns true each time it fires the artifact. indicates when the robot has decided to fire, not when the shot is clear.
     //do not move the instant this function returns true. You may attempt to fire again.
@@ -188,23 +204,42 @@ public class CrossbowMain extends OpMode {
     int desired_met_count = 5;
 
     public boolean trying_to_fire = false;
+
+    private MovingAverage left_speed_average = new MovingAverage(10); //this class was written by AI
     public boolean launcher_code(boolean fire,boolean override_shot){
         //the return value of the function: did the robot fire the artifact
         boolean fired_this_tick = false;
         telemetry.addData("Launcher Target Velocity:", "\n"+launcherSpeed); // \n makes the text go down a line
 
-        telemetry.addData("left_speed",leftLaunchMotor.getVelocity());
-        telemetry.addData("right_speed",rightLaunchMotor.getVelocity());
+        double right_current_speed = rightLaunchMotor.getVelocity();
+        double left_current_speed = leftLaunchMotor.getVelocity();
+
+        left_speed_average.addValue(left_current_speed);
+
+        telemetry.addData("right_speed",right_current_speed);
+        telemetry.addData("left_speed",left_current_speed);
 
 //        telemetry.addData("left_speed_met_count",left_speed_met_count);
 //        telemetry.addData("right_speed_met_count",right_speed_met_count);
+
+        //This allows us to see the speeds of the left and right motor and tune the PIDs
+        panelsTelemetry.addData("right_current_speed", right_current_speed);
+        panelsTelemetry.addData("left_current_speed", left_current_speed);
+        if (kick) {
+            panelsTelemetry.addData("kick", 1.0*launcherSpeed);
+        } else {
+            panelsTelemetry.addData("kick", 0.0);
+        }
+        panelsTelemetry.addData("right_target_speed", launcherSpeed);
+        panelsTelemetry.addData("left_target_speed", -launcherSpeed);
+
 
         if (fire) {
             trying_to_fire = true;
             spin_launcher = true;
             //add a visualiser to the robot to show the launch angle?? (unless we just do range estimation first)
 
-            boolean right_speed_met = Math.abs(launcherSpeed - rightLaunchMotor.getVelocity()) < 20.0;
+            boolean right_speed_met = Math.abs(launcherSpeed - right_current_speed) < 20.0;
 //            if (right_speed_met){
 //                right_speed_met_count++;
 //            } else {
@@ -212,7 +247,7 @@ public class CrossbowMain extends OpMode {
 //            }
 //            right_speed_met_count = int_clamp(right_speed_met_count,0,desired_met_count);
 //
-            boolean left_speed_met = Math.abs(launcherSpeed + leftLaunchMotor.getVelocity()) < 20.0;
+            boolean left_speed_met = Math.abs(launcherSpeed + left_current_speed) < 20.0;
 
             //these were just too slow. need to tune the PID or they just slow our cycle too much.
             //better to miss than wait 30 sec to make a shot.
@@ -239,8 +274,8 @@ public class CrossbowMain extends OpMode {
                     timeSinceShot.reset();
                     //debug information - motor 2 is left, motor 1 is right
                     //
-                    left_speed_at_kick = leftLaunchMotor.getVelocity();
-                    right_speed_at_kick = rightLaunchMotor.getVelocity();
+                    left_speed_at_kick = left_current_speed;
+                    right_speed_at_kick = right_current_speed;
                     fired_this_tick = true;
                 }
             }
@@ -253,7 +288,9 @@ public class CrossbowMain extends OpMode {
         telemetry.addData("left_speed_at_kick",left_speed_at_kick);
         telemetry.addData("right_speed_at_kick",right_speed_at_kick);
 
-        if (timeSinceShot.seconds() > 0.5) {
+
+        double kicker_extension_time = 0.3;
+        if (timeSinceShot.seconds() > kicker_extension_time) {
             kick = false;
         }
 
@@ -271,7 +308,6 @@ public class CrossbowMain extends OpMode {
             leftLaunchMotor.setPower(1);
             leftLaunchMotor.setVelocity(-1*launcherSpeed); //ticks/s
         } else {
-
             rightLaunchMotor.setPower(0);
             leftLaunchMotor.setPower(0);
         }
@@ -292,10 +328,30 @@ public class CrossbowMain extends OpMode {
             double tx = LLresult.getTx()-3.0; // How far left or right the target is (degrees)
             limelight_x_offset = tx;
             telemetry.addData("tx",tx);
+
+
+            //https://docs.limelightvision.io/docs/docs-limelight/tutorials/tutorial-estimating-distance
+            //how I made this.. I should just use megatag 2..
+
+            //after some testing this looks pretty stable! gonna keep it for this comp
+
+            double ty = LLresult.getTy();
             double ta = LLresult.getTa(); // How big the target looks (0%-100% of the image)
+            double limelightMountAngleDegrees = 19.0;
+            double targetOffsetAngle_Vertical = ty;
+            double limelight_height = 11.5;
+            double goal_tag_height = 29.5;
+
+            double angleToGoalDegrees = targetOffsetAngle_Vertical+limelightMountAngleDegrees;
+            double angleToGoalRadians = Math.toRadians(angleToGoalDegrees);
+            double estimated_distance = (goal_tag_height-limelight_height) / Math.tan(angleToGoalRadians);
+            telemetry.addData("estimated distance w/ angles",estimated_distance);
+
             telemetry.addData("current pipeline",LLresult.getPipelineIndex());
             // gives the x offset from the limelight
 //            telemetry.addData("Target X", tx);
+
+
 //
         } else {
             telemetry.addData("Limelight", "No Targets\n----");

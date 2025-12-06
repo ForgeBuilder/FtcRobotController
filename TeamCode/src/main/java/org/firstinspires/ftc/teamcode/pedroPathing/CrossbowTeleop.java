@@ -66,7 +66,7 @@ public class CrossbowTeleop extends CrossbowMain {
                 double x = botpose.getPosition().x;
                 double y = botpose.getPosition().y;
                 double meters_to_inches = 39.3701;
-                telemetry.addData("MT1 Location", "(" + x*meters_to_inches + ", " + y*meters_to_inches + ")");
+                telemetry.addData("MT2 Location", "(" + x*meters_to_inches + ", " + y*meters_to_inches + ")");
             }
         }
         if (gamepad1.yWasPressed()){
@@ -79,6 +79,7 @@ public class CrossbowTeleop extends CrossbowMain {
         telemetry.addData("Follower Pose",current_pose.getX() + ", "+current_pose.getY());
 
         telemetry.update();
+        panelsTelemetry.update(telemetry);
     }
 
     private boolean spin_intake = false;

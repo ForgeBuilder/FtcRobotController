@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -10,7 +11,7 @@ import java.sql.Array;
 
 import dalvik.system.DelegateLastClassLoader;
 
-
+@Configurable
 @TeleOp(name="LauncherPIDtuner")
 public class Crossbow_launcher_PID_Tuner extends CrossbowTeleop{
 
@@ -20,7 +21,7 @@ public class Crossbow_launcher_PID_Tuner extends CrossbowTeleop{
     private DcMotorEx leftLaunchMotor;
     private DcMotorEx rightLaunchMotor;
 
-    private Double[] PIDFCoefficientsList = {250.0,20.0,0.0,0.0};
+    public static Double[] PIDFCoefficientsList = {0.0,0.0,0.0,0.0};
 
     @Override
     public void init(){
@@ -35,36 +36,66 @@ public class Crossbow_launcher_PID_Tuner extends CrossbowTeleop{
 
     @Override
     public void loop(){
-        launcher_code(gamepad1.left_trigger > 0.1,gamepad1.left_bumper);
+        launcher_code(gamepad1.right_trigger > 0.1,gamepad1.left_bumper);
         intake_code();
-        if (gamepad1.dpadLeftWasPressed()){
-            selector+=1;
-            if (selector == 4){
-                selector = 0;
-            }
-        }
-        if (gamepad1.dpadRightWasPressed()){
-            selector-=1;
-            if (selector == -1){
-                selector = 3;
-            }
-        }
+
         if (gamepad1.dpadUpWasPressed()){
-            PIDFCoefficientsList[selector] += 1.0;
+            set_launcher_speed(get_launcher_speed()+40);
+        } else if (gamepad1.dpadDownWasPressed()) {//||gamepad1.dpadDownWasPressed()
+            set_launcher_speed(get_launcher_speed()-40);
         }
-        if (gamepad1.dpadDownWasPressed()){
-            PIDFCoefficientsList[selector] -= 1.0;
-        }
+//        if (gamepad1.dpadLeftWasPressed()){
+//            selector+=1;
+//            if (selector == 4){
+//                selector = 0;
+//            }
+//        }
+//        if (gamepad1.dpadRightWasPressed()){
+//            selector-=1;
+//            if (selector == -1){
+//                selector = 3;
+//            }
+//        }
+//        if (gamepad1.dpadUpWasPressed()){
+//            PIDFCoefficientsList[selector] += 1.0;
+//        }
+//        if (gamepad1.dpadDownWasPressed()){
+//            PIDFCoefficientsList[selector] -= 1.0;
+//        }
         telemetry.addData("p",PIDFCoefficientsList[0]);
-        telemetry.addData("i",PIDFCoefficientsList[1]/10);
+//        if (selector == 0){telemetry.addData("^","");}
+        telemetry.addData("i",PIDFCoefficientsList[1]);
+//        if (selector == 1){telemetry.addData("^","");}
         telemetry.addData("d",PIDFCoefficientsList[2]);
+//        if (selector == 2){telemetry.addData("^","");}
         telemetry.addData("f",PIDFCoefficientsList[3]);
+//        if (selector == 3){telemetry.addData("^","");}
         if (gamepad1.xWasPressed()){
-            launcherCoefficients = new PIDFCoefficients(PIDFCoefficientsList[0],PIDFCoefficientsList[1]/10,PIDFCoefficientsList[2],PIDFCoefficientsList[3]);
+            launcherCoefficients = new PIDFCoefficients(PIDFCoefficientsList[0],PIDFCoefficientsList[1],PIDFCoefficientsList[2],PIDFCoefficientsList[3]);
             leftLaunchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,launcherCoefficients);
             rightLaunchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,launcherCoefficients);
         }
+
+        if (follower.isBusy()) {
+            if (gamepad1.x){
+                follower.breakFollowing();
+            }
+        } else {
+            //this is a little nonsensical. I might as well have just put all the teleop functions in here
+            //and made the motors public. It is what it is.. this is how we learn!
+
+            //For the teleop functions I could just have them in here and give them refrences to what they need.
+            drive_with_teleop(
+                    gamepad1.left_stick_y,
+                    gamepad1.left_stick_x,
+                    gamepad1.right_stick_x,
+                    gamepad1.left_trigger,
+                    ((gamepad1.right_trigger > 0.1)||(gamepad2.right_trigger > 0.1))
+            );
+        }
+
         telemetry.update();
+        panelsTelemetry.update(telemetry);
     }
 
 
