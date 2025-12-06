@@ -59,10 +59,11 @@ public class PeterPedroAutoTest extends CrossbowMain {
 
         follower.update();
         // loop that robot, only happen after first path and when finished with the loop
-        if ()
+        if (true)
         {
 
-        } else if (looping && !follower.isBusy())
-            follower.followPath(squareLoop);
+        } else if (looping && !follower.isBusy()) {
+            //follower.followPath(squareLoop);
+        }
     }
 }

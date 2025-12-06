@@ -289,7 +289,7 @@ public class CrossbowMain extends OpMode {
         telemetry.addData("right_speed_at_kick",right_speed_at_kick);
 
 
-        double kicker_extension_time = 0.3;
+        double kicker_extension_time = 0.5;
         if (timeSinceShot.seconds() > kicker_extension_time) {
             kick = false;
         }
