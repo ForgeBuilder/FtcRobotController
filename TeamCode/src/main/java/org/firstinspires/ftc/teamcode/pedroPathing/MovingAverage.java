@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -15,6 +16,17 @@ public class MovingAverage {
         this.sum = 0;
     }
 
+    public double getAverageError() {
+        //this could work more like the normal average and be more performant but idc rn
+        double averageError = 0;
+        double average = getAverage();
+
+        Iterator<Double> iterator = values.iterator();
+        while (iterator.hasNext()){
+            averageError += Math.abs(iterator.next()-average);
+        }
+        return averageError;
+    }
     public void addValue(double newValue) {
         // If the queue is at capacity, remove the oldest value
         if (values.size() == capacity) {

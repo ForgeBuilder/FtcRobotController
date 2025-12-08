@@ -215,6 +215,7 @@ public class CrossbowMain extends OpMode {
         double left_current_speed = leftLaunchMotor.getVelocity();
 
         left_speed_average.addValue(left_current_speed);
+        telemetry.addData("average_error",left_speed_average.getAverageError());
 
         telemetry.addData("right_speed",right_current_speed);
         telemetry.addData("left_speed",left_current_speed);
