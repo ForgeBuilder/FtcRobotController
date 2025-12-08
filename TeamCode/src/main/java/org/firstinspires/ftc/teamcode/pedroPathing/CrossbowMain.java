@@ -209,6 +209,8 @@ public class CrossbowMain extends OpMode {
     private int launcher_moving_average_range = 10;
     private MovingAverage left_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by AI
     private MovingAverage right_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by AI
+
+    private int max_average_error = 20;
     public boolean launcher_code(boolean fire,boolean override_shot){
         //the return value of the function: did the robot fire the artifact
         boolean fired_this_tick = false;
@@ -250,15 +252,16 @@ public class CrossbowMain extends OpMode {
             spin_launcher = true;
             //add a visualiser to the robot to show the launch angle?? (unless we just do range estimation first)
 
-            boolean right_speed_met = Math.abs(launcherSpeed - right_current_speed) < 20.0;
+            boolean right_speed_met = Math.abs(launcherSpeed - right_current_speed) < 50.0;
+            right_speed_met = right_speed_met && (Math.abs(right_speed_average_error)<max_average_error);
 //            if (right_speed_met){
 //                right_speed_met_count++;
 //            } else {
 //                right_speed_met_count--;
 //            }
 //            right_speed_met_count = int_clamp(right_speed_met_count,0,desired_met_count);
-//
-            boolean left_speed_met = Math.abs(launcherSpeed + left_current_speed) < 20.0;
+            boolean left_speed_met = Math.abs(launcherSpeed + left_current_speed) < 50.0;
+            left_speed_met = left_speed_met && (Math.abs(left_speed_average_error)<max_average_error);
 
             //these were just too slow. need to tune the PID or they just slow our cycle too much.
             //better to miss than wait 30 sec to make a shot.
