@@ -205,7 +205,10 @@ public class CrossbowMain extends OpMode {
 
     public boolean trying_to_fire = false;
 
-    private MovingAverage left_speed_average = new MovingAverage(10); //this class was written by AI
+
+    private int launcher_moving_average_range = 10;
+    private MovingAverage left_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by AI
+    private MovingAverage right_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by AI
     public boolean launcher_code(boolean fire,boolean override_shot){
         //the return value of the function: did the robot fire the artifact
         boolean fired_this_tick = false;
@@ -215,7 +218,14 @@ public class CrossbowMain extends OpMode {
         double left_current_speed = leftLaunchMotor.getVelocity();
 
         left_speed_average.addValue(left_current_speed);
-        telemetry.addData("average_error",left_speed_average.getAverageError());
+        double left_speed_average_error = left_speed_average.getAverageError();
+        panelsTelemetry.addData("l_speed_avg_error", left_speed_average_error);
+        telemetry.addData("l_speed_avg_error",left_speed_average_error);
+
+        right_speed_average.addValue(left_current_speed);
+        double right_speed_average_error = left_speed_average.getAverageError();
+        panelsTelemetry.addData("r_speed_avg_error", right_speed_average_error);
+        telemetry.addData("r_speed_avg_error",right_speed_average_error);
 
         telemetry.addData("right_speed",right_current_speed);
         telemetry.addData("left_speed",left_current_speed);
