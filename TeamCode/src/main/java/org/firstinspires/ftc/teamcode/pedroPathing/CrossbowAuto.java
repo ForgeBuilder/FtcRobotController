@@ -44,7 +44,7 @@ public class CrossbowAuto extends CrossbowMain{
 
     private int intake_round = 0;
 
-    double drivetrain_pickup_speed = 0.7;
+    double drivetrain_pickup_speed = 0.4;
 
     private ElapsedTime steptimer = new ElapsedTime();
 
@@ -59,8 +59,13 @@ public class CrossbowAuto extends CrossbowMain{
         if (step == 0){
             //go to the launching position
             Pose current_pose = follower.getPose();
+            Pose launch_pose;
+            if (intake_round == 0){
+                launch_pose = new Pose(100,-50*apm,1*apm);
+            } else {
+                launch_pose = new Pose(72,-40*apm,0.65*apm);
+            }
 
-            Pose next_pose = new Pose(90,-45*apm,1*apm);
             PathChain firstpath = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
                     .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
