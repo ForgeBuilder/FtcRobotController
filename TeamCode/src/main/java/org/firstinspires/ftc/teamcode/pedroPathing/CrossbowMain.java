@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
-import com.bylazar.panels.Panels;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.PoseTracker;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -17,9 +17,9 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
-import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
 
@@ -28,10 +28,14 @@ import com.bylazar.telemetry.TelemetryManager;
 
 
 public class CrossbowMain extends OpMode {
+
+    public boolean launcher_freeze_movement = false;
     // Declare OpMode members.
     public TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
     private Servo launchKickServo1;
     private Servo launchKickServo2;
+
+    private GoBildaPinpointDriver pinpoint;
 
     private DcMotor rightFront;
     private DcMotor rightBack;
@@ -83,8 +87,7 @@ public class CrossbowMain extends OpMode {
 
     @Override
     public void init() {
-
-
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
 
         rightFront = hardwareMap.get(DcMotor.class, "rf");
         rightBack = hardwareMap.get(DcMotor.class, "rb");
@@ -246,6 +249,8 @@ public class CrossbowMain extends OpMode {
         panelsTelemetry.addData("right_target_speed", launcherSpeed);
         panelsTelemetry.addData("left_target_speed", -launcherSpeed);
 
+        //how fast can the robot be rotating and still fire?
+        double max_angular_velocity = 1;
 
         if (fire) {
             trying_to_fire = true;
@@ -275,14 +280,14 @@ public class CrossbowMain extends OpMode {
 //
 //            //mabye add some telemetry that tells why the launcher won't fire but only if it's false
 //            boolean speed_ready = ((right_speed_met_count == desired_met_count) && (left_speed_met_count ==desired_met_count));
-
             boolean speed_ready = right_speed_met && left_speed_met;
-            boolean limelight_ready = limelight_x_offset < 1;
+            boolean limelight_ready = (limelight_x_offset < 1)&&(pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES)<max_angular_velocity);
 
             telemetry.addData("speed_ready",speed_ready);
             telemetry.addData("limelight_ready",limelight_ready);
 
             if (speed_ready && limelight_ready || override_shot){  // //the right bumper serves as an override
+                launcher_freeze_movement = true;
                 if (timeSinceShot.seconds() > 1.5){
                     kick = true;
                     timeSinceShot.reset();
@@ -306,6 +311,7 @@ public class CrossbowMain extends OpMode {
         double kicker_extension_time = 0.5;
         if (timeSinceShot.seconds() > kicker_extension_time) {
             kick = false;
+            launcher_freeze_movement = false;
         }
 
         if (kick) {
@@ -460,6 +466,13 @@ public class CrossbowMain extends OpMode {
         leftBack.setPower(forward + strafe - turn);
         rightFront.setPower(forward + strafe + turn);
         rightBack.setPower(forward - strafe + turn);
+
+        if (launcher_freeze_movement){
+            leftFront.setPower(0);
+            leftBack.setPower(0);
+            rightFront.setPower(0);
+            rightBack.setPower(0);
+        }
     }
 
     /*

@@ -25,6 +25,7 @@ public class MovingAverage {
         while (iterator.hasNext()){
             averageError += Math.abs(iterator.next()-average);
         }
+        averageError = averageError/this.capacity;
         return averageError;
     }
     public void addValue(double newValue) {
