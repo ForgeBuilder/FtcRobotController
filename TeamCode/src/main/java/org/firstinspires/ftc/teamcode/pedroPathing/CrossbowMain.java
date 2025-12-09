@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -26,7 +27,7 @@ import com.bylazar.telemetry.TelemetryManager;
 
 //@TeleOp(name="DecodeTeleopMain")
 
-
+@Configurable
 public class CrossbowMain extends OpMode {
 
     public boolean launcher_freeze_movement = false;
@@ -178,7 +179,7 @@ public class CrossbowMain extends OpMode {
     double right_speed_at_kick = 0.0;
 
 
-    public static double KickerLaunchAngle = 0.35;
+    public static double KickerLaunchAngle = 0.5;
     public static double KickerIdleAngle = 0;
 
     private int launcherSpeed = 620;
