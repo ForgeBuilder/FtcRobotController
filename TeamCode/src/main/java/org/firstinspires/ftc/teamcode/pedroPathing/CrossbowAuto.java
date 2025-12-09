@@ -46,6 +46,8 @@ public class CrossbowAuto extends CrossbowMain{
 
     double drivetrain_pickup_speed = 0.4;
 
+    double resume_time = 200;
+
     private ElapsedTime steptimer = new ElapsedTime();
 
     @Override public void loop(){
@@ -115,7 +117,7 @@ public class CrossbowAuto extends CrossbowMain{
         } else if (step == 4 && !follower.isBusy()){
             //slowly roll over to pickup balls
             spin_intake = true;
-            Pose next_pose = new Pose(74,-15*apm,apm*(Math.PI/-2.0));
+            Pose next_pose = new Pose(74,-13*apm,apm*(Math.PI/-2.0));
             Pose current_pose = follower.getPose();
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
@@ -145,13 +147,18 @@ public class CrossbowAuto extends CrossbowMain{
         } else if (step == 7 && !follower.isBusy()){
             //slowly roll over to pickup balls
             spin_intake = true;
-            Pose next_pose = new Pose(51.5,-15*apm,apm*(Math.PI/-2.0));
+            Pose next_pose = new Pose(51.5,-13*apm,apm*(Math.PI/-2.0));
             Pose current_pose = follower.getPose();
             Pose avoid_gate_pose = new Pose(51.5,-30*apm,apm*(Math.PI/-2.0));
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
                     .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
                     .addPath(new BezierLine(next_pose, avoid_gate_pose))
+                    .addParametricCallback(1, () -> { // Pause 80% through the *previous* path
+                        follower.pausePathFollowing(); // Stop robot movement
+                        resume_time = runtime.seconds()+(double) 0.3;
+                        //0.3 is how long the robot will wait to ensure it intakes all artifacts. 0.3 is 1/100 of the time aloted for auto.
+                    })
                     .build();
             follower.setMaxPower(drivetrain_pickup_speed);
             follower.followPath(center_path);
@@ -177,7 +184,7 @@ public class CrossbowAuto extends CrossbowMain{
         } else if (step == 10 && !follower.isBusy()){
             //slowly roll over to pickup balls
             spin_intake = true;
-            Pose next_pose = new Pose(28,-15*apm,apm*(Math.PI/-2.0));
+            Pose next_pose = new Pose(28,-13*apm,apm*(Math.PI/-2.0));
             Pose current_pose = follower.getPose();
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
@@ -203,6 +210,12 @@ public class CrossbowAuto extends CrossbowMain{
         //check where we are and depending on which side of the launch line we are on, go to a different spot.
 
        //I HAVE NOT IMPLEMENTED THE ABOVE, DO IT WHEN YOU COME BACK PLEASE!
+
+        if (runtime.seconds() > resume_time){
+            resume_time = 200;
+            follower.resumePathFollowing();
+        }
+
         if (runtime.seconds() > 28.0){
             //go to intake bar 1
             step = 100;
