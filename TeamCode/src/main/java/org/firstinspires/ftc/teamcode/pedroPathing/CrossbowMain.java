@@ -265,14 +265,16 @@ public class CrossbowMain extends OpMode {
         double chasis_angular_velocity = pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES);
 
         boolean speed_ready = right_speed_met && left_speed_met;
-        boolean limlight_facing_goal = (limelight_x_offset < 1);
-        boolean angular_velocity_acceptable = chasis_angular_velocity < max_angular_velocity;
+        boolean limlight_ready = (Math.abs(tx) < 1)&&LLresult.isValid();
+        boolean angular_velocity_acceptable = Math.abs(chasis_angular_velocity) < max_angular_velocity;
 
         telemetry.addData("speed_ready",speed_ready);
-        if (limlight_facing_goal) {
-            telemetry.addData("limelight_ready",true);
+        if (limlight_ready) {
+            telemetry.addData("limelight_ready,tx",tx);
+        } else if (!LLresult.isValid()){
+            telemetry.addData("limelight_error_tag","No Tag");
         } else {
-            telemetry.addData("limelight_tx_error",tx);
+            telemetry.addData("limelight_error,tx",tx);
         }
 
         panelsTelemetry.addData("chasis_angular_velocity",chasis_angular_velocity);
@@ -282,7 +284,7 @@ public class CrossbowMain extends OpMode {
             trying_to_fire = true;
             spin_launcher = true;
 
-            if ((LLresult.isValid() && speed_ready && limlight_facing_goal && angular_velocity_acceptable) || override_shot){  // //the right bumper serves as an override
+            if ((speed_ready && limlight_ready && angular_velocity_acceptable) || override_shot){  // //the right bumper serves as an override
                 launcher_freeze_movement = true;
                 if (timeSinceShot.seconds() > 1.5){
                     kick = true;
@@ -343,6 +345,7 @@ public class CrossbowMain extends OpMode {
         telemetry.addData("current pipeline",LLresult.getPipelineIndex());
         if ((LLresult != null) && LLresult.isValid()) {
             double tx = LLresult.getTx()-3.0; // How far left or right the target is (degrees)
+            telemetry.addData("tx",tx);
             limelight_x_offset = tx;
 //            telemetry.addData("tx",tx);
 
