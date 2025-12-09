@@ -178,8 +178,8 @@ public class CrossbowMain extends OpMode {
     double right_speed_at_kick = 0.0;
 
 
-    private double KickerLaunchAngle = 0.35;
-    private double KickerIdleAngle = 0;
+    public static double KickerLaunchAngle = 0.35;
+    public static double KickerIdleAngle = 0;
 
     private int launcherSpeed = 620;
     public int get_launcher_speed(){
