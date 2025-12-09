@@ -27,7 +27,6 @@ import com.bylazar.telemetry.TelemetryManager;
 
 //@TeleOp(name="DecodeTeleopMain")
 
-@Configurable
 public class CrossbowMain extends OpMode {
 
     public boolean launcher_freeze_movement = false;
