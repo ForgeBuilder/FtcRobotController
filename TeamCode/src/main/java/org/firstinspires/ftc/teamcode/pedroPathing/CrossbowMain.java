@@ -217,7 +217,7 @@ public class CrossbowMain extends OpMode {
     public static int max_current_error = 40;
 
     //how fast can the robot be rotating and still fire?
-    double max_angular_velocity = 1;
+    double max_angular_velocity = 0.1;
 
     public boolean launcher_code(boolean fire,boolean override_shot){
         //the return value of the function: did the robot fire the artifact
@@ -254,46 +254,35 @@ public class CrossbowMain extends OpMode {
         panelsTelemetry.addData("right_target_speed", launcherSpeed);
         panelsTelemetry.addData("left_target_speed", -launcherSpeed);
 
+        //run all the checks even if we are not trying to fire!
+
+        boolean right_speed_met = Math.abs(launcherSpeed - right_current_speed) < max_current_error;
+        right_speed_met = right_speed_met && (Math.abs(right_speed_average_error)<max_average_error);
+//
+        boolean left_speed_met = Math.abs(launcherSpeed + left_current_speed) < max_current_error;
+        left_speed_met = left_speed_met && (Math.abs(left_speed_average_error)<max_average_error);
+
+        double chasis_angular_velocity = pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES);
+
+        boolean speed_ready = right_speed_met && left_speed_met;
+        boolean limlight_facing_goal = (limelight_x_offset < 1);
+        boolean angular_velocity_acceptable = chasis_angular_velocity < max_angular_velocity;
+
+        telemetry.addData("speed_ready",speed_ready);
+        if (limlight_facing_goal) {
+            telemetry.addData("limelight_ready",true);
+        } else {
+            telemetry.addData("limelight_tx_error",tx);
+        }
+
+        panelsTelemetry.addData("chasis_angular_velocity",chasis_angular_velocity);
+        telemetry.addData("chasis_angular_velocity",chasis_angular_velocity);
+
         if (fire) {
             trying_to_fire = true;
             spin_launcher = true;
-            //add a visualiser to the robot to show the launch angle?? (unless we just do range estimation first)
 
-            boolean right_speed_met = Math.abs(launcherSpeed - right_current_speed) < max_current_error;
-            right_speed_met = right_speed_met && (Math.abs(right_speed_average_error)<max_average_error);
-//            if (right_speed_met){
-//                right_speed_met_count++;
-//            } else {
-//                right_speed_met_count--;
-//            }
-//            right_speed_met_count = int_clamp(right_speed_met_count,0,desired_met_count);
-            boolean left_speed_met = Math.abs(launcherSpeed + left_current_speed) < max_current_error;
-            left_speed_met = left_speed_met && (Math.abs(left_speed_average_error)<max_average_error);
-
-            //these were just too slow. need to tune the PID or they just slow our cycle too much.
-            //better to miss than wait 30 sec to make a shot.
-
-//            if (left_speed_met){
-//                left_speed_met_count++;
-//            } else {
-//                left_speed_met_count--;
-//            }
-//            left_speed_met_count = int_clamp(left_speed_met_count,0,desired_met_count);
-//
-//            //mabye add some telemetry that tells why the launcher won't fire but only if it's false
-//            boolean speed_ready = ((right_speed_met_count == desired_met_count) && (left_speed_met_count ==desired_met_count));
-            double chasis_angular_velocity = pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES);
-
-            boolean speed_ready = right_speed_met && left_speed_met;
-            boolean limlight_facing_goal = (limelight_x_offset < 1);
-            boolean angular_velocity_acceptable = chasis_angular_velocity < max_angular_velocity;
-
-            telemetry.addData("speed_ready",speed_ready);
-            telemetry.addData("limelight_ready",limlight_facing_goal);
-            panelsTelemetry.addData("chasis_angular_velocity",chasis_angular_velocity);
-            telemetry.addData("chasis_angular_velocity",chasis_angular_velocity);
-
-            if ((speed_ready && limlight_facing_goal && angular_velocity_acceptable) || override_shot){  // //the right bumper serves as an override
+            if ((LLresult.isValid() && speed_ready && limlight_facing_goal && angular_velocity_acceptable) || override_shot){  // //the right bumper serves as an override
                 launcher_freeze_movement = true;
                 if (timeSinceShot.seconds() > 1.5){
                     kick = true;
@@ -379,7 +368,7 @@ public class CrossbowMain extends OpMode {
         } else {
             telemetry.addData("Limelight", "No Targets");
         //do a \n for each line of telemetry you put above so wheather or not lime has a target it takes the same space.
-            limelight_x_offset = 100;
+            limelight_x_offset = 0;
         }
     }
     public void intake_code(){
