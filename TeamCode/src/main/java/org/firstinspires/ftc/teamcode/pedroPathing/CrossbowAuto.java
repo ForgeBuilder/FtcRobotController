@@ -154,11 +154,11 @@ public class CrossbowAuto extends CrossbowMain{
                     .addPath(new BezierLine(current_pose, next_pose))
                     .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
                     .addPath(new BezierLine(next_pose, avoid_gate_pose))
-                    .addParametricCallback(1, () -> { // Pause 80% through the *previous* path
-                        follower.pausePathFollowing(); // Stop robot movement
-                        resume_time = runtime.seconds()+(double) 0.3;
-                        //0.3 is how long the robot will wait to ensure it intakes all artifacts. 0.3 is 1/100 of the time aloted for auto.
-                    })
+//                    .addParametricCallback(1, () -> { // Pause 80% through the *previous* path
+//                        follower.pausePathFollowing(); // Stop robot movement
+//                        resume_time = runtime.seconds()+(double) 0.3;
+//                        //0.3 is how long the robot will wait to ensure it intakes all artifacts. 0.3 is 1/100 of the time aloted for auto.
+//                    })
                     .build();
             follower.setMaxPower(drivetrain_pickup_speed);
             follower.followPath(center_path);
@@ -220,7 +220,7 @@ public class CrossbowAuto extends CrossbowMain{
             //go to intake bar 1
             step = 100;
             fire_artifact = false;
-            Pose next_pose = new Pose(100,-40*apm,apm*1.2);
+            Pose next_pose = new Pose(65,-40*apm,0.65*apm);
             Pose current_pose = follower.getPose();
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
