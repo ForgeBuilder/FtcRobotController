@@ -213,7 +213,12 @@ public class CrossbowMain extends OpMode {
     private MovingAverage left_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by AI
     private MovingAverage right_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by AI
 
-    private int max_average_error = 20;
+    public static int max_average_error = 20;
+    public static int max_current_error = 40;
+
+    //how fast can the robot be rotating and still fire?
+    double max_angular_velocity = 1;
+
     public boolean launcher_code(boolean fire,boolean override_shot){
         //the return value of the function: did the robot fire the artifact
         boolean fired_this_tick = false;
@@ -249,15 +254,12 @@ public class CrossbowMain extends OpMode {
         panelsTelemetry.addData("right_target_speed", launcherSpeed);
         panelsTelemetry.addData("left_target_speed", -launcherSpeed);
 
-        //how fast can the robot be rotating and still fire?
-        double max_angular_velocity = 1;
-
         if (fire) {
             trying_to_fire = true;
             spin_launcher = true;
             //add a visualiser to the robot to show the launch angle?? (unless we just do range estimation first)
 
-            boolean right_speed_met = Math.abs(launcherSpeed - right_current_speed) < 50.0;
+            boolean right_speed_met = Math.abs(launcherSpeed - right_current_speed) < max_current_error;
             right_speed_met = right_speed_met && (Math.abs(right_speed_average_error)<max_average_error);
 //            if (right_speed_met){
 //                right_speed_met_count++;
@@ -265,7 +267,7 @@ public class CrossbowMain extends OpMode {
 //                right_speed_met_count--;
 //            }
 //            right_speed_met_count = int_clamp(right_speed_met_count,0,desired_met_count);
-            boolean left_speed_met = Math.abs(launcherSpeed + left_current_speed) < 50.0;
+            boolean left_speed_met = Math.abs(launcherSpeed + left_current_speed) < max_current_error;
             left_speed_met = left_speed_met && (Math.abs(left_speed_average_error)<max_average_error);
 
             //these were just too slow. need to tune the PID or they just slow our cycle too much.
@@ -280,13 +282,18 @@ public class CrossbowMain extends OpMode {
 //
 //            //mabye add some telemetry that tells why the launcher won't fire but only if it's false
 //            boolean speed_ready = ((right_speed_met_count == desired_met_count) && (left_speed_met_count ==desired_met_count));
+            double chasis_angular_velocity = pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES);
+
             boolean speed_ready = right_speed_met && left_speed_met;
-            boolean limelight_ready = (limelight_x_offset < 1)&&(pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES)<max_angular_velocity);
+            boolean limlight_facing_goal = (limelight_x_offset < 1);
+            boolean angular_velocity_acceptable = chasis_angular_velocity < max_angular_velocity;
 
             telemetry.addData("speed_ready",speed_ready);
-            telemetry.addData("limelight_ready",limelight_ready);
+            telemetry.addData("limelight_ready",limlight_facing_goal);
+            panelsTelemetry.addData("chasis_angular_velocity",chasis_angular_velocity);
+            telemetry.addData("chasis_angular_velocity",chasis_angular_velocity);
 
-            if (speed_ready && limelight_ready || override_shot){  // //the right bumper serves as an override
+            if ((speed_ready && limlight_facing_goal && angular_velocity_acceptable) || override_shot){  // //the right bumper serves as an override
                 launcher_freeze_movement = true;
                 if (timeSinceShot.seconds() > 1.5){
                     kick = true;
@@ -344,10 +351,11 @@ public class CrossbowMain extends OpMode {
     public void teleop_limelight_code(){
         //limelight stuff
         LLresult = limelight.getLatestResult();
+        telemetry.addData("current pipeline",LLresult.getPipelineIndex());
         if ((LLresult != null) && LLresult.isValid()) {
             double tx = LLresult.getTx()-3.0; // How far left or right the target is (degrees)
             limelight_x_offset = tx;
-            telemetry.addData("tx",tx);
+//            telemetry.addData("tx",tx);
 
 
             //https://docs.limelightvision.io/docs/docs-limelight/tutorials/tutorial-estimating-distance
@@ -366,16 +374,12 @@ public class CrossbowMain extends OpMode {
             double angleToGoalRadians = Math.toRadians(angleToGoalDegrees);
             double estimated_distance = (goal_tag_height-limelight_height) / Math.tan(angleToGoalRadians);
             telemetry.addData("estimated distance w/ angles",estimated_distance);
-
-            telemetry.addData("current pipeline",LLresult.getPipelineIndex());
             // gives the x offset from the limelight
 //            telemetry.addData("Target X", tx);
-
-
-//
         } else {
-            telemetry.addData("Limelight", "No Targets\n----");
-            limelight_x_offset = 0.0;
+            telemetry.addData("Limelight", "No Targets");
+        //do a \n for each line of telemetry you put above so wheather or not lime has a target it takes the same space.
+            limelight_x_offset = 100;
         }
     }
     public void intake_code(){

@@ -36,32 +36,8 @@ public class Crossbow_launcher_PID_Tuner extends CrossbowTeleop{
 
     @Override
     public void loop(){
-        launcher_code(gamepad1.right_trigger > 0.1,gamepad1.left_bumper);
-        intake_code();
+        super.loop();
 
-        if (gamepad1.dpadUpWasPressed()){
-            set_launcher_speed(get_launcher_speed()+40);
-        } else if (gamepad1.dpadDownWasPressed()) {//||gamepad1.dpadDownWasPressed()
-            set_launcher_speed(get_launcher_speed()-40);
-        }
-//        if (gamepad1.dpadLeftWasPressed()){
-//            selector+=1;
-//            if (selector == 4){
-//                selector = 0;
-//            }
-//        }
-//        if (gamepad1.dpadRightWasPressed()){
-//            selector-=1;
-//            if (selector == -1){
-//                selector = 3;
-//            }
-//        }
-//        if (gamepad1.dpadUpWasPressed()){
-//            PIDFCoefficientsList[selector] += 1.0;
-//        }
-//        if (gamepad1.dpadDownWasPressed()){
-//            PIDFCoefficientsList[selector] -= 1.0;
-//        }
         telemetry.addData("p",PIDFCoefficientsList[0]);
 //        if (selector == 0){telemetry.addData("^","");}
         telemetry.addData("i",PIDFCoefficientsList[1]);
@@ -94,7 +70,11 @@ public class Crossbow_launcher_PID_Tuner extends CrossbowTeleop{
             );
         }
 
+        //append to telemetry without clearing previous
+        telemetry.setAutoClear(false);
         telemetry.update();
+        telemetry.setAutoClear(true);
+
         panelsTelemetry.update(telemetry);
     }
 
