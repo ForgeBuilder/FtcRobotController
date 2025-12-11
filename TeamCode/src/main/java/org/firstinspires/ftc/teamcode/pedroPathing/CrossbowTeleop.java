@@ -1,10 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 import com.pedropathing.geometry.Pose;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
@@ -28,7 +24,7 @@ public class CrossbowTeleop extends CrossbowMain {
     @Override
     public void loop(){
         super.loop();
-        teleop_limelight_code();
+        limelight_code();
         launcher_code((gamepad2.right_trigger>0.1)||(gamepad1.right_trigger>0.1),gamepad1.right_bumper);
         intake_code();
         //handles saving position and making return path to saved position

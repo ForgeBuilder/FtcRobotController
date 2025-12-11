@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
-import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -339,7 +338,7 @@ public class CrossbowMain extends OpMode {
     LLResult LLresult;
 
     double tx = 0.0;
-    public void teleop_limelight_code(){
+    public void limelight_code(){
         //limelight stuff
         LLresult = limelight.getLatestResult();
         telemetry.addData("current pipeline",LLresult.getPipelineIndex());

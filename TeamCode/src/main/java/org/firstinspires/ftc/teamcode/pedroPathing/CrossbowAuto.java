@@ -52,6 +52,7 @@ public class CrossbowAuto extends CrossbowMain{
 
     @Override public void loop(){
         super.loop();
+        limelight_code();
         intake_code();
         fired_an_artifact = launcher_code(fire_artifact,false);
 
