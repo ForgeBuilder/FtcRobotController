@@ -58,17 +58,20 @@ public class CrossbowAuto extends CrossbowMain{
         Pose current_posee = follower.getPose();
         telemetry.addData("Pedro Pose: ",current_posee.getX()+", "+current_posee.getY()+", "+current_posee.getHeading());
 
-        if (runtime.seconds() > 29.0){
-            step = 100;
-            fire_artifact = false;
-            Pose next_pose = new Pose(65,-40*apm,0.65*apm);
+        if (runtime.seconds() > 28.0){
             Pose current_pose = follower.getPose();
-            PathChain center_path = follower.pathBuilder()
-                    .addPath(new BezierLine(current_pose, next_pose))
-                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
-                    .setHeadingConstraint(0)
-                    .build();
-            follower.followPath(center_path);
+
+            if (current_pose.getX() > 40.0){
+                step = 100;
+                fire_artifact = false;
+                Pose next_pose = new Pose(60,-15*apm,(Math.PI/2)*apm);
+                PathChain center_path = follower.pathBuilder()
+                        .addPath(new BezierLine(current_pose, next_pose))
+                        .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
+                        .setHeadingConstraint(0)
+                        .build();
+                follower.followPath(center_path);
+            }
         }
 
         if (step == 0){
