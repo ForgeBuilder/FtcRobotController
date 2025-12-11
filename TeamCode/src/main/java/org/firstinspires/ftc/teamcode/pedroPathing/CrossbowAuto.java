@@ -26,7 +26,7 @@ public class CrossbowAuto extends CrossbowMain{
 
     @Override public void init(){
         super.init();
-        set_launcher_speed(620);
+        set_launcher_speed(780);
     }
 
     @Override public void start(){
@@ -59,11 +59,24 @@ public class CrossbowAuto extends CrossbowMain{
         Pose current_posee = follower.getPose();
         telemetry.addData("Pedro Pose: ",current_posee.getX()+", "+current_posee.getY()+", "+current_posee.getHeading());
 
+        if (runtime.seconds() > 29.0){
+            step = 100;
+            fire_artifact = false;
+            Pose next_pose = new Pose(65,-40*apm,0.65*apm);
+            Pose current_pose = follower.getPose();
+            PathChain center_path = follower.pathBuilder()
+                    .addPath(new BezierLine(current_pose, next_pose))
+                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
+                    .setHeadingConstraint(0)
+                    .build();
+            follower.followPath(center_path);
+        }
+
         if (step == 0){
             //go to the launching position
             Pose current_pose = follower.getPose();
             Pose launch_pose;
-            launch_pose = new Pose(72,-40*apm,0.65*apm);
+            launch_pose = new Pose(80,-45*apm,0.77*apm);
 //            if (intake_round == 0){
 //                launch_pose = new Pose(100,-40*apm,1.2*apm);
 //            } else {
@@ -204,6 +217,8 @@ public class CrossbowAuto extends CrossbowMain{
             intake_round = 2;
             //don't take the last shot we'll be on the bar.
 //            step = 0;
+        } else if (step == 100){
+
         }
 
 
@@ -213,24 +228,10 @@ public class CrossbowAuto extends CrossbowMain{
 
        //I HAVE NOT IMPLEMENTED THE ABOVE, DO IT WHEN YOU COME BACK PLEASE!
 
-        if (runtime.seconds() > resume_time){
-            resume_time = 200;
-            follower.resumePathFollowing();
-        }
-
-        if (runtime.seconds() > 28.0){
-            //go to intake bar 1
-            step = 100;
-            fire_artifact = false;
-            Pose next_pose = new Pose(65,-40*apm,0.65*apm);
-            Pose current_pose = follower.getPose();
-            PathChain center_path = follower.pathBuilder()
-                    .addPath(new BezierLine(current_pose, next_pose))
-                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
-                    .setHeadingConstraint(0)
-                    .build();
-            follower.followPath(center_path);
-        }
+//        if (runtime.seconds() > resume_time){
+//            resume_time = 200;
+//            follower.resumePathFollowing();
+//        }
 
         telemetry.addData("fired artifacts: ",fired_artifacts);
         telemetry.addData("step",step);

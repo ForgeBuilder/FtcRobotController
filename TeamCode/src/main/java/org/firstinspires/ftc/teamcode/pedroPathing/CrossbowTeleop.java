@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
+import javax.lang.model.element.VariableElement;
+
 
 // Inside your OpMode
 
@@ -31,6 +33,9 @@ public class CrossbowTeleop extends CrossbowMain {
     @Override
     public void loop(){
         super.loop();
+
+        //this stuff doesn't really work. I wish lazlar was smart n gave his gamepad object the same functions.
+        //I could make a translator!
         c_gamepad1.asCombinedFTCGamepad(gamepad1);
         c_gamepad2.asCombinedFTCGamepad(gamepad1);
 
@@ -101,9 +106,9 @@ public class CrossbowTeleop extends CrossbowMain {
                 telemetry.addData("MT2 Location", "(" + x*meters_to_inches + ", " + y*meters_to_inches + ")");
             }
         }
-        if (gamepad1.yWasPressed()){
-            limelight_set_pose();
-        }
+//        if (gamepad1.yWasPressed()){
+//            limelight_set_pose();
+//        }
 
         // Show the elapsed game time and update telemetry so we can see it
         telemetry.addData("Status", "Run Time: " + runtime.toString());

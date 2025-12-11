@@ -180,7 +180,7 @@ public class CrossbowMain extends OpMode {
     public static double KickerLaunchAngle = 0.5;
     public static double KickerIdleAngle = 0;
 
-    private int launcherSpeed = 620;
+    private int launcherSpeed = 780;
     public int get_launcher_speed(){
         return launcherSpeed;
     }
@@ -343,7 +343,7 @@ public class CrossbowMain extends OpMode {
         LLresult = limelight.getLatestResult();
         telemetry.addData("current pipeline",LLresult.getPipelineIndex());
         if ((LLresult != null) && LLresult.isValid()) {
-            double tx = LLresult.getTx()-3.0; // How far left or right the target is (degrees)
+            double tx = LLresult.getTx(); // How far left or right the target is (degrees)
             telemetry.addData("tx",tx);
             limelight_x_offset = tx;
 //            telemetry.addData("tx",tx);
