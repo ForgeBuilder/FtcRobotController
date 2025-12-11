@@ -61,7 +61,11 @@ public class CrossbowAuto extends CrossbowMain{
         if (runtime.seconds() > 28.0){
             Pose current_pose = follower.getPose();
 
-            if (current_pose.getX() > 40.0){
+
+            //current_pose.getX() > 40.0
+
+            //if we are tring to launch, cancel that and go get ready at the gate.
+            if ((step == 0)||(step == 1)||(step == 2)){
                 step = 100;
                 fire_artifact = false;
                 Pose next_pose = new Pose(60,-15*apm,(Math.PI/2)*apm);
