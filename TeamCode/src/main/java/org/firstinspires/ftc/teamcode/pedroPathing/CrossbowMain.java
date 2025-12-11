@@ -343,8 +343,8 @@ public class CrossbowMain extends OpMode {
             launcherSpeed = 780;
             limelight_x_offset = 0;
         } else {
-            launcherSpeed = 900;
-            limelight_x_offset = 3*apm;
+            launcherSpeed = 960;
+            limelight_x_offset = -5*apm;
         }
     }
 
