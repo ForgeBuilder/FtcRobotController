@@ -63,12 +63,13 @@ public class CrossbowAuto extends CrossbowMain{
             //go to the launching position
             Pose current_pose = follower.getPose();
             Pose launch_pose;
-            if (intake_round == 0){
-                launch_pose = new Pose(100,-40*apm,1.2*apm);
-            } else {
-                //barely touch the line
-                launch_pose = new Pose(72,-40*apm,0.65*apm);
-            }
+            launch_pose = new Pose(72,-40*apm,0.65*apm);
+//            if (intake_round == 0){
+//                launch_pose = new Pose(100,-40*apm,1.2*apm);
+//            } else {
+//                //barely touch the line
+//                launch_pose = new Pose(72,-40*apm,0.65*apm);
+//            }
 
             PathChain firstpath = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, launch_pose))
