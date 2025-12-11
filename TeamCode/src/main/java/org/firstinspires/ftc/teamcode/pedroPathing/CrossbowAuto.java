@@ -12,7 +12,6 @@ public class CrossbowAuto extends CrossbowMain{
     private ElapsedTime runtime = new ElapsedTime();
 
     //auto position multiplier. flips the auto for red and blue. //Should only be 1 or -1
-    private double apm;
     //It's a double so the rotation plays nice.
     @Override
     public void set_team(String team) {

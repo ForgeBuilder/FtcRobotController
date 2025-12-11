@@ -66,9 +66,9 @@ public class CrossbowMain extends OpMode {
 
     public String team = "blue";
 
-    double limelight_x_offset = 0.0;
-
     Pose backboard_pose;
+
+    public double apm;
 
     public void set_team(String team){
         if (team == "red"){
@@ -76,11 +76,13 @@ public class CrossbowMain extends OpMode {
             backboard_id = 24;
             limelight.pipelineSwitch(backboard_pipeline);
             backboard_pose = new Pose(121.35, -7.37,0);
+            apm = -1.0;
         } else if (team == "blue"){
             backboard_pipeline = 0;
             backboard_id = 20;
             limelight.pipelineSwitch(backboard_pipeline);
             backboard_pose = new Pose(121.35, 7.37,0);
+            apm = 1.0;
         }
     }
 
@@ -219,6 +221,7 @@ public class CrossbowMain extends OpMode {
     double max_angular_velocity = 0.1;
 
     public boolean launcher_code(boolean fire,boolean override_shot){
+        rangefind();
         //the return value of the function: did the robot fire the artifact
         boolean fired_this_tick = false;
         telemetry.addData("Launcher Target Velocity:", "\n"+launcherSpeed); // \n makes the text go down a line
@@ -335,17 +338,31 @@ public class CrossbowMain extends OpMode {
         return fired_this_tick;
     }
 
+    public void rangefind(){
+        if (estimated_distance < 100){
+            launcherSpeed = 780;
+            limelight_x_offset = 0;
+        } else {
+            launcherSpeed = 900;
+            limelight_x_offset = 3*apm;
+        }
+    }
+
     LLResult LLresult;
 
     double tx = 0.0;
+    //how much to offset the shot
+    public double limelight_x_offset = 0.0;
+
+    public double estimated_distance = 0;
     public void limelight_code(){
         //limelight stuff
         LLresult = limelight.getLatestResult();
         telemetry.addData("current pipeline",LLresult.getPipelineIndex());
         if ((LLresult != null) && LLresult.isValid()) {
-            double tx = LLresult.getTx(); // How far left or right the target is (degrees)
+            tx = LLresult.getTx()+limelight_x_offset; // How far left or right the target is (degrees)
             telemetry.addData("tx",tx);
-            limelight_x_offset = tx;
+
 //            telemetry.addData("tx",tx);
 
 
@@ -363,14 +380,14 @@ public class CrossbowMain extends OpMode {
 
             double angleToGoalDegrees = targetOffsetAngle_Vertical+limelightMountAngleDegrees;
             double angleToGoalRadians = Math.toRadians(angleToGoalDegrees);
-            double estimated_distance = (goal_tag_height-limelight_height) / Math.tan(angleToGoalRadians);
+            estimated_distance = (goal_tag_height-limelight_height) / Math.tan(angleToGoalRadians);
             telemetry.addData("estimated distance w/ angles",estimated_distance);
             // gives the x offset from the limelight
 //            telemetry.addData("Target X", tx);
         } else {
             telemetry.addData("Limelight", "No Targets");
         //do a \n for each line of telemetry you put above so wheather or not lime has a target it takes the same space.
-            limelight_x_offset = 0;
+            tx = 0;
         }
     }
     public void intake_code(){
@@ -446,7 +463,7 @@ public class CrossbowMain extends OpMode {
 
         //if we are trying to fire, line up with the goal.
         if (fire) {
-            turn+= 0.03*limelight_x_offset; //This could be a PID and it would be better
+            turn+= 0.03*tx; //This could be a PID and it would be better
         }
 
         double slowdown_multiplier = 1 - (slowdown * .75);
