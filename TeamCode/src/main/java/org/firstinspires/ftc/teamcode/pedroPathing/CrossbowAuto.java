@@ -68,13 +68,9 @@ public class CrossbowAuto extends CrossbowMain{
         Pose current_posee = follower.getPose();
         telemetry.addData("Pedro Pose: ",current_posee.getX()+", "+current_posee.getY()+", "+current_posee.getHeading());
 
+        //if we are trying to launch (so on the launch line) go to the gate and get off it.
         if (runtime.seconds() > 28.0){
             Pose current_pose = follower.getPose();
-
-
-            //current_pose.getX() > 40.0
-
-            //if we are tring to launch, cancel that and go get ready at the gate.
             if ((step == 0)||(step == 1)||(step == 2)){
                 step = 100;
                 fire_artifact = false;

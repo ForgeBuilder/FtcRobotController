@@ -210,12 +210,12 @@ public class CrossbowMain extends OpMode {
     public boolean trying_to_fire = false;
 
 
-    private int launcher_moving_average_range = 15;
+    private int launcher_moving_average_range = 8;
     private MovingAverage left_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by AI
     private MovingAverage right_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by AI
 
-    public static int max_average_error = 20;
-    public static int max_current_error = 20;
+    public static int max_average_error = 15;
+    public static int max_current_error = 20; //there is no 30 so this is goofy but whatever
 
     //how fast can the robot be rotating and still fire?
     double max_angular_velocity = 0.1;
@@ -231,7 +231,7 @@ public class CrossbowMain extends OpMode {
 
     double zero_power_turn = 0.001;
 
-    double max_limelight_tx_error = 3;
+    double max_limelight_tx_error = 1;
     public boolean launcher_code(boolean fire,boolean override_shot){
         rangefind();
         //the return value of the function: did the robot fire the artifact
@@ -300,7 +300,7 @@ public class CrossbowMain extends OpMode {
 
             //do the lineup
 
-            chasis_aim_turn= 0.03*(tx); //This could be a PID and it would be better
+            chasis_aim_turn= 0.05*(tx); //This could be a PID and it would be better
             double cats = chasis_aim_turn/Math.abs(chasis_aim_turn); //chasis aim turn sign
 
             leftFront.setPower(leftFront.getPower()+chasis_aim_turn);//+(zero_power_turn*cats));
@@ -311,7 +311,7 @@ public class CrossbowMain extends OpMode {
             //take the shot
             if ((speed_ready && limlight_ready && angular_velocity_acceptable) || override_shot){  // //the right bumper serves as an override
                 launcher_freeze_movement = true;
-                if (timeSinceShot.seconds() > 1.15){
+                if (timeSinceShot.seconds() > 1.3){
                     kick = true;
                     timeSinceShot.reset();
                     //debug information - motor 2 is left, motor 1 is right
