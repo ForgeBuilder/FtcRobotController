@@ -53,11 +53,11 @@ public class CrossbowAuto extends CrossbowMain{
         super.loop();
         limelight_code();
         intake_code();
-        fired_an_artifact = launcher_code(fire_artifact,false);
         if (fire_artifact){
             set_motor_power_zero();
         }
-
+        fired_an_artifact = launcher_code(fire_artifact,false);
+        
         Pose current_posee = follower.getPose();
         telemetry.addData("Pedro Pose: ",current_posee.getX()+", "+current_posee.getY()+", "+current_posee.getHeading());
 
