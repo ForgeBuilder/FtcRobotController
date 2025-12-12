@@ -169,7 +169,7 @@ public class CrossbowMain extends OpMode {
     boolean spin_launcher = true;
 
     public boolean kick = false;
-    private ElapsedTime timeSinceShot = new ElapsedTime();
+    public ElapsedTime timeSinceShot = new ElapsedTime();
 
     private int maxLauncherSpeed = 2200;
     private int minLauncherSpeed = 600;
@@ -232,6 +232,8 @@ public class CrossbowMain extends OpMode {
     double zero_power_turn = 0.001;
 
     double max_limelight_tx_error = 3;
+
+    public double shot_completed;
     public boolean launcher_code(boolean fire,boolean override_shot){
         rangefind();
         //the return value of the function: did the robot fire the artifact
