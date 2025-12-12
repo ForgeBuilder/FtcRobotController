@@ -290,7 +290,7 @@ public class CrossbowMain extends OpMode {
 
             //do the lineup
 
-            chasis_aim_turn+= 0.03*(tx+limelight_x_offset); //This could be a PID and it would be better
+            chasis_aim_turn= 0.03*(tx+limelight_x_offset); //This could be a PID and it would be better
 
             leftFront.setPower(leftFront.getPower()-chasis_aim_turn);
             leftBack.setPower(leftFront.getPower()-chasis_aim_turn);
