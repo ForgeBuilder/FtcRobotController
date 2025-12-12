@@ -177,7 +177,7 @@ public class CrossbowAuto extends CrossbowMain{
         } else if (step == 6 && steptimer.seconds() > 0.5){
             //go to intake bar 2
             fire_artifact = false;
-            Pose next_pose = new Pose(51.5,-40*apm,apm*(Math.PI/-2.0));
+            Pose next_pose = new Pose(50.5,-40*apm,apm*(Math.PI/-2.0));
             Pose current_pose = follower.getPose();
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
@@ -189,12 +189,13 @@ public class CrossbowAuto extends CrossbowMain{
         } else if (step == 7 && !follower.isBusy()){
             //slowly roll over to pickup balls
             spin_intake = true;
-            Pose next_pose = new Pose(51.5,-13*apm,apm*(Math.PI/-2.0));
+            Pose next_pose = new Pose(50.5,-13*apm,apm*(Math.PI/-2.0));
             Pose current_pose = follower.getPose();
-            Pose avoid_gate_pose = new Pose(51.5,-30*apm,apm*(Math.PI/-2.0));
+            Pose avoid_gate_pose = new Pose(51.5,-20*apm,apm*(Math.PI/-2.0));
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
                     .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
+                    .addParametricCallback(1,()-> follower.setMaxPower(1))
                     .addPath(new BezierLine(next_pose, avoid_gate_pose))
 //                    .addParametricCallback(1, () -> { // Pause 80% through the *previous* path
 //                        follower.pausePathFollowing(); // Stop robot movement
