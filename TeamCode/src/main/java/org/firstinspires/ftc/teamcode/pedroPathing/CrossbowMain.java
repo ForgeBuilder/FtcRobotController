@@ -169,7 +169,7 @@ public class CrossbowMain extends OpMode {
     boolean spin_launcher = true;
 
     public boolean kick = false;
-    private ElapsedTime timeSinceShot = new ElapsedTime();
+    public ElapsedTime timeSinceShot = new ElapsedTime();
 
     private int maxLauncherSpeed = 2200;
     private int minLauncherSpeed = 600;
@@ -210,12 +210,12 @@ public class CrossbowMain extends OpMode {
     public boolean trying_to_fire = false;
 
 
-    private int launcher_moving_average_range = 10;
+    private int launcher_moving_average_range = 15;
     private MovingAverage left_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by AI
     private MovingAverage right_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by AI
 
     public static int max_average_error = 20;
-    public static int max_current_error = 40;
+    public static int max_current_error = 20;
 
     //how fast can the robot be rotating and still fire?
     double max_angular_velocity = 0.1;
@@ -311,7 +311,7 @@ public class CrossbowMain extends OpMode {
             //take the shot
             if ((speed_ready && limlight_ready && angular_velocity_acceptable) || override_shot){  // //the right bumper serves as an override
                 launcher_freeze_movement = true;
-                if (timeSinceShot.seconds() > 1.5){
+                if (timeSinceShot.seconds() > 1.15){
                     kick = true;
                     timeSinceShot.reset();
                     //debug information - motor 2 is left, motor 1 is right
@@ -332,7 +332,7 @@ public class CrossbowMain extends OpMode {
         telemetry.addData("right_speed_at_kick",right_speed_at_kick);
 
 
-        double kicker_extension_time = 0.5;
+        double kicker_extension_time = 0.3;
         if (timeSinceShot.seconds() > kicker_extension_time) {
             kick = false;
             launcher_freeze_movement = false;

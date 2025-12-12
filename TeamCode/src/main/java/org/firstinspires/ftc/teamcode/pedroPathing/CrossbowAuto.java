@@ -32,7 +32,6 @@ public class CrossbowAuto extends CrossbowMain{
         super.start();
         follower.setPose(new Pose(101,-7.5*apm, apm*(Math.PI/2)));
         runtime.reset();
-        insanity_timer.reset();
     }
 
     private int fired_artifacts = 0;
@@ -44,14 +43,13 @@ public class CrossbowAuto extends CrossbowMain{
 
     private int intake_round = 0;
 
-    double drivetrain_pickup_speed = 0.4;
+    double drivetrain_pickup_speed = 0.6;
 
     double resume_time = 200;
 
     private ElapsedTime steptimer = new ElapsedTime();
 
     //how long until the system goes insane and takes the shot even if it's not ready
-    private  ElapsedTime insanity_timer = new ElapsedTime();
     private double insanity_time = 3.0;
 
     private boolean launch_override = false;
@@ -63,18 +61,9 @@ public class CrossbowAuto extends CrossbowMain{
         if (fire_artifact){
             //this thing is for drive motors
             set_motor_power_zero();
-            if (insanity_timer.seconds() > insanity_time){
-                insanity_timer.reset();
-                launch_override = true;
-            }
-        } else {
-            insanity_timer.reset();
         }
-        fired_an_artifact = launcher_code(fire_artifact,launch_override);
-        if (fire_artifact) {
-            insanity_timer.reset();
-            launch_override = false;
-        }
+        boolean launcher_override = (timeSinceShot.seconds()>insanity_time);
+        fired_an_artifact = launcher_code(fire_artifact,launcher_override);
 
         Pose current_posee = follower.getPose();
         telemetry.addData("Pedro Pose: ",current_posee.getX()+", "+current_posee.getY()+", "+current_posee.getHeading());
@@ -103,7 +92,7 @@ public class CrossbowAuto extends CrossbowMain{
             //go to the launching position
             Pose current_pose = follower.getPose();
             Pose launch_pose;
-            launch_pose = new Pose(84,-54*apm,0.9*apm);
+            launch_pose = new Pose(84,-44*apm,0.9*apm);
 //            if (intake_round == 0){
 //                launch_pose = new Pose(100,-40*apm,1.2*apm);
 //            } else {
