@@ -230,6 +230,8 @@ public class CrossbowMain extends OpMode {
     }
 
     double zero_power_turn = 0.001;
+
+    double max_limelight_tx_error = 3;
     public boolean launcher_code(boolean fire,boolean override_shot){
         rangefind();
         //the return value of the function: did the robot fire the artifact
@@ -277,7 +279,7 @@ public class CrossbowMain extends OpMode {
         double chasis_angular_velocity = pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES);
 
         boolean speed_ready = right_speed_met && left_speed_met;
-        boolean limlight_ready = (Math.abs(tx) < 1)&&LLresult.isValid();
+        boolean limlight_ready = (Math.abs(tx) < max_limelight_tx_error)&&LLresult.isValid();
         boolean angular_velocity_acceptable = Math.abs(chasis_angular_velocity) < max_angular_velocity;
 
         telemetry.addData("speed_ready",speed_ready);
@@ -298,7 +300,7 @@ public class CrossbowMain extends OpMode {
 
             //do the lineup
 
-            chasis_aim_turn= 0.03*(tx); //This could be a PID and it would be better
+            chasis_aim_turn= 0.03*(Math.sqrt(tx)*3); //This could be a PID and it would be better
             double cats = chasis_aim_turn/Math.abs(chasis_aim_turn); //chasis aim turn sign
 
             leftFront.setPower(leftFront.getPower()+chasis_aim_turn);//+(zero_power_turn*cats));
