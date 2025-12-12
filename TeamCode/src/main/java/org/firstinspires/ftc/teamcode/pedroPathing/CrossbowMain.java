@@ -229,6 +229,7 @@ public class CrossbowMain extends OpMode {
         rightBack.setPower(0);
     }
 
+    double zero_power_turn = 0.025;
     public boolean launcher_code(boolean fire,boolean override_shot){
         rangefind();
         //the return value of the function: did the robot fire the artifact
@@ -298,11 +299,12 @@ public class CrossbowMain extends OpMode {
             //do the lineup
 
             chasis_aim_turn= 0.03*(tx+limelight_x_offset); //This could be a PID and it would be better
-
-            leftFront.setPower(leftFront.getPower()+chasis_aim_turn);
-            leftBack.setPower(leftFront.getPower()+chasis_aim_turn);
-            rightFront.setPower(leftFront.getPower()-chasis_aim_turn);
-            rightBack.setPower(leftFront.getPower()-chasis_aim_turn);
+            double cats = chasis_aim_turn/Math.abs(chasis_aim_turn); //chasis aim turn sign
+            
+            leftFront.setPower(leftFront.getPower()+chasis_aim_turn+(zero_power_turn*cats));
+            leftBack.setPower(leftFront.getPower()+chasis_aim_turn+(zero_power_turn*cats));
+            rightFront.setPower(leftFront.getPower()-chasis_aim_turn-(zero_power_turn*cats));
+            rightBack.setPower(leftFront.getPower()-chasis_aim_turn-(zero_power_turn*cats));
 
             //take the shot
             if ((speed_ready && limlight_ready && angular_velocity_acceptable) || override_shot){  // //the right bumper serves as an override

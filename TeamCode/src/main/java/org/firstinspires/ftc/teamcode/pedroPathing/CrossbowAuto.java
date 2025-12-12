@@ -32,6 +32,7 @@ public class CrossbowAuto extends CrossbowMain{
         super.start();
         follower.setPose(new Pose(101,-7.5*apm, apm*(Math.PI/2)));
         runtime.reset();
+        insanity_timer.reset();
     }
 
     private int fired_artifacts = 0;
@@ -60,11 +61,14 @@ public class CrossbowAuto extends CrossbowMain{
         limelight_code();
         intake_code();
         if (fire_artifact){
+            //this thing is for drive motors
             set_motor_power_zero();
             if (insanity_timer.seconds() > insanity_time){
                 insanity_timer.reset();
                 launch_override = true;
             }
+        } else {
+            insanity_timer.reset();
         }
         fired_an_artifact = launcher_code(fire_artifact,launch_override);
         if (fire_artifact) {
