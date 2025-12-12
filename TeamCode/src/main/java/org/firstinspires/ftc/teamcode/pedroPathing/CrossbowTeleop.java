@@ -101,16 +101,16 @@ public class CrossbowTeleop extends CrossbowMain {
         if (LLresult != null && LLresult.isValid()) {
             Pose3D botpose = LLresult.getBotpose_MT2();
             if (botpose != null) {
-                double x = botpose.getPosition().x*METERS_TO_INCHES;
-                double y = botpose.getPosition().y*METERS_TO_INCHES;
+                double x = botpose.getPosition().x;
+                double y = botpose.getPosition().y;
                 double yaw = botpose.getOrientation().getYaw();
                 double meters_to_inches = 39.3701;
                 telemetry.addData("MT2 Location\n", "x: " + x*meters_to_inches + "\ny: " + y*meters_to_inches + "\nyaw: "+yaw);
             }
         }
-//        if (gamepad1.yWasPressed()){
-//            limelight_set_pose();
-//        }
+        if (gamepad1.yWasPressed()){
+            limelight_set_pose();
+        }
 
         // Show the elapsed game time and update telemetry so we can see it
         telemetry.addData("Status", "Run Time: " + runtime.toString());

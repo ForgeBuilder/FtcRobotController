@@ -451,24 +451,25 @@ public class CrossbowMain extends OpMode {
     }
     public void limelight_set_pose(){
         if (LLresult != null && LLresult.isValid()) {
-            Pose3D limelight_botpose = LLresult.getBotpose();
+            Pose3D limelight_botpose = LLresult.getBotpose_MT2();
             if (limelight_botpose != null) {
-                double x = limelight_botpose.getPosition().x;
-                double y = limelight_botpose.getPosition().y;
+                double meters_to_inches = 39.3701;
+                double x = limelight_botpose.getPosition().x*meters_to_inches;
+                double y = limelight_botpose.getPosition().y*meters_to_inches;
                 YawPitchRollAngles limelight_orientation = limelight_botpose.getOrientation();
                 double yaw = limelight_orientation.getYaw(AngleUnit.RADIANS);
-                double meters_to_inches = 39.3701;
+
 //                telemetry.addData("MT1 Location", "(" + x*meters_to_inches + ", " + y*meters_to_inches + ")");
 //                telemetry.addData("MT1 Yaw", yaw);
 
                 //this will likley be very off becasue the limelight is backwards..
                 //the negitives and math.pi are to reverse the pose
-                Pose limelight_pose = new Pose(x*meters_to_inches,y*meters_to_inches,yaw);
-                follower.setPose(limelight_pose);
+                Pose pedro_limelight_pose = new Pose(x,y,yaw);
+                follower.setPose(pedro_limelight_pose);
 
-                x = limelight_pose.getX();//inches I think
-                y = limelight_pose.getY();
-                yaw = limelight_pose.getHeading(); //radians
+                x = pedro_limelight_pose.getX();//inches I think
+                y = pedro_limelight_pose.getY();
+                yaw = pedro_limelight_pose.getHeading(); //radians
 
                 telemetry.addData("limelight pose x,y,yaw","("+x+","+y+","+yaw+")");
             }
