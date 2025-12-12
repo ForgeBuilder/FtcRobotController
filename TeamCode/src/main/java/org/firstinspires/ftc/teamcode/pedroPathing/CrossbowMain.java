@@ -220,6 +220,8 @@ public class CrossbowMain extends OpMode {
     //how fast can the robot be rotating and still fire?
     double max_angular_velocity = 0.1;
 
+    double chasis_aim_turn = 0;
+
     public boolean launcher_code(boolean fire,boolean override_shot){
         rangefind();
         //the return value of the function: did the robot fire the artifact
@@ -286,6 +288,16 @@ public class CrossbowMain extends OpMode {
             trying_to_fire = true;
             spin_launcher = true;
 
+            //do the lineup
+
+            chasis_aim_turn+= 0.03*(tx+limelight_x_offset); //This could be a PID and it would be better
+
+            leftFront.setPower(leftFront.getPower()-chasis_aim_turn);
+            leftBack.setPower(leftFront.getPower()-chasis_aim_turn);
+            rightFront.setPower(leftFront.getPower()+chasis_aim_turn);
+            rightBack.setPower(leftFront.getPower()+chasis_aim_turn);
+
+            //take the shot
             if ((speed_ready && limlight_ready && angular_velocity_acceptable) || override_shot){  // //the right bumper serves as an override
                 launcher_freeze_movement = true;
                 if (timeSinceShot.seconds() > 1.5){
@@ -350,7 +362,7 @@ public class CrossbowMain extends OpMode {
 
     LLResult LLresult;
 
-    double tx = 0.0;
+    public double tx = 0.0;
     //how much to offset the shot
     public double limelight_x_offset = 0.0;
 
@@ -462,9 +474,6 @@ public class CrossbowMain extends OpMode {
         }
 
         //if we are trying to fire, line up with the goal.
-        if (fire) {
-            turn+= 0.03*tx; //This could be a PID and it would be better
-        }
 
         double slowdown_multiplier = 1 - (slowdown * .75);
 

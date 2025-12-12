@@ -259,7 +259,6 @@ public class CrossbowAuto extends CrossbowMain{
     public void backboard_scan_simple(){
         LLresult = limelight.getLatestResult();
         if (LLresult != null && LLresult.isValid()) {
-            double tx = LLresult.getTx(); // How far left or right the target is (degrees)
             double ty = LLresult.getTy(); // How far up or down the target is (degrees)
             double ta = LLresult.getTa(); // How big the target looks (0%-100% of the image)
 
