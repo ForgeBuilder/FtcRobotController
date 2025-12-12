@@ -372,7 +372,7 @@ public class CrossbowMain extends OpMode {
         }
     }
 
-    LLResult LLresult;
+    public LLResult LLresult;
 
     public double tx = 0.0;
     //how much to offset the shot
@@ -380,7 +380,10 @@ public class CrossbowMain extends OpMode {
 
     public double estimated_distance = 0;
     public void limelight_code(){
-        //limelight stuff
+        //limelight stuff - should always run
+
+        //This will probably need an offset
+        limelight.updateRobotOrientation(pinpoint.getHeading(AngleUnit.DEGREES));
         LLresult = limelight.getLatestResult();
         telemetry.addData("current pipeline",LLresult.getPipelineIndex());
         if ((LLresult != null) && LLresult.isValid()) {
@@ -447,7 +450,6 @@ public class CrossbowMain extends OpMode {
         }
     }
     public void limelight_set_pose(){
-        LLresult = limelight.getLatestResult();
         if (LLresult != null && LLresult.isValid()) {
             Pose3D limelight_botpose = LLresult.getBotpose();
             if (limelight_botpose != null) {

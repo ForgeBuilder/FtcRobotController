@@ -30,6 +30,8 @@ public class CrossbowTeleop extends CrossbowMain {
     private GamepadManager c_gamepad1 = PanelsGamepad.INSTANCE.getFirstManager();
     private GamepadManager c_gamepad2 = PanelsGamepad.INSTANCE.getFirstManager();
 
+    final double METERS_TO_INCHES = 39.3701;
+
     @Override
     public void loop(){
         super.loop();
@@ -96,15 +98,14 @@ public class CrossbowTeleop extends CrossbowMain {
         } else if (gamepad1.dpadDownWasPressed()) {//||gamepad1.dpadDownWasPressed()
             set_launcher_speed(get_launcher_speed()-40);
         }
-
-        LLresult = limelight.getLatestResult();
         if (LLresult != null && LLresult.isValid()) {
-            Pose3D botpose = LLresult.getBotpose();
+            Pose3D botpose = LLresult.getBotpose_MT2();
             if (botpose != null) {
-                double x = botpose.getPosition().x;
-                double y = botpose.getPosition().y;
+                double x = botpose.getPosition().x*METERS_TO_INCHES;
+                double y = botpose.getPosition().y*METERS_TO_INCHES;
+                double yaw = botpose.getOrientation().getYaw();
                 double meters_to_inches = 39.3701;
-                telemetry.addData("MT2 Location", "(" + x*meters_to_inches + ", " + y*meters_to_inches + ")");
+                telemetry.addData("MT2 Location\n", "x: " + x*meters_to_inches + "\ny: " + y*meters_to_inches + "\nyaw: "+yaw);
             }
         }
 //        if (gamepad1.yWasPressed()){
