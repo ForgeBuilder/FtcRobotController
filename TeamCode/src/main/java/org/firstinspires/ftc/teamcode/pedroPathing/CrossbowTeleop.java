@@ -66,7 +66,6 @@ public class CrossbowTeleop extends CrossbowMain {
 
 
         limelight_code();
-        launcher_code((gamepad2.right_trigger>0.1)||(gamepad1.right_trigger>0.1),gamepad1.right_bumper);
         intake_code();
         //handles saving position and making return path to saved position
         teleop_return_to_position();
@@ -89,6 +88,8 @@ public class CrossbowTeleop extends CrossbowMain {
                     ((gamepad1.right_trigger > 0.1)||(gamepad2.right_trigger > 0.1))
                     );
         }
+        //must go after drivetrain
+        launcher_code((gamepad2.right_trigger>0.1)||(gamepad1.right_trigger>0.1),gamepad1.right_bumper);
 
         if (gamepad1.dpadUpWasPressed()){
             set_launcher_speed(get_launcher_speed()+40);

@@ -222,6 +222,13 @@ public class CrossbowMain extends OpMode {
 
     double chasis_aim_turn = 0;
 
+    public void set_motor_power_zero() {
+        leftFront.setPower(0);
+        leftBack.setPower(0);
+        rightFront.setPower(0);
+        rightBack.setPower(0);
+    }
+
     public boolean launcher_code(boolean fire,boolean override_shot){
         rangefind();
         //the return value of the function: did the robot fire the artifact
