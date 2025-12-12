@@ -301,10 +301,10 @@ public class CrossbowMain extends OpMode {
             chasis_aim_turn= 0.03*(tx); //This could be a PID and it would be better
             double cats = chasis_aim_turn/Math.abs(chasis_aim_turn); //chasis aim turn sign
 
-            leftFront.setPower(leftFront.getPower());//+chasis_aim_turn+(zero_power_turn*cats));
-            leftBack.setPower(leftBack.getPower());//+chasis_aim_turn+(zero_power_turn*cats));
-            rightFront.setPower(rightFront.getPower());//-chasis_aim_turn-(zero_power_turn*cats));
-            rightBack.setPower(rightBack.getPower());//-chasis_aim_turn-(zero_power_turn*cats));
+            leftFront.setPower(leftFront.getPower()+chasis_aim_turn);//+(zero_power_turn*cats));
+            leftBack.setPower(leftBack.getPower()+chasis_aim_turn);//+(zero_power_turn*cats));
+            rightFront.setPower(rightFront.getPower()-chasis_aim_turn);//-(zero_power_turn*cats));
+            rightBack.setPower(rightBack.getPower()-chasis_aim_turn);//-(zero_power_turn*cats));
 
             //take the shot
             if ((speed_ready && limlight_ready && angular_velocity_acceptable) || override_shot){  // //the right bumper serves as an override
