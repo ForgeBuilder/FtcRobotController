@@ -300,7 +300,7 @@ public class CrossbowMain extends OpMode {
 
             //do the lineup
 
-            chasis_aim_turn= 0.03*(Math.sqrt(tx)*3); //This could be a PID and it would be better
+            chasis_aim_turn= 0.03*(tx); //This could be a PID and it would be better
             double cats = chasis_aim_turn/Math.abs(chasis_aim_turn); //chasis aim turn sign
 
             leftFront.setPower(leftFront.getPower()+chasis_aim_turn);//+(zero_power_turn*cats));
@@ -368,7 +368,7 @@ public class CrossbowMain extends OpMode {
             limelight_x_offset = 0;
         } else {
             launcherSpeed = 960;
-            limelight_x_offset = -5*apm;
+            limelight_x_offset = -2*apm;
         }
     }
 
