@@ -25,7 +25,7 @@ public class CrossbowAuto extends CrossbowMain{
 
     @Override public void init(){
         super.init();
-        set_launcher_speed(780);
+        set_launcher_speed(760);
     }
 
     @Override public void start(){
@@ -269,7 +269,7 @@ public class CrossbowAuto extends CrossbowMain{
             double ty = LLresult.getTy(); // How far up or down the target is (degrees)
             double ta = LLresult.getTa(); // How big the target looks (0%-100% of the image)
 
-            telemetry.addData("Target X", tx);
+            telemetry.addData("Target X", launch_angle_error);
 //            telemetry.addData("Target Y", ty);
 //            telemetry.addData("Target Area", ta);
         } else {

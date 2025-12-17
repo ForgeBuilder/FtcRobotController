@@ -28,6 +28,9 @@ import com.bylazar.telemetry.TelemetryManager;
 
 public class CrossbowMain extends OpMode {
 
+    public int near_shot_speed = 700;
+    public int far_shot_speed = 860;
+
     public boolean launcher_freeze_movement = false;
     // Declare OpMode members.
     public TelemetryManager panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
@@ -218,7 +221,7 @@ public class CrossbowMain extends OpMode {
     public static int max_current_error = 20; //there is no 30 so this is goofy but whatever
 
     //how fast can the robot be rotating and still fire?
-    double max_angular_velocity = 0.1;
+    double max_angular_velocity = 10;
 
     double chasis_aim_turn = 0;
 
@@ -279,11 +282,11 @@ public class CrossbowMain extends OpMode {
         double chasis_angular_velocity = pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES);
 
         boolean speed_ready = right_speed_met && left_speed_met;
-        boolean limlight_ready = (Math.abs(tx) < max_limelight_tx_error)&&LLresult.isValid();
+        boolean limelight_ready = (Math.abs(tx) < max_limelight_tx_error)&&LLresult.isValid();
         boolean angular_velocity_acceptable = Math.abs(chasis_angular_velocity) < max_angular_velocity;
 
         telemetry.addData("speed_ready",speed_ready);
-        if (limlight_ready) {
+        if (limelight_ready) {
             telemetry.addData("limelight_ready,tx",tx);
         } else if (!LLresult.isValid()){
             telemetry.addData("limelight_error_tag","No Tag");
@@ -293,6 +296,13 @@ public class CrossbowMain extends OpMode {
 
         panelsTelemetry.addData("chasis_angular_velocity",chasis_angular_velocity);
         telemetry.addData("chasis_angular_velocity",chasis_angular_velocity);
+
+        panelsTelemetry.addData("chasis_angular_velocity",chasis_angular_velocity);
+
+        panelsTelemetry.addData("speed_ready",speed_ready);
+        panelsTelemetry.addData("limelight_ready",limelight_ready);
+        panelsTelemetry.addData("angular_velocity_acceptable",angular_velocity_acceptable);
+        panelsTelemetry.addData("override_shot",override_shot);
 
         if (fire) {
             trying_to_fire = true;
@@ -309,7 +319,7 @@ public class CrossbowMain extends OpMode {
             rightBack.setPower(rightBack.getPower()-chasis_aim_turn);//-(zero_power_turn*cats));
 
             //take the shot
-            if ((speed_ready && limlight_ready && angular_velocity_acceptable) || override_shot){  // //the right bumper serves as an override
+            if ((speed_ready && limelight_ready && angular_velocity_acceptable) || override_shot){  // //the right bumper serves as an override
                 launcher_freeze_movement = true;
                 if (timeSinceShot.seconds() > 1.3){
                     kick = true;
@@ -363,18 +373,19 @@ public class CrossbowMain extends OpMode {
     }
 
     public void rangefind(){
-        if (estimated_distance < 100){
-            launcherSpeed = 780;
-            limelight_x_offset = 0;
-        } else {
-            launcherSpeed = 960;
-            limelight_x_offset = -2*apm;
-        }
+//        if (estimated_distance < 100){
+//            launcherSpeed = 760;
+//            limelight_x_offset = 0;
+//        } else {
+//            launcherSpeed = 960;
+//            limelight_x_offset = -2*apm;
+//        }
     }
 
     public LLResult LLresult;
 
-    public double tx = 0.0;
+    public double launch_angle_error = 0.0;
+    private double tx = 0.0;
     //how much to offset the shot
     public double limelight_x_offset = 0.0;
 
@@ -416,6 +427,7 @@ public class CrossbowMain extends OpMode {
         //do a \n for each line of telemetry you put above so wheather or not lime has a target it takes the same space.
             tx = 0;
         }
+        launch_angle_error = tx;
     }
     public void intake_code(){
     }
