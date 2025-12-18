@@ -25,7 +25,7 @@ public class CrossbowAuto extends CrossbowMain{
 
     @Override public void init(){
         super.init();
-        set_launcher_speed(760);
+        set_launcher_speed(near_shot_speed);
     }
 
     @Override public void start(){
@@ -88,7 +88,7 @@ public class CrossbowAuto extends CrossbowMain{
             //go to the launching position
             Pose current_pose = follower.getPose();
             Pose launch_pose;
-            launch_pose = new Pose(84,-44*apm,0.9*apm);
+            launch_pose = new Pose(84,-44*apm,1*apm);
 //            if (intake_round == 0){
 //                launch_pose = new Pose(100,-40*apm,1.2*apm);
 //            } else {
@@ -174,9 +174,9 @@ public class CrossbowAuto extends CrossbowMain{
         } else if (step == 7 && !follower.isBusy()){
             //slowly roll over to pickup balls
             spin_intake = true;
-            Pose next_pose = new Pose(50.5,-13*apm,apm*(Math.PI/-2.0));
+            Pose next_pose = new Pose(49.5,-10*apm,apm*(Math.PI/-2.0));
             Pose current_pose = follower.getPose();
-            Pose avoid_gate_pose = new Pose(51.5,-20*apm,apm*(Math.PI/-2.0));
+            Pose avoid_gate_pose = new Pose(49.5,-20*apm,apm*(Math.PI/-2.0));
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
                     .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
@@ -212,7 +212,7 @@ public class CrossbowAuto extends CrossbowMain{
         } else if (step == 10 && !follower.isBusy()){
             //slowly roll over to pickup balls
             spin_intake = true;
-            Pose next_pose = new Pose(28,-13*apm,apm*(Math.PI/-2.0));
+            Pose next_pose = new Pose(28,-10*apm,apm*(Math.PI/-2.0));
             Pose current_pose = follower.getPose();
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))

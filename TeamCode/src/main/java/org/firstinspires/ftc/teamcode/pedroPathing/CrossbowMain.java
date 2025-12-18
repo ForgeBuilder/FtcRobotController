@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+import com.bylazar.field.PanelsField;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -16,7 +17,10 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
@@ -28,8 +32,10 @@ import com.bylazar.telemetry.TelemetryManager;
 
 public class CrossbowMain extends OpMode {
 
-    public int near_shot_speed = 700;
-    public int far_shot_speed = 860;
+    public PanelsField panelsField = PanelsField.INSTANCE;
+
+    public static int near_shot_speed = 700;
+    public static int far_shot_speed = 860;
 
     public boolean launcher_freeze_movement = false;
     // Declare OpMode members.
@@ -161,6 +167,9 @@ public class CrossbowMain extends OpMode {
         } else {
             pose_tracker.update();
         }
+
+
+        //draw the pose.. don't know how.
     }
     /*
      * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
@@ -282,7 +291,7 @@ public class CrossbowMain extends OpMode {
         double chasis_angular_velocity = pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES);
 
         boolean speed_ready = right_speed_met && left_speed_met;
-        boolean limelight_ready = (Math.abs(tx) < max_limelight_tx_error)&&LLresult.isValid();
+        boolean limelight_ready = (Math.abs(launch_angle_error) < max_limelight_tx_error)&&LLresult.isValid();
         boolean angular_velocity_acceptable = Math.abs(chasis_angular_velocity) < max_angular_velocity;
 
         telemetry.addData("speed_ready",speed_ready);
@@ -373,13 +382,13 @@ public class CrossbowMain extends OpMode {
     }
 
     public void rangefind(){
-//        if (estimated_distance < 100){
-//            launcherSpeed = 760;
-//            limelight_x_offset = 0;
-//        } else {
-//            launcherSpeed = 960;
-//            limelight_x_offset = -2*apm;
-//        }
+        if (estimated_distance < 100){
+            launcherSpeed = near_shot_speed;
+            limelight_x_offset = 0;
+        } else {
+            launcherSpeed = far_shot_speed;
+            limelight_x_offset = -2*apm;
+        }
     }
 
     public LLResult LLresult;
@@ -422,6 +431,18 @@ public class CrossbowMain extends OpMode {
             telemetry.addData("estimated distance w/ angles",estimated_distance);
             // gives the x offset from the limelight
 //            telemetry.addData("Target X", tx);
+
+            //trig solution
+            Pose3D limelight_botpose = LLresult.getBotpose_MT2();
+            Position limelight_position = limelight_botpose.getPosition();
+            Position goal_position = new Position(DistanceUnit.INCH,65,65,0,0);
+
+            double dx = goal_position.x-limelight_position.x;
+            double dy = goal_position.y-limelight_position.y;
+
+            double desired_angle = Math.atan2(dx,dy);
+            panelsTelemetry.addData("desired_angle",desired_angle);
+            panelsTelemetry.addData("current_angle",pinpoint.getHeading(AngleUnit.RADIANS));
         } else {
             telemetry.addData("Limelight", "No Targets");
         //do a \n for each line of telemetry you put above so wheather or not lime has a target it takes the same space.
