@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
-import com.bylazar.field.PanelsField;
+//import com.bylazar.field.PanelsField;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
@@ -26,13 +26,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
-
+import com.bylazar.configurables.annotations.Configurable;
 
 //@TeleOp(name="DecodeTeleopMain")
 
+@Configurable
 public class CrossbowMain extends OpMode {
 
-    public PanelsField panelsField = PanelsField.INSTANCE;
+//    public PanelsField panelsField = PanelsField.INSTANCE;
 
     public static int near_shot_speed = 700;
     public static int far_shot_speed = 860;
@@ -136,6 +137,7 @@ public class CrossbowMain extends OpMode {
 
         //limelight camera
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.start();
     }
 
     /*
@@ -143,6 +145,7 @@ public class CrossbowMain extends OpMode {
      */
     @Override
     public void init_loop() {
+        limelight.start();
     }
 
     /*
@@ -382,7 +385,7 @@ public class CrossbowMain extends OpMode {
     }
 
     public void rangefind(){
-        if (estimated_distance < 100){
+        if (estimated_distance < 130){
             launcherSpeed = near_shot_speed;
             limelight_x_offset = 0;
         } else {
