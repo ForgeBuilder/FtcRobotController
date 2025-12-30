@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
+import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.gamepad.GamepadManager;
 import com.bylazar.gamepad.PanelsGamepad;
 import com.pedropathing.geometry.Pose;
@@ -11,6 +12,7 @@ import javax.lang.model.element.VariableElement;
 
 // Inside your OpMode
 
+@Configurable
 public class CrossbowTeleop extends CrossbowMain {
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -32,6 +34,8 @@ public class CrossbowTeleop extends CrossbowMain {
 
     final double METERS_TO_INCHES = 39.3701;
 
+    boolean fire_launcher = false;
+    public static boolean debug_fire = false;
     @Override
     public void loop(){
         super.loop();
@@ -91,7 +95,10 @@ public class CrossbowTeleop extends CrossbowMain {
                     );
         }
         //must go after drivetrain
-        launcher_code((gamepad2.right_trigger>0.1)||(gamepad1.right_trigger>0.1),gamepad1.right_bumper);
+
+        fire_launcher = (gamepad2.right_trigger>0.1)||(gamepad1.right_trigger>0.1)||debug_fire;
+
+        launcher_code(fire_launcher,gamepad1.right_bumper);
 
         if (gamepad1.dpadUpWasPressed()){
             set_launcher_speed(get_launcher_speed()+40);
