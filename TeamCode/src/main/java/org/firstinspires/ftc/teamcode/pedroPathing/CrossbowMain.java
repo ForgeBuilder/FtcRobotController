@@ -82,13 +82,13 @@ public class CrossbowMain extends OpMode {
 
     public void set_team(String team){
         if (team == "red"){
-            backboard_pipeline = 1;
+            backboard_pipeline = 3;
             backboard_id = 24;
             limelight.pipelineSwitch(backboard_pipeline);
             backboard_pose = new Pose(121.35, -7.37,0);
             apm = -1.0;
         } else if (team == "blue"){
-            backboard_pipeline = 0;
+            backboard_pipeline = 2;
             backboard_id = 20;
             limelight.pipelineSwitch(backboard_pipeline);
             backboard_pose = new Pose(121.35, 7.37,0);
@@ -243,10 +243,13 @@ public class CrossbowMain extends OpMode {
         rightFront.setPower(0);
         rightBack.setPower(0);
     }
-
     double zero_power_turn = 0.001;
 
     double max_limelight_tx_error = 1;
+
+    public static boolean debug_kicker = false;
+    public static boolean override_kick = false;
+
     public boolean launcher_code(boolean fire,boolean override_shot){
         rangefind();
         //the return value of the function: did the robot fire the artifact
@@ -360,6 +363,14 @@ public class CrossbowMain extends OpMode {
             launcher_freeze_movement = false;
         }
 
+        //debug
+        if (debug_kicker) {
+            kick = override_kick;
+            if (gamepad1.xWasPressed()){
+                override_kick = !override_kick;
+            }
+        }
+
         if (kick) {
             launchKickServo1.setPosition(KickerLaunchAngle);
             launchKickServo2.setPosition(1- KickerLaunchAngle);
@@ -380,7 +391,6 @@ public class CrossbowMain extends OpMode {
 
 //        telemetry.addData("launchmotor1 velocity", rightLaunchMotor.getVelocity());//ticks/s
 //        telemetry.addData("launchmotor2 velocity", leftLaunchMotor.getVelocity());//ticks/s
-
         return fired_this_tick;
     }
 
