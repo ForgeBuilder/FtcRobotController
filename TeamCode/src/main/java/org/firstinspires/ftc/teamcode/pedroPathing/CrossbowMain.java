@@ -35,7 +35,7 @@ public class CrossbowMain extends OpMode {
 
 //    public PanelsField panelsField = PanelsField.INSTANCE;
 
-    public static int near_shot_speed = 700;
+    public static int near_shot_speed = 800;
     public static int far_shot_speed = 860;
 
     public boolean launcher_freeze_movement = false;
@@ -246,7 +246,7 @@ public class CrossbowMain extends OpMode {
 
     double zero_power_turn = 0.001;
 
-    double max_limelight_tx_error = 1;
+    public static double max_limelight_tx_error = 1.5;
     public boolean launcher_code(boolean fire,boolean override_shot){
         rangefind();
         //the return value of the function: did the robot fire the artifact
