@@ -2,11 +2,9 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.gamepad.GamepadManager;
 import com.bylazar.gamepad.PanelsGamepad;
-import com.pedropathing.ftc.PoseConverter;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 import javax.lang.model.element.VariableElement;
@@ -40,7 +38,6 @@ public class CrossbowTeleop extends CrossbowMain {
     public static boolean debug_fire = false;
     @Override
     public void loop(){
-        limelight_code();
         super.loop();
 
 //        //this stuff doesn't really work. I wish lazlar was smart n gave his gamepad object the same functions.
@@ -73,6 +70,8 @@ public class CrossbowTeleop extends CrossbowMain {
 //        panelsTelemetry.debug("Right Stick X: ${g1.right_stick_x}");
 //        panelsTelemetry.debug("Right Stick Y: ${g1.right_stick_y}");
 
+
+        limelight_code();
         intake_code();
         //handles saving position and making return path to saved position
         teleop_return_to_position();
@@ -106,9 +105,17 @@ public class CrossbowTeleop extends CrossbowMain {
         } else if (gamepad1.dpadDownWasPressed()) {//||gamepad1.dpadDownWasPressed()
             set_launcher_speed(get_launcher_speed()-40);
         }
-
-        //reset the current pose using the limelight by getting limelightpose from main function
-        if (gamepad1.y){
+        if (LLresult != null && LLresult.isValid()) {
+            Pose3D botpose = LLresult.getBotpose_MT2();
+            if (botpose != null) {
+                double x = botpose.getPosition().x;
+                double y = botpose.getPosition().y;
+                double yaw = botpose.getOrientation().getYaw();
+                double meters_to_inches = 39.3701;
+                telemetry.addData("MT2 Location\n", "x: " + x*meters_to_inches + "\ny: " + y*meters_to_inches + "\nyaw: "+yaw);
+            }
+        }
+        if (gamepad1.yWasPressed()){
             limelight_set_pose();
         }
 
