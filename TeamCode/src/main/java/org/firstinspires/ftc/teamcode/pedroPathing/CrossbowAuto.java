@@ -54,21 +54,9 @@ public class CrossbowAuto extends CrossbowMain{
 
     private boolean launch_override = false;
 
-    @Override public void loop(){
-        super.loop();
-        limelight_code();
-        intake_code();
-        if (fire_artifact){
-            //this thing is for drive motors
-            set_motor_power_zero();
-        }
-        boolean launcher_override = (timeSinceShot.seconds()>insanity_time);
-        fired_an_artifact = launcher_code(fire_artifact,launcher_override);
-
-        Pose current_posee = follower.getPose();
-        telemetry.addData("Pedro Pose: ",current_posee.getX()+", "+current_posee.getY()+", "+current_posee.getHeading());
-
-        //if we are trying to launch (so on the launch line) go to the gate and get off it.
+    //functionality spesific to a particular auto
+    public void custom_auto_loop(){
+        //If auto is almost over and the bot might be on the line, go over to 
         if (runtime.seconds() > 28.0){
             Pose current_pose = follower.getPose();
             if ((step == 0)||(step == 1)||(step == 2)){
@@ -233,18 +221,26 @@ public class CrossbowAuto extends CrossbowMain{
         } else if (step == 100){
 
         }
+    }
 
+    @Override public void loop(){
 
-        //if the match is about to end, get off the launch line!!
+        //always true during auto
+        super.loop();
+        limelight_code();
+        intake_code();
+        if (fire_artifact){
+            //this thing is for drive motors
+            set_motor_power_zero();
+        }
+        boolean launcher_override = (timeSinceShot.seconds()>insanity_time);
+        fired_an_artifact = launcher_code(fire_artifact,launcher_override);
 
-        //check where we are and depending on which side of the launch line we are on, go to a different spot.
+        Pose current_posee = follower.getPose();
+        telemetry.addData("Pedro Pose: ",current_posee.getX()+", "+current_posee.getY()+", "+current_posee.getHeading());
 
-       //I HAVE NOT IMPLEMENTED THE ABOVE, DO IT WHEN YOU COME BACK PLEASE!
-
-//        if (runtime.seconds() > resume_time){
-//            resume_time = 200;
-//            follower.resumePathFollowing();
-//        }
+        //This call is code that is spesific to a particular auto. Should not contain any code neccecary for all autos.
+        custom_auto_loop();
 
         telemetry.addData("fired artifacts: ",fired_artifacts);
         telemetry.addData("step",step);
