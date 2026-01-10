@@ -8,67 +8,18 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 //This is the auto program. a few values will be able to be change to make it work for red/blue
 //or near/far. near/far might be completley different programs based on how much crossbowMain allready abstracts
 //but I always could inherit the class bwahaha
-public class CrossbowAutoFar extends CrossbowMain{
-    private ElapsedTime runtime = new ElapsedTime();
-
-    //auto position multiplier. flips the auto for red and blue. //Should only be 1 or -1
-    //It's a double so the rotation plays nice.
-    @Override
-    public void set_team(String team) {
-        super.set_team(team);
-        if (team == "red"){
-            apm = -1.0;
-        } else if (team == "blue"){
-            apm = 1.0;
-        }
-    }
-
-    @Override public void init(){
-        super.init();
-        set_launcher_speed(near_shot_speed);
-    }
+public class CrossbowAutoFar extends CrossbowAuto{
+//    @Override public void init(){
+//        super.init();
+//        set_launcher_speed(near_shot_speed);
+//    }
 
     @Override public void start(){
         super.start();
         follower.setPose(new Pose(0,-52*apm, Math.toRadians(0)));
         runtime.reset();
     }
-
-    private int fired_artifacts = 0;
-    private boolean fired_an_artifact = false;
-    private boolean fire_artifact = false;
-
-
-    private int step = 0;
-
-    private int intake_round = 0;
-
-    double drivetrain_pickup_speed = 0.6;
-
-    double resume_time = 200;
-
-    private ElapsedTime steptimer = new ElapsedTime();
-
-    //how long until the system goes insane and takes the shot even if it's not ready
-    private double insanity_time = 3.0;
-
-    private boolean launch_override = false;
-
-    @Override public void loop(){
-        super.loop();
-        limelight_code();
-        intake_code();
-        if (fire_artifact){
-            //this thing is for drive motors
-            set_motor_power_zero();
-        }
-        boolean launcher_override = (timeSinceShot.seconds()>insanity_time);
-        fired_an_artifact = launcher_code(fire_artifact,launcher_override);
-
-        Pose current_posee = follower.getPose();
-        telemetry.addData("Pedro Pose: ",current_posee.getX()+", "+current_posee.getY()+", "+current_posee.getHeading());
-
-        //if we are trying to launch (so on the launch line) go to the gate and get off it.
+    @Override public void custom_auto_loop(){
         if (runtime.seconds() > 28.0){
             Pose current_pose = follower.getPose();
             if ((step == 0)||(step == 1)||(step == 2)){
@@ -225,55 +176,6 @@ public class CrossbowAutoFar extends CrossbowMain{
             step = 0;
         } else if (step == 100){
 
-        }
-
-
-        //if the match is about to end, get off the launch line!!
-
-        //check where we are and depending on which side of the launch line we are on, go to a different spot.
-
-        //I HAVE NOT IMPLEMENTED THE ABOVE, DO IT WHEN YOU COME BACK PLEASE!
-
-//        if (runtime.seconds() > resume_time){
-//            resume_time = 200;
-//            follower.resumePathFollowing();
-//        }
-
-        telemetry.addData("fired artifacts: ",fired_artifacts);
-        telemetry.addData("step",step);
-        telemetry.update();
-        panelsTelemetry.update(telemetry);
-    }
-    private boolean spin_intake = true;
-
-    public void set_limelight_enabled (boolean enabled){
-        if (enabled){
-            limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
-            limelight.start(); // This tells Limelight to start looking!
-        } else {
-            limelight.stop(); // This tells Limelight to stop looking.
-        }
-    }
-
-    //doesnt return anything yet, not used yet.
-    public void backboard_scan_simple(){
-        LLresult = limelight.getLatestResult();
-        if (LLresult != null && LLresult.isValid()) {
-            double ty = LLresult.getTy(); // How far up or down the target is (degrees)
-            double ta = LLresult.getTa(); // How big the target looks (0%-100% of the image)
-
-            telemetry.addData("Target X", launch_angle_error);
-//            telemetry.addData("Target Y", ty);
-//            telemetry.addData("Target Area", ta);
-        } else {
-            telemetry.addData("Limelight", "No Targets");
-        }
-    }
-    @Override public void intake_code(){
-        if (spin_intake&&(!kick)){
-            set_intake_speed(2000);
-        } else {
-            set_intake_speed(0);
         }
     }
 }

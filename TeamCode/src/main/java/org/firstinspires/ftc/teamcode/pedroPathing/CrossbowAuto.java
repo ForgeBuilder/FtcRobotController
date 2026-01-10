@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 //or near/far. near/far might be completley different programs based on how much crossbowMain allready abstracts
 //but I allways could inherit the class bwahaha
 public class CrossbowAuto extends CrossbowMain{
-    private ElapsedTime runtime = new ElapsedTime();
+    protected ElapsedTime runtime = new ElapsedTime();
 
     //auto position multiplier. flips the auto for red and blue. //Should only be 1 or -1
     //It's a double so the rotation plays nice.
@@ -34,14 +34,14 @@ public class CrossbowAuto extends CrossbowMain{
         runtime.reset();
     }
 
-    private int fired_artifacts = 0;
+    protected int fired_artifacts = 0;
     private boolean fired_an_artifact = false;
-    private boolean fire_artifact = false;
+    protected boolean fire_artifact = false;
     
 
-    private int step = 0;
+    protected int step = 0;
 
-    private int intake_round = 0;
+    protected int intake_round = 0;
 
     double drivetrain_pickup_speed = 0.6;
 
@@ -56,7 +56,7 @@ public class CrossbowAuto extends CrossbowMain{
 
     //functionality spesific to a particular auto
     public void custom_auto_loop(){
-        //If auto is almost over and the bot might be on the line, go over to 
+        //If auto is almost over and the bot might be on the line, go over to
         if (runtime.seconds() > 28.0){
             Pose current_pose = follower.getPose();
             if ((step == 0)||(step == 1)||(step == 2)){
