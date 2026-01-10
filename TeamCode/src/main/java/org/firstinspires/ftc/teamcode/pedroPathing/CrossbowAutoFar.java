@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 //This is the auto program. a few values will be able to be change to make it work for red/blue
 //or near/far. near/far might be completley different programs based on how much crossbowMain allready abstracts
 //but I allways could inherit the class bwahaha
-public class CrossbowAuto extends CrossbowMain{
+public class CrossbowAutoFar extends CrossbowMain{
     private ElapsedTime runtime = new ElapsedTime();
 
     //auto position multiplier. flips the auto for red and blue. //Should only be 1 or -1
@@ -25,19 +25,19 @@ public class CrossbowAuto extends CrossbowMain{
 
     @Override public void init(){
         super.init();
-        set_launcher_speed(near_shot_speed);
+        set_launcher_speed(far_shot_speed);
     }
 
     @Override public void start(){
         super.start();
-        follower.setPose(new Pose(101,-7.5*apm, apm*(Math.PI/2)));
+        follower.setPose(new Pose(0,-52*apm, Math.toRadians(0)));
         runtime.reset();
     }
 
     private int fired_artifacts = 0;
     private boolean fired_an_artifact = false;
     private boolean fire_artifact = false;
-    
+
 
     private int step = 0;
 
@@ -88,13 +88,7 @@ public class CrossbowAuto extends CrossbowMain{
             //go to the launching position
             Pose current_pose = follower.getPose();
             Pose launch_pose;
-            launch_pose = new Pose(84,-44*apm,1*apm);
-//            if (intake_round == 0){
-//                launch_pose = new Pose(100,-40*apm,1.2*apm);
-//            } else {
-//                //barely touch the line
-//                launch_pose = new Pose(72,-40*apm,0.65*apm);
-//            }
+            launch_pose = new Pose (4,-48*apm,(0.41)*apm);
 
             PathChain firstpath = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, launch_pose))
@@ -120,11 +114,11 @@ public class CrossbowAuto extends CrossbowMain{
                         spin_intake = false;
                         steptimer.reset();
                         if (intake_round == 0){
-                            step = 3;
+                            step = 9;
                         } else if (intake_round == 1){
                             step = 6;
                         } else if (intake_round == 2) {
-                            step = 9;
+                            step = 3;
                         }
                     }
                 }
@@ -157,7 +151,7 @@ public class CrossbowAuto extends CrossbowMain{
 //            spin_intake = false;
             follower.setMaxPower(1);
             fired_artifacts = 0;
-            intake_round = 1;
+            intake_round += 1;
             step = 0;
         } else if (step == 6 && steptimer.seconds() > 0.5){
             //go to intake bar 2
@@ -195,7 +189,7 @@ public class CrossbowAuto extends CrossbowMain{
 //            spin_intake = false;
             follower.setMaxPower(1);
             fired_artifacts = 0;
-            intake_round = 2;
+            intake_round += 1;
             step = 0;
         } else if (step == 9 && steptimer.seconds() > 0.5){
             //go to intake bar 3
@@ -227,9 +221,8 @@ public class CrossbowAuto extends CrossbowMain{
 //            spin_intake = false;
             follower.setMaxPower(1);
             fired_artifacts = 0;
-            intake_round = 2;
-            //don't take the last shot we'll be on the bar.
-//            step = 0;
+            intake_round += 1;
+            step = 0;
         } else if (step == 100){
 
         }
@@ -239,7 +232,7 @@ public class CrossbowAuto extends CrossbowMain{
 
         //check where we are and depending on which side of the launch line we are on, go to a different spot.
 
-       //I HAVE NOT IMPLEMENTED THE ABOVE, DO IT WHEN YOU COME BACK PLEASE!
+        //I HAVE NOT IMPLEMENTED THE ABOVE, DO IT WHEN YOU COME BACK PLEASE!
 
 //        if (runtime.seconds() > resume_time){
 //            resume_time = 200;

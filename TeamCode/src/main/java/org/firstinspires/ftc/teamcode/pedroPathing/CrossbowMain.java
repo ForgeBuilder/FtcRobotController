@@ -36,7 +36,7 @@ public class CrossbowMain extends OpMode {
 //    public PanelsField panelsField = PanelsField.INSTANCE;
 
     public static int near_shot_speed = 800;
-    public static int far_shot_speed = 860;
+    public static int far_shot_speed = 940;
 
     public boolean launcher_freeze_movement = false;
     // Declare OpMode members.
@@ -197,7 +197,7 @@ public class CrossbowMain extends OpMode {
     public static double KickerLaunchAngle = 0.5;
     public static double KickerIdleAngle = 0;
 
-    private int launcherSpeed = 780;
+    private int launcherSpeed = 800;
     public int get_launcher_speed(){
         return launcherSpeed;
     }
@@ -322,7 +322,7 @@ public class CrossbowMain extends OpMode {
 
             //do the lineup
 
-            chasis_aim_turn= 0.05*(tx); //This could be a PID and it would be better
+            chasis_aim_turn= 0.03*(tx); //This could be a PID and it would be better
             double cats = chasis_aim_turn/Math.abs(chasis_aim_turn); //chasis aim turn sign
 
             leftFront.setPower(leftFront.getPower()+chasis_aim_turn);//+(zero_power_turn*cats));
@@ -385,12 +385,13 @@ public class CrossbowMain extends OpMode {
     }
 
     public void rangefind(){
-        if (estimated_distance < 130){
+        if (estimated_distance < 100){
             launcherSpeed = near_shot_speed;
             limelight_x_offset = 0;
         } else {
             launcherSpeed = far_shot_speed;
-            limelight_x_offset = -2*apm;
+            limelight_x_offset = -3*apm;
+            //the sign on the offset is inverse to the radian rotation of the compass
         }
     }
 
