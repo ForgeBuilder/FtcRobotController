@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 //This is the auto program. a few values will be able to be change to make it work for red/blue
 //or near/far. near/far might be completley different programs based on how much crossbowMain allready abstracts
-//but I allways could inherit the class bwahaha
+//but I always could inherit the class bwahaha
 public class CrossbowAutoFar extends CrossbowMain{
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -25,7 +25,7 @@ public class CrossbowAutoFar extends CrossbowMain{
 
     @Override public void init(){
         super.init();
-        set_launcher_speed(far_shot_speed);
+        set_launcher_speed(near_shot_speed);
     }
 
     @Override public void start(){
@@ -88,7 +88,7 @@ public class CrossbowAutoFar extends CrossbowMain{
             //go to the launching position
             Pose current_pose = follower.getPose();
             Pose launch_pose;
-            launch_pose = new Pose (4,-48*apm,(0.41)*apm);
+            launch_pose = new Pose(84,-44*apm,1*apm);
 
             PathChain firstpath = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, launch_pose))
@@ -114,11 +114,11 @@ public class CrossbowAutoFar extends CrossbowMain{
                         spin_intake = false;
                         steptimer.reset();
                         if (intake_round == 0){
-                            step = 9;
+                            step = 3;
                         } else if (intake_round == 1){
                             step = 6;
                         } else if (intake_round == 2) {
-                            step = 3;
+                            step = 9;
                         }
                     }
                 }
