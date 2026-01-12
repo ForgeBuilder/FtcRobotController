@@ -35,7 +35,7 @@ public class CrossbowAuto extends CrossbowMain{
     }
 
     protected int fired_artifacts = 0;
-    private boolean fired_an_artifact = false;
+    protected boolean fired_an_artifact = false;
     protected boolean fire_artifact = false;
     
 
@@ -47,7 +47,7 @@ public class CrossbowAuto extends CrossbowMain{
 
     double resume_time = 200;
 
-    private ElapsedTime steptimer = new ElapsedTime();
+    protected ElapsedTime steptimer = new ElapsedTime();
 
     //how long until the system goes insane and takes the shot even if it's not ready
     private double insanity_time = 3.0;
@@ -247,7 +247,7 @@ public class CrossbowAuto extends CrossbowMain{
         telemetry.update();
         panelsTelemetry.update(telemetry);
     }
-    private boolean spin_intake = true;
+    protected boolean spin_intake = true;
 
     public void set_limelight_enabled (boolean enabled){
         if (enabled){
