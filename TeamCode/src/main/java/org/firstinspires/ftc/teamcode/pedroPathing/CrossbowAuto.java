@@ -145,7 +145,7 @@ public class CrossbowAuto extends CrossbowMain{
 //            spin_intake = false;
             follower.setMaxPower(1);
             fired_artifacts = 0;
-            intake_round = 1;
+            intake_round += 1;
             step = 0;
         } else if (step == 6 && steptimer.seconds() > 0.5){
             //go to intake bar 2
@@ -183,7 +183,7 @@ public class CrossbowAuto extends CrossbowMain{
 //            spin_intake = false;
             follower.setMaxPower(1);
             fired_artifacts = 0;
-            intake_round = 2;
+            intake_round += 1;
             step = 0;
         } else if (step == 9 && steptimer.seconds() > 0.5){
             //go to intake bar 3
@@ -215,7 +215,7 @@ public class CrossbowAuto extends CrossbowMain{
 //            spin_intake = false;
             follower.setMaxPower(1);
             fired_artifacts = 0;
-            intake_round = 2;
+            intake_round += 1;
             //don't take the last shot we'll be on the bar.
 //            step = 0;
         } else if (step == 100){
