@@ -350,21 +350,13 @@ public class CrossbowMain extends OpMode {
 
             if (open_door){  // //the right bumper serves as an override
                     launcher_freeze_movement = true;
-                    if (timeSinceShot.seconds() > 1.3) {
-                        kick = true;
-                        timeSinceShot.reset();
-                        //debug information - motor 2 is left, motor 1 is right
-                        //
-                        left_speed_at_kick = left_current_speed;
-                        right_speed_at_kick = right_current_speed;
-                        fired_this_tick = true;
-                    }
             } else {
                 door_open_timer.reset();
             }
         } else {
             spin_launcher = false;
             trying_to_fire = false;
+            open_door = false;
             telemetry.addData("speed_ready"," -N/A-");
             telemetry.addData("limelight_ready"," -N/A-");
             telemetry.addData("bias",limelight_x_offset);
