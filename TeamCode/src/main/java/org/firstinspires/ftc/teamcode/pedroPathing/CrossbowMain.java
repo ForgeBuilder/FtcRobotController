@@ -250,6 +250,8 @@ public class CrossbowMain extends OpMode {
     public static boolean debug_kicker = false;
     public static boolean override_kick = false;
 
+    protected boolean ready_to_fire = false;
+
     public boolean launcher_code(boolean fire,boolean override_shot){
         rangefind();
         //the return value of the function: did the robot fire the artifact
@@ -300,6 +302,8 @@ public class CrossbowMain extends OpMode {
         boolean limelight_ready = (Math.abs(launch_angle_error) < max_limelight_tx_error)&&LLresult.isValid();
         boolean angular_velocity_acceptable = Math.abs(chasis_angular_velocity) < max_angular_velocity;
 
+
+
         telemetry.addData("speed_ready",speed_ready);
         if (limelight_ready) {
             telemetry.addData("limelight_ready,tx",tx);
@@ -334,7 +338,10 @@ public class CrossbowMain extends OpMode {
             rightBack.setPower(rightBack.getPower()-chasis_aim_turn);//-(zero_power_turn*cats));
 
             //take the shot
-            if ((speed_ready && limelight_ready && angular_velocity_acceptable) || override_shot){  // //the right bumper serves as an override
+
+            ready_to_fire = ((speed_ready && limelight_ready && angular_velocity_acceptable) || override_shot);
+
+            if (ready_to_fire){  // //the right bumper serves as an override
                 launcher_freeze_movement = true;
                 if (timeSinceShot.seconds() > 1.3){
                     kick = true;
