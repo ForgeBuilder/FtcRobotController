@@ -34,7 +34,7 @@ public class CrossbowMain extends OpMode {
 
 //    public PanelsField panelsField = PanelsField.INSTANCE;
 
-    public static double the_time_it_takes_to_open_the_door_in_seconds = 0.4;
+    public static double the_time_it_takes_to_open_the_door_in_seconds = 0.6;
 
     public static int near_shot_speed = 700;
     public static int far_shot_speed = 860;
@@ -391,8 +391,10 @@ public class CrossbowMain extends OpMode {
             launchKickServo1.setPosition(KickerLaunchAngle);
             launchKickServo2.setPosition(1- KickerLaunchAngle);
         } else {
-            launchKickServo1.setPosition(KickerIdleAngle);
-            launchKickServo2.setPosition(1-KickerIdleAngle);
+            if(!fire) {
+                launchKickServo1.setPosition(KickerIdleAngle);
+                launchKickServo2.setPosition(1 - KickerIdleAngle);
+            }
         }
 
         if (spin_launcher){
