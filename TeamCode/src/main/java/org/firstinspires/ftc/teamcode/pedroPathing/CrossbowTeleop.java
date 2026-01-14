@@ -7,8 +7,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
-import javax.lang.model.element.VariableElement;
-
 
 // Inside your OpMode
 
@@ -137,7 +135,7 @@ public class CrossbowTeleop extends CrossbowMain {
             spin_intake = !spin_intake;
         }
         //it's a 312 so 537.7 PPR at the Output Shaft. 5.2 RPS (max) would be 2796.04 or about 2800.
-        if ((spin_intake||ready_to_fire)){
+        if ((spin_intake&&(!open_door))||(open_door && (door_open_timer.seconds() > the_time_it_takes_to_open_the_door_in_seconds))){
             set_intake_speed(2000);
         } else if(gamepad2.aWasReleased()||gamepad1.leftBumperWasReleased()) {
             intake_reverse_timer.reset();

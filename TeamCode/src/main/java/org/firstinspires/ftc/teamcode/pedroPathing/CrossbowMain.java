@@ -18,7 +18,6 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
@@ -34,6 +33,8 @@ import com.bylazar.configurables.annotations.Configurable;
 public class CrossbowMain extends OpMode {
 
 //    public PanelsField panelsField = PanelsField.INSTANCE;
+
+    public static double the_time_it_takes_to_open_the_door_in_seconds = 0.4;
 
     public static int near_shot_speed = 700;
     public static int far_shot_speed = 860;
@@ -250,7 +251,9 @@ public class CrossbowMain extends OpMode {
     public static boolean debug_kicker = false;
     public static boolean override_kick = false;
 
-    protected boolean ready_to_fire = false;
+    protected boolean open_door = false;
+
+    protected ElapsedTime door_open_timer = new ElapsedTime();
 
     public boolean launcher_code(boolean fire,boolean override_shot){
         rangefind();
@@ -298,7 +301,7 @@ public class CrossbowMain extends OpMode {
 
         double chasis_angular_velocity = pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES);
 
-        boolean speed_ready = right_speed_met && left_speed_met;
+        boolean speed_ready = right_speed_met || left_speed_met;
         boolean limelight_ready = (Math.abs(launch_angle_error) < max_limelight_tx_error)&&LLresult.isValid();
         boolean angular_velocity_acceptable = Math.abs(chasis_angular_velocity) < max_angular_velocity;
 
@@ -339,19 +342,25 @@ public class CrossbowMain extends OpMode {
 
             //take the shot
 
-            ready_to_fire = ((speed_ready && limelight_ready && angular_velocity_acceptable) || override_shot);
 
-            if (ready_to_fire){  // //the right bumper serves as an override
-                launcher_freeze_movement = true;
-                if (timeSinceShot.seconds() > 1.3){
-                    kick = true;
-                    timeSinceShot.reset();
-                    //debug information - motor 2 is left, motor 1 is right
-                    //
-                    left_speed_at_kick = left_current_speed;
-                    right_speed_at_kick = right_current_speed;
-                    fired_this_tick = true;
-                }
+            //limelight not installed
+
+            //&& limelight_ready
+            open_door = ((speed_ready  && angular_velocity_acceptable) || override_shot);
+
+            if (open_door){  // //the right bumper serves as an override
+                    launcher_freeze_movement = true;
+                    if (timeSinceShot.seconds() > 1.3) {
+                        kick = true;
+                        timeSinceShot.reset();
+                        //debug information - motor 2 is left, motor 1 is right
+                        //
+                        left_speed_at_kick = left_current_speed;
+                        right_speed_at_kick = right_current_speed;
+                        fired_this_tick = true;
+                    }
+            } else {
+                door_open_timer.reset();
             }
         } else {
             spin_launcher = false;
@@ -378,7 +387,7 @@ public class CrossbowMain extends OpMode {
             }
         }
 
-        if (kick) {
+        if (open_door) {
             launchKickServo1.setPosition(KickerLaunchAngle);
             launchKickServo2.setPosition(1- KickerLaunchAngle);
         } else {
