@@ -36,8 +36,8 @@ public class CrossbowMain extends OpMode {
 
     public static double the_time_it_takes_to_open_the_door_in_seconds = 0.6;
 
-    public static int near_shot_speed = 700;
-    public static int far_shot_speed = 860;
+    public static int near_shot_speed = 1200;
+    public static int far_shot_speed = 1400;
 
     public boolean launcher_freeze_movement = false;
     // Declare OpMode members.
@@ -255,10 +255,9 @@ public class CrossbowMain extends OpMode {
 
     protected ElapsedTime door_open_timer = new ElapsedTime();
 
-    public boolean launcher_code(boolean fire,boolean override_shot){
+    public void launcher_code(boolean fire,boolean override_shot){
         rangefind();
         //the return value of the function: did the robot fire the artifact
-        boolean fired_this_tick = false;
         telemetry.addData("Launcher Target Velocity:", "\n"+launcherSpeed); // \n makes the text go down a line
 
         double right_current_speed = rightLaunchMotor.getVelocity();
@@ -332,7 +331,9 @@ public class CrossbowMain extends OpMode {
 
             //do the lineup
 
-            chasis_aim_turn= 0.05*(tx); //This could be a PID and it would be better
+            double limelight_chasis_rotation_multiplier = 0.02;
+
+            chasis_aim_turn= limelight_chasis_rotation_multiplier*(tx); //This could be a PID and it would be better
             double cats = chasis_aim_turn/Math.abs(chasis_aim_turn); //chasis aim turn sign
 
             leftFront.setPower(leftFront.getPower()+chasis_aim_turn);//+(zero_power_turn*cats));
@@ -340,13 +341,11 @@ public class CrossbowMain extends OpMode {
             rightFront.setPower(rightFront.getPower()-chasis_aim_turn);//-(zero_power_turn*cats));
             rightBack.setPower(rightBack.getPower()-chasis_aim_turn);//-(zero_power_turn*cats));
 
-            //take the shot
+            //take the shot - once you've started, don't stop!
+            boolean open_door_conditions = ((speed_ready && ((angular_velocity_acceptable && limelight_ready) || override_shot)));
+            boolean keep_door_open = open_door && fire;
 
-
-            //limelight not installed
-
-            //&& limelight_ready
-            open_door = ((speed_ready  && angular_velocity_acceptable) || override_shot);
+            open_door = open_door_conditions || keep_door_open;
 
             if (open_door){  // //the right bumper serves as an override
                     launcher_freeze_movement = true;
@@ -363,13 +362,6 @@ public class CrossbowMain extends OpMode {
         }
         telemetry.addData("left_speed_at_kick",left_speed_at_kick);
         telemetry.addData("right_speed_at_kick",right_speed_at_kick);
-
-
-        double kicker_extension_time = 0.3;
-        if (timeSinceShot.seconds() > kicker_extension_time) {
-            kick = false;
-            launcher_freeze_movement = false;
-        }
 
         //debug
         if (debug_kicker) {
@@ -401,7 +393,6 @@ public class CrossbowMain extends OpMode {
 
 //        telemetry.addData("launchmotor1 velocity", rightLaunchMotor.getVelocity());//ticks/s
 //        telemetry.addData("launchmotor2 velocity", leftLaunchMotor.getVelocity());//ticks/s
-        return fired_this_tick;
     }
 
     public void rangefind(){
@@ -546,18 +537,20 @@ public class CrossbowMain extends OpMode {
 
         //if we are trying to fire, line up with the goal.
 
+
+        //slowdown should probably be in teleop..
         double slowdown_multiplier = 1 - (slowdown * .75);
 
 
         //had to make it negitive for now to account for weird pedro reversal stuff. figure this out more later.
-        forward = -forward * slowdown_multiplier;
-        strafe = -strafe * slowdown_multiplier;
-        turn = -turn * slowdown_multiplier;
+        forward = -forward ;
+        strafe = -strafe;
+        turn = -turn;
 
-        leftFront.setPower(forward - strafe - turn);
-        leftBack.setPower(forward + strafe - turn);
-        rightFront.setPower(forward + strafe + turn);
-        rightBack.setPower(forward - strafe + turn);
+        leftFront.setPower(forward - strafe - turn*slowdown_multiplier);
+        leftBack.setPower(forward + strafe - turn*slowdown_multiplier);
+        rightFront.setPower(forward + strafe + turn*slowdown_multiplier);
+        rightBack.setPower(forward - strafe + turn*slowdown_multiplier);
 
         if (launcher_freeze_movement){
             leftFront.setPower(0);

@@ -63,7 +63,7 @@ public class CrossbowAuto extends CrossbowMain{
             set_motor_power_zero();
         }
         boolean launcher_override = (timeSinceShot.seconds()>insanity_time);
-        fired_an_artifact = launcher_code(fire_artifact,launcher_override);
+        launcher_code(fire_artifact,launcher_override);
 
         Pose current_posee = follower.getPose();
         telemetry.addData("Pedro Pose: ",current_posee.getX()+", "+current_posee.getY()+", "+current_posee.getHeading());
