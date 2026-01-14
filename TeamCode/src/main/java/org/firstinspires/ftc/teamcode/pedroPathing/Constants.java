@@ -22,8 +22,8 @@ public class Constants {
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
     public static PinpointConstants localizerConstants = new PinpointConstants()
             //originals were 120 and 40. they might be negitive with it reversed now.
-            .forwardPodY(-146.5) //these may or may not be accurate. I did them very roughly counting hold distance as 24 mm.
-            .strafePodX(0)
+            .forwardPodY(-120) //these may or may not be accurate. I did them very roughly counting hold distance as 24 mm.
+            .strafePodX(-40)
             .distanceUnit(DistanceUnit.MM)
             .hardwareMapName("pinpoint")
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
