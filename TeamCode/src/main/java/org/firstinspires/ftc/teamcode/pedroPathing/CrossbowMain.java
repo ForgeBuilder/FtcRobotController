@@ -514,8 +514,8 @@ public class CrossbowMain extends OpMode {
                 Pose pedro_limelight_pose = new Pose(x,y,yaw);
                 follower.setPose(pedro_limelight_pose);
 
-                x = pedro_limelight_pose.getX();//inches I think
-                y = pedro_limelight_pose.getY();
+                x = pedro_limelight_pose.getX() - 72;//inches I think
+                y = pedro_limelight_pose.getY() + 72; // hopefully this should provide the translated coords
                 yaw = pedro_limelight_pose.getHeading(); //radians
 
                 telemetry.addData("limelight pose x,y,yaw","("+x+","+y+","+yaw+")");
