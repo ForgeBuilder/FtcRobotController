@@ -554,14 +554,14 @@ public class CrossbowMain extends OpMode {
 
 
         //had to make it negitive for now to account for weird pedro reversal stuff. figure this out more later.
-        forward = -forward ;
-        strafe = -strafe;
-        turn = -turn;
+        forward = -forward*slowdown_multiplier;
+        strafe = -strafe*slowdown_multiplier;
+        turn = -turn*slowdown_multiplier;
 
-        leftFront.setPower(forward - strafe - turn*slowdown_multiplier);
-        leftBack.setPower(forward + strafe - turn*slowdown_multiplier);
-        rightFront.setPower(forward + strafe + turn*slowdown_multiplier);
-        rightBack.setPower(forward - strafe + turn*slowdown_multiplier);
+        leftFront.setPower(forward - strafe - turn);
+        leftBack.setPower(forward + strafe - turn);
+        rightFront.setPower(forward + strafe + turn);
+        rightBack.setPower(forward - strafe + turn);
 
         if (launcher_freeze_movement){
             leftFront.setPower(0);
