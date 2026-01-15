@@ -54,6 +54,9 @@ public class CrossbowAuto extends CrossbowMain{
 
     private boolean launch_override = false;
 
+    private ElapsedTime shots_timer = new ElapsedTime(); //once it starts shooting how long till stop firing because all shot
+    private double shots_timer_length = 3;
+
     @Override public void loop(){
         super.loop();
         limelight_code();
@@ -109,26 +112,23 @@ public class CrossbowAuto extends CrossbowMain{
             fire_artifact = true;
             spin_intake = true;
             set_limelight_enabled(true);
+            shots_timer.reset();
         } else if (step == 2) {
+            if (open_door) {
+                shots_timer.reset();
+            }
 
-//            limelight_set_pose();
-
-            if (fired_artifacts <= 3){
-                if (fired_an_artifact){
-                    fired_artifacts += 1;
-                    if (fired_artifacts >= 3){
-                        spin_intake = false;
-                        steptimer.reset();
-                        if (intake_round == 0){
-                            step = 3;
-                        } else if (intake_round == 1){
-                            step = 6;
-                        } else if (intake_round == 2) {
-                            step = 9;
-                        }
-                    }
+            if (open_door && shots_timer.seconds() > shots_timer_length){
+                steptimer.reset();
+                if (intake_round == 0){
+                    step = 3;
+                } else if (intake_round == 1){
+                    step = 6;
+                } else if (intake_round == 2) {
+                    step = 9;
                 }
             }
+
         } else if (step == 3 && steptimer.seconds() > 0.5) {
             //go to intake bar 1
             fire_artifact = false;

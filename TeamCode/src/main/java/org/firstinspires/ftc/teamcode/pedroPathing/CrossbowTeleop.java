@@ -126,23 +126,26 @@ public class CrossbowTeleop extends CrossbowMain {
         panelsTelemetry.update(telemetry);
     }
 
-    private boolean spin_intake = false;
+
 
     private ElapsedTime intake_reverse_timer = new ElapsedTime();
     @Override
     public void intake_code(){
+
+        //THIS IS NOT DONE YET I JUST HAD TO GO
+
         if (gamepad2.aWasPressed()||gamepad1.leftBumperWasPressed()){
             spin_intake = !spin_intake;
         }
-        //it's a 312 so 537.7 PPR at the Output Shaft. 5.2 RPS (max) would be 2796.04 or about 2800.
-        if ((spin_intake&&(!open_door))||(open_door && (door_open_timer.seconds() > the_time_it_takes_to_open_the_door_in_seconds))){
-            set_intake_speed(2000);
-        } else if(gamepad2.aWasReleased()||gamepad1.leftBumperWasReleased()) {
+
+        if(gamepad2.aWasReleased()||gamepad1.leftBumperWasReleased()) {
             intake_reverse_timer.reset();
-        } else if((gamepad2.a||gamepad1.left_bumper)&&intake_reverse_timer.seconds()>0.5) {
-            set_intake_speed(-2000);
+
+        if((gamepad2.a||gamepad1.left_bumper)&&intake_reverse_timer.seconds()>0.5) {
+            reverse_intake = true;
         } else {
-            set_intake_speed(0);
+            reverse_intake = false;
         }
+        super.intake_code();
     }
 }

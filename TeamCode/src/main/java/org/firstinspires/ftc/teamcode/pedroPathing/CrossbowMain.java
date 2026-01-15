@@ -475,7 +475,24 @@ public class CrossbowMain extends OpMode {
         }
         launch_angle_error = tx;
     }
+
+    protected boolean spin_intake = false;
+    protected boolean reverse_intake = false;
+
+    private int reverse_multiplier = 1;
     public void intake_code(){
+        if (reverse_intake && !open_door){
+            reverse_multiplier = -1;
+        } else {
+            reverse_multiplier = 1;
+        }
+
+        //it's a 312 so 537.7 PPR at the Output Shaft. 5.2 RPS (max) would be 2796.04 or about 2800.
+        if ((spin_intake&&(!open_door))||(open_door && (door_open_timer.seconds() > the_time_it_takes_to_open_the_door_in_seconds))){
+            set_intake_speed(2000*reverse_multiplier);
+        } else {
+            set_intake_speed(0);
+        }
     }
 
     public void set_intake_speed(int speed){
