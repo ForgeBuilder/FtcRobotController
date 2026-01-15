@@ -54,6 +54,9 @@ public class CrossbowAuto extends CrossbowMain{
 
     private boolean launch_override = false;
 
+    private ElapsedTime shots_timer = new ElapsedTime(); //once it starts shooting how long till stop firing because all shot
+    private double shots_timer_length = 3;
+
     @Override public void loop(){
         super.loop();
         limelight_code();
@@ -111,12 +114,12 @@ public class CrossbowAuto extends CrossbowMain{
             set_limelight_enabled(true);
         } else if (step == 2) {
 
-//            limelight_set_pose();
+            shots_timer.reset();
+
+            //RETURN TO THIS
 
             if (fired_artifacts <= 3){
-                if (fired_an_artifact){
-                    fired_artifacts += 1;
-                    if (fired_artifacts >= 3){
+                    if (shots_timer.seconds() > shots_timer_length){
                         spin_intake = false;
                         steptimer.reset();
                         if (intake_round == 0){
@@ -276,11 +279,12 @@ public class CrossbowAuto extends CrossbowMain{
             telemetry.addData("Limelight", "No Targets");
         }
     }
-    @Override public void intake_code(){
-        if (spin_intake&&(!kick)){
-            set_intake_speed(2000);
-        } else {
-            set_intake_speed(0);
+        public void intake_code(){
+            //it's a 312 so 537.7 PPR at the Output Shaft. 5.2 RPS (max) would be 2796.04 or about 2800.
+            if ((spin_intake&&(!open_door))||(open_door && (door_open_timer.seconds() > the_time_it_takes_to_open_the_door_in_seconds))){
+                set_intake_speed(2000);
+            } else {
+                set_intake_speed(0);
+            }
         }
-    }
 }

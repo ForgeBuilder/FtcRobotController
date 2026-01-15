@@ -231,8 +231,8 @@ public class CrossbowMain extends OpMode {
     private MovingAverage right_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by AI
 
     public static int max_average_error = 15;
-    public static int max_current_error = 40; //there is no 30 so this is goofy but whatever
-    public static int max_current_error_lazy = 80; //there is no 30 so this is goofy but whatever
+    public static int max_current_error = 60; //there is no 30 so this is goofy but whatever
+    public static int max_current_error_lazy = 100; //there is no 30 so this is goofy but whatever
 
     //how fast can the robot be rotating and still fire?
     double max_angular_velocity = 10;
