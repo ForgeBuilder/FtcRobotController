@@ -56,7 +56,7 @@ public class CrossbowMain extends OpMode {
     private DcMotorEx rightLaunchMotor;
     private DcMotorEx leftLaunchMotor;
 
-    public PIDFCoefficients launcherCoefficients = new PIDFCoefficients(50,1,1,12);
+    public PIDFCoefficients launcherCoefficients = new PIDFCoefficients(60,1,1,0);
 
     public DcMotorEx intakeMotor;
 
@@ -347,7 +347,7 @@ public class CrossbowMain extends OpMode {
             boolean left_speed_met_easy = Math.abs(launcherSpeed + left_current_speed) < max_current_error_lazy;
             boolean right_speed_met_easy = Math.abs(launcherSpeed - right_current_speed) < max_current_error_lazy;
             boolean basic_speed_met = left_speed_met_easy&&right_speed_met_easy;
-            
+
 
             boolean open_door_conditions = ((speed_ready && ((angular_velocity_acceptable && limelight_ready) || (override_shot && basic_speed_met))));
             //If the speed goes back down.. too bad. door stays open.
