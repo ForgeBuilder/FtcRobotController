@@ -231,8 +231,8 @@ public class CrossbowMain extends OpMode {
     private MovingAverage right_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by AI
 
     public static int max_average_error = 15;
-    public static int max_current_error = 20; //there is no 30 so this is goofy but whatever
-    public static int max_current_error_lazy = 40; //there is no 30 so this is goofy but whatever
+    public static int max_current_error = 40; //there is no 30 so this is goofy but whatever
+    public static int max_current_error_lazy = 80; //there is no 30 so this is goofy but whatever
 
     //how fast can the robot be rotating and still fire?
     double max_angular_velocity = 10;
@@ -293,11 +293,13 @@ public class CrossbowMain extends OpMode {
 
         //run all the checks even if we are not trying to fire!
 
+        //new system does not need the superchecks
+
         boolean right_speed_met = Math.abs(launcherSpeed - right_current_speed) < max_current_error;
-        right_speed_met = right_speed_met && (Math.abs(right_speed_average_error)<max_average_error);
+        //right_speed_met = right_speed_met && (Math.abs(right_speed_average_error)<max_average_error);
 //
         boolean left_speed_met = Math.abs(launcherSpeed + left_current_speed) < max_current_error;
-        left_speed_met = left_speed_met && (Math.abs(left_speed_average_error)<max_average_error);
+        //left_speed_met = left_speed_met && (Math.abs(left_speed_average_error)<max_average_error);
 
         double chasis_angular_velocity = pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES);
 
