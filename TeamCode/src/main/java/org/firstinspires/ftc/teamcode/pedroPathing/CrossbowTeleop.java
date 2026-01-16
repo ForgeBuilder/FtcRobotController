@@ -40,39 +40,9 @@ public class CrossbowTeleop extends CrossbowMain {
     public void loop() {
         super.loop();
 
-//        //this stuff doesn't really work. I wish lazlar was smart n gave his gamepad object the same functions.
-//        //I could make a translator!
-//        c_gamepad1.asCombinedFTCGamepad(gamepad1);
-//        c_gamepad2.asCombinedFTCGamepad(gamepad1);
-//
-//        panelsTelemetry.debug("==== Buttons ====");
-//        panelsTelemetry.debug("A: "+c_gamepad1.getCross());
-//        panelsTelemetry.debug("B: "+c_gamepad1.getCircle());
-//        panelsTelemetry.debug("X: "+c_gamepad1.getSquare());
-//        panelsTelemetry.debug("Y: "+c_gamepad1.getTriangle());
-//        panelsTelemetry.debug("DPad Up: ${g1.dpad_up}");
-//        panelsTelemetry.debug("DPad Down: ${g1.dpad_down}") ;
-//        panelsTelemetry.debug("DPad Left: ${g1.dpad_left}");
-//        panelsTelemetry.debug("DPad Right: ${g1.dpad_right}");
-//        panelsTelemetry.debug("Left Bumper: ${g1.left_bumper}");
-//        panelsTelemetry.debug("Right Bumper: ${g1.right_bumper}");
-//        panelsTelemetry.debug("Left Trigger: ${g1.left_trigger}");
-//        panelsTelemetry.debug("Right Trigger: ${g1.right_trigger}");
-//        panelsTelemetry.debug("Start / Options: ${g1.options}");
-//        panelsTelemetry.debug("Back / Share: ${g1.back}");
-//        panelsTelemetry.debug("Guide / PS: ${g1.guide}");
-//        panelsTelemetry.debug("Touchpad: ${g1.touchpad}");
-//        panelsTelemetry.debug("Left Stick Button: ${g1.left_stick_button}");
-//        panelsTelemetry.debug("Right Stick Button: ${g1.right_stick_button}");
-//        panelsTelemetry.debug("==== Sticks ====");
-//        panelsTelemetry.debug("Left Stick X: ${g1.left_stick_x}");
-//        panelsTelemetry.debug("Left Stick Y: ${g1.left_stick_y}");
-//        panelsTelemetry.debug("Right Stick X: ${g1.right_stick_x}");
-//        panelsTelemetry.debug("Right Stick Y: ${g1.right_stick_y}");
-
-
+        //handels limelight
         limelight_code();
-        intake_code();
+
         //handles saving position and making return path to saved position
         teleop_return_to_position();
 
@@ -133,10 +103,10 @@ public class CrossbowTeleop extends CrossbowMain {
 
     @Override
     public void intake_code() {
+        panelsTelemetry.addData("spin intake",spin_intake);
+        panelsTelemetry.addData("reverse intake",reverse_intake);
 
-        //THIS IS NOT DONE YET I JUST HAD TO GO
-
-        if (gamepad2.aWasPressed() || gamepad1.leftBumperWasPressed()) {
+          if (gamepad2.aWasPressed() || gamepad1.leftBumperWasPressed()) {
             spin_intake = !spin_intake;
         }
 

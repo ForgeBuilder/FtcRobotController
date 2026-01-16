@@ -57,41 +57,40 @@ public class CrossbowAuto extends CrossbowMain{
     private ElapsedTime shots_timer = new ElapsedTime(); //once it starts shooting how long till stop firing because all shot
     private double shots_timer_length = 3;
 
-    @Override public void loop(){
+    @Override public void loop() {
         super.loop();
         limelight_code();
-        intake_code();
-        if (fire_artifact){
+        if (fire_artifact) {
             //this thing is for drive motors
             set_motor_power_zero();
         }
-        boolean launcher_override = (timeSinceShot.seconds()>insanity_time);
-        launcher_code(fire_artifact,launcher_override);
+        boolean launcher_override = (timeSinceShot.seconds() > insanity_time);
+        launcher_code(fire_artifact, launcher_override);
 
         Pose current_posee = follower.getPose();
-        telemetry.addData("Pedro Pose: ",current_posee.getX()+", "+current_posee.getY()+", "+current_posee.getHeading());
+        telemetry.addData("Pedro Pose: ", current_posee.getX() + ", " + current_posee.getY() + ", " + current_posee.getHeading());
 
         //if we are trying to launch (so on the launch line) go to the gate and get off it.
-        if (runtime.seconds() > 28.0){
+        if (runtime.seconds() > 28.0) {
             Pose current_pose = follower.getPose();
-            if ((step == 0)||(step == 1)||(step == 2)){
+            if ((step == 0) || (step == 1) || (step == 2)) {
                 step = 100;
                 fire_artifact = false;
-                Pose next_pose = new Pose(60,-15*apm,Math.PI+(Math.PI/2)*apm);
+                Pose next_pose = new Pose(60, -15 * apm, Math.PI + (Math.PI / 2) * apm);
                 PathChain center_path = follower.pathBuilder()
                         .addPath(new BezierLine(current_pose, next_pose))
-                        .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
+                        .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(), 0.5)
                         .setHeadingConstraint(0)
                         .build();
                 follower.followPath(center_path);
             }
         }
 
-        if (step == 0){
+        if (step == 0) {
             //go to the launching position
             Pose current_pose = follower.getPose();
             Pose launch_pose;
-            launch_pose = new Pose(84,-44*apm,Math.PI+1*apm);
+            launch_pose = new Pose(84, -44 * apm, Math.PI + 1 * apm);
 //            if (intake_round == 0){
 //                launch_pose = new Pose(100,-40*apm,1.2*apm);
 //            } else {
@@ -101,11 +100,11 @@ public class CrossbowAuto extends CrossbowMain{
 
             PathChain firstpath = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, launch_pose))
-                    .setLinearHeadingInterpolation(current_pose.getHeading(), launch_pose.getHeading(),0.5)
+                    .setLinearHeadingInterpolation(current_pose.getHeading(), launch_pose.getHeading(), 0.5)
                     .build();
             follower.followPath(firstpath);
             step = 1;
-        } else if (!follower.isBusy() && (step ==1)){
+        } else if (!follower.isBusy() && (step == 1)) {
             //get the limelight to set the pose
 //            follower.setPose()
             step = 2;
@@ -115,15 +114,15 @@ public class CrossbowAuto extends CrossbowMain{
             set_limelight_enabled(true);
             shots_timer.reset();
         } else if (step == 2) {
-            if (!open_door){
+            if (!open_door) {
                 shots_timer.reset();
             }
-            if ((shots_timer.seconds() > shots_timer_length)){
+            if ((shots_timer.seconds() > shots_timer_length)) {
                 steptimer.reset();
                 fire_artifact = false;
-                if (intake_round == 0){
+                if (intake_round == 0) {
                     step = 3;
-                } else if (intake_round == 1){
+                } else if (intake_round == 1) {
                     step = 6;
                 } else if (intake_round == 2) {
                     step = 9;
@@ -133,55 +132,55 @@ public class CrossbowAuto extends CrossbowMain{
         } else if (step == 3 && steptimer.seconds() > 0.5) {
             //go to intake bar 1
             fire_artifact = false;
-            Pose next_pose = new Pose(74,-40*apm,Math.PI+apm*(Math.PI/-2.0));
+            Pose next_pose = new Pose(74, -40 * apm, Math.PI + apm * (Math.PI / -2.0));
             Pose current_pose = follower.getPose();
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
-                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
+                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(), 0.5)
 //                    .setHeadingConstraint(0)
                     .build();
             follower.followPath(center_path);
             step = 4;
-        } else if (step == 4 && !follower.isBusy()){
+        } else if (step == 4 && !follower.isBusy()) {
             //slowly roll over to pickup balls
             spin_intake = true;
-            Pose next_pose = new Pose(74,-13*apm,Math.PI+apm*(Math.PI/-2.0));
+            Pose next_pose = new Pose(74, -13 * apm, Math.PI + apm * (Math.PI / -2.0));
             Pose current_pose = follower.getPose();
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
-                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
+                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(), 0.5)
                     .build();
             follower.setMaxPower(drivetrain_pickup_speed);
             follower.followPath(center_path);
             step = 5;
-        } else if ((step == 5) && !follower.isBusy()){
+        } else if ((step == 5) && !follower.isBusy()) {
 //            spin_intake = false;
             follower.setMaxPower(1);
             fired_artifacts = 0;
             intake_round = 1;
             step = 0;
-        } else if (step == 6 && steptimer.seconds() > 0.5){
+        } else if (step == 6 && steptimer.seconds() > 0.5) {
             //go to intake bar 2
             fire_artifact = false;
-            Pose next_pose = new Pose(50.5,-40*apm,Math.PI+apm*(Math.PI/-2.0));
+            Pose next_pose = new Pose(50.5, -40 * apm, Math.PI + apm * (Math.PI / -2.0));
             Pose current_pose = follower.getPose();
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
-                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
+                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(), 0.5)
 //                    .setHeadingConstraint(0)
                     .build();
             follower.followPath(center_path);
             step = 7;
-        } else if (step == 7 && !follower.isBusy()){
+        } else if (step == 7 && !follower.isBusy()) {
             //slowly roll over to pickup balls
             spin_intake = true;
-            Pose next_pose = new Pose(49.5,-10*apm,Math.PI+apm*(Math.PI/-2.0));
+            Pose next_pose = new Pose(49.5, -10 * apm, Math.PI + apm * (Math.PI / -2.0));
             Pose current_pose = follower.getPose();
-            Pose avoid_gate_pose = new Pose(49.5,-20*apm,Math.PI+apm*(Math.PI/-2.0));
+            Pose avoid_gate_pose = new Pose(49.5, -20 * apm, Math.PI + apm * (Math.PI / -2.0));
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
-                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
-                    .addParametricCallback(1,()-> follower.setMaxPower(1))
+                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(), 0.5)
+                    .addParametricCallback(1, () -> follower.setMaxPower(1))
                     .addPath(new BezierLine(next_pose, avoid_gate_pose))
 //                    .addParametricCallback(1, () -> { // Pause 80% through the *previous* path
 //                        follower.pausePathFollowing(); // Stop robot movement
@@ -192,46 +191,46 @@ public class CrossbowAuto extends CrossbowMain{
             follower.setMaxPower(drivetrain_pickup_speed);
             follower.followPath(center_path);
             step = 8;
-        } else if (step == 8 && !follower.isBusy()){
+        } else if (step == 8 && !follower.isBusy()) {
 //            spin_intake = false;
             follower.setMaxPower(1);
             fired_artifacts = 0;
             intake_round = 2;
             step = 0;
-        } else if (step == 9 && steptimer.seconds() > 0.5){
+        } else if (step == 9 && steptimer.seconds() > 0.5) {
             //go to intake bar 3
             fire_artifact = false;
-            Pose next_pose = new Pose(28,-40*apm,Math.PI+apm*(Math.PI/-2.0));
+            Pose next_pose = new Pose(28, -40 * apm, Math.PI + apm * (Math.PI / -2.0));
             Pose current_pose = follower.getPose();
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
-                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
+                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(), 0.5)
 //                    .setHeadingConstraint(0)
                     .build();
             follower.followPath(center_path);
             step = 10;
-        } else if (step == 10 && !follower.isBusy()){
+        } else if (step == 10 && !follower.isBusy()) {
             //slowly roll over to pickup balls
             spin_intake = true;
-            Pose next_pose = new Pose(28,-10*apm,Math.PI+apm*(Math.PI/-2.0));
+            Pose next_pose = new Pose(28, -10 * apm, Math.PI + apm * (Math.PI / -2.0));
             Pose current_pose = follower.getPose();
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
-                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(),0.5)
+                    .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(), 0.5)
                     .addPath(new BezierLine(next_pose, current_pose))
                     .build();
             follower.setMaxPower(drivetrain_pickup_speed);
             follower.followPath(center_path);
             step = 11;
             //THE END sort of
-        } else if (step == 11 && !follower.isBusy()){
+        } else if (step == 11 && !follower.isBusy()) {
 //            spin_intake = false;
             follower.setMaxPower(1);
             fired_artifacts = 0;
             intake_round = 2;
             //don't take the last shot we'll be on the bar.
 //            step = 0;
-        } else if (step == 100){
+        } else if (step == 100) {
 
         }
 
@@ -240,19 +239,18 @@ public class CrossbowAuto extends CrossbowMain{
 
         //check where we are and depending on which side of the launch line we are on, go to a different spot.
 
-       //I HAVE NOT IMPLEMENTED THE ABOVE, DO IT WHEN YOU COME BACK PLEASE!
+        //I HAVE NOT IMPLEMENTED THE ABOVE, DO IT WHEN YOU COME BACK PLEASE!
 
 //        if (runtime.seconds() > resume_time){
 //            resume_time = 200;
 //            follower.resumePathFollowing();
 //        }
 
-        telemetry.addData("fired artifacts: ",fired_artifacts);
-        telemetry.addData("step",step);
+        telemetry.addData("fired artifacts: ", fired_artifacts);
+        telemetry.addData("step", step);
         telemetry.update();
         panelsTelemetry.update(telemetry);
     }
-    private boolean spin_intake = true;
 
     public void set_limelight_enabled (boolean enabled){
         if (enabled){
@@ -276,13 +274,5 @@ public class CrossbowAuto extends CrossbowMain{
         } else {
             telemetry.addData("Limelight", "No Targets");
         }
-    }
-    @Override public void intake_code(){
-        if (spin_intake&&(!kick)){
-            set_intake_speed(2000);
-        } else {
-            set_intake_speed(0);
-        }
-        super.intake_code();
     }
 }

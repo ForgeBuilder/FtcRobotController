@@ -162,6 +162,7 @@ public class CrossbowMain extends OpMode {
     @Override
     public void loop() {
         follower_code();
+        intake_code();
     }
 
     //exists purely for organisation, part of loop.
