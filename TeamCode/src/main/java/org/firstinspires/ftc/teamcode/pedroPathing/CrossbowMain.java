@@ -39,7 +39,7 @@ public class CrossbowMain extends OpMode {
     public static int super_near_shot_speed = 1100;
 
     public static int near_shot_speed = 1200;
-    public static int far_shot_speed = 1400;
+    public static int far_shot_speed = 1450;
 
     public boolean launcher_freeze_movement = false;
     // Declare OpMode members.

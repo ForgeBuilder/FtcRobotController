@@ -45,7 +45,12 @@ public class CrossbowTeleop extends CrossbowMain {
 
 
         try {
-            autopose = CrossbowAuto.auto_current_pose;
+            if (team == "blue"){
+                autopose = CrossbowAutoBlue.auto_current_pose;
+            } else if (team == "red"){
+                autopose = CrossbowAutoRed.auto_current_pose;
+            }
+
         } finally {
             if (autopose != null){
                 telemetry.addData("auto_pose",autopose);
