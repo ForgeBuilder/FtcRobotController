@@ -36,6 +36,8 @@ public class CrossbowMain extends OpMode {
 
     public static double the_time_it_takes_to_open_the_door_in_seconds = 0.6;
 
+    public static int super_near_shot_speed = 1100;
+
     public static int near_shot_speed = 1200;
     public static int far_shot_speed = 1400;
 
@@ -407,7 +409,10 @@ public class CrossbowMain extends OpMode {
     }
 
     public void rangefind(){
-        if (estimated_distance < 130){
+        if (estimated_distance < 50){
+            launcherSpeed = super_near_shot_speed;
+            limelight_x_offset = 0;
+        } else if (estimated_distance < 130){
             launcherSpeed = near_shot_speed;
             limelight_x_offset = 0;
         } else {
@@ -488,7 +493,7 @@ public class CrossbowMain extends OpMode {
         }
 
         //it's a 312 so 537.7 PPR at the Output Shaft. 5.2 RPS (max) would be 2796.04 or about 2800.
-        if ((spin_intake&&(!open_door))||(open_door && (door_open_timer.seconds() > the_time_it_takes_to_open_the_door_in_seconds))){
+        if (((spin_intake||reverse_intake)&&(!open_door))||(open_door && (door_open_timer.seconds() > the_time_it_takes_to_open_the_door_in_seconds))){
             set_intake_speed(2000*reverse_multiplier);
         } else {
             set_intake_speed(0);
