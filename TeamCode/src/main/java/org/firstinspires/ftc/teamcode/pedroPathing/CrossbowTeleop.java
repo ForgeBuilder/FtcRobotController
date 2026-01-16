@@ -36,9 +36,24 @@ public class CrossbowTeleop extends CrossbowMain {
     boolean fire_launcher = false;
     public static boolean debug_fire = false;
 
+    private Pose autopose;
+
     @Override
     public void loop() {
         super.loop();
+
+
+
+        try {
+            autopose = CrossbowAuto.auto_current_pose;
+        } finally {
+            if (autopose != null){
+                telemetry.addData("auto_pose",autopose);
+            } else {
+                telemetry.addData("auto_pose","no auto pose found");
+            }
+        }
+
 
         //handels limelight
         limelight_code();

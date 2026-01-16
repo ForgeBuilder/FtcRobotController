@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 //or near/far. near/far might be completley different programs based on how much crossbowMain allready abstracts
 //but I allways could inherit the class bwahaha
 public class CrossbowAuto extends CrossbowMain{
+
+    public static Pose auto_current_pose;
     private ElapsedTime runtime = new ElapsedTime();
 
     //auto position multiplier. flips the auto for red and blue. //Should only be 1 or -1
@@ -59,6 +61,7 @@ public class CrossbowAuto extends CrossbowMain{
 
     @Override public void loop() {
         super.loop();
+        auto_current_pose = follower.getPose();
         limelight_code();
         if (fire_artifact) {
             //this thing is for drive motors
