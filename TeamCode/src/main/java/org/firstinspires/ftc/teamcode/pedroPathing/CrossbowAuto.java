@@ -30,7 +30,7 @@ public class CrossbowAuto extends CrossbowMain{
 
     @Override public void start(){
         super.start();
-        follower.setPose(new Pose(101,-7.5*apm, Math.PI+apm*(Math.PI/2)));
+        follower.setPose(new Pose(105.5,-7.5*apm, Math.PI+apm*(Math.PI/2)));
         runtime.reset();
     }
 
