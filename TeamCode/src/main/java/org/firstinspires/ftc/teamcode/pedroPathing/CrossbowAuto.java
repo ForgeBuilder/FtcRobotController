@@ -57,7 +57,7 @@ public class CrossbowAuto extends CrossbowMain{
     private boolean launch_override = false;
 
     private ElapsedTime shots_timer = new ElapsedTime(); //once it starts shooting how long till stop firing because all shot
-    private double shots_timer_length = 3;
+    private double shots_timer_length = 2.0;
 
     @Override public void loop() {
         super.loop();
@@ -104,6 +104,7 @@ public class CrossbowAuto extends CrossbowMain{
             PathChain firstpath = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, launch_pose))
                     .setLinearHeadingInterpolation(current_pose.getHeading(), launch_pose.getHeading(), 0.5)
+                    .addParametricCallback(0.5,() -> {fire_artifact = true;})
                     .build();
             follower.followPath(firstpath);
             step = 1;
@@ -185,6 +186,7 @@ public class CrossbowAuto extends CrossbowMain{
                     .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(), 0.5)
                     .addParametricCallback(1, () -> follower.setMaxPower(1))
                     .addPath(new BezierLine(next_pose, avoid_gate_pose))
+                    .setLinearHeadingInterpolation(next_pose.getHeading(), avoid_gate_pose.getHeading(), 0.5)
 //                    .addParametricCallback(1, () -> { // Pause 80% through the *previous* path
 //                        follower.pausePathFollowing(); // Stop robot movement
 //                        resume_time = runtime.seconds()+(double) 0.3;
