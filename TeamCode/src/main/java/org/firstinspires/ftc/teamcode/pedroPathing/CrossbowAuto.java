@@ -104,7 +104,7 @@ public class CrossbowAuto extends CrossbowMain{
             PathChain firstpath = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, launch_pose))
                     .setLinearHeadingInterpolation(current_pose.getHeading(), launch_pose.getHeading(), 0.5)
-                    .addParametricCallback(0.5,() -> {fire_artifact = true;})
+                    .addParametricCallback(0.2,() -> {fire_artifact = true;})
                     .build();
             follower.followPath(firstpath);
             step = 1;

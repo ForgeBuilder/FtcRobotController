@@ -586,12 +586,12 @@ public class CrossbowMain extends OpMode {
         rightFront.setPower(forward + strafe + turn);
         rightBack.setPower(forward - strafe + turn);
 
-        if (launcher_freeze_movement){
-            leftFront.setPower(0);
-            leftBack.setPower(0);
-            rightFront.setPower(0);
-            rightBack.setPower(0);
-        }
+//        if (launcher_freeze_movement){
+//            leftFront.setPower(0);
+//            leftBack.setPower(0);
+//            rightFront.setPower(0);
+//            rightBack.setPower(0);
+//        }
     }
 
     /*
