@@ -58,7 +58,7 @@ public class CrossbowMain extends OpMode {
     private DcMotorEx rightLaunchMotor;
     private DcMotorEx leftLaunchMotor;
 
-    public PIDFCoefficients launcherCoefficients = new PIDFCoefficients(60,1,1,0);
+    public PIDFCoefficients launcherCoefficients = new PIDFCoefficients(100,1,1,0);
 
     public DcMotorEx intakeMotor;
 
@@ -234,8 +234,8 @@ public class CrossbowMain extends OpMode {
     private MovingAverage right_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by AI
 
     public static int max_average_error = 15;
-    public static int max_current_error = 40; //there is no 30 so this is goofy but whatever
-    public static int max_current_error_lazy = 80; //there is no 30 so this is goofy but whatever
+    public static int max_current_error = 80; //there is no 30 so this is goofy but whatever
+    public static int max_current_error_lazy = 100; //there is no 30 so this is goofy but whatever
 
     //how fast can the robot be rotating and still fire?
     double max_angular_velocity = 10;
@@ -342,14 +342,13 @@ public class CrossbowMain extends OpMode {
             chasis_aim_turn= limelight_chasis_rotation_multiplier*(tx); //This could be a PID and it would be better
             double cats = chasis_aim_turn/Math.abs(chasis_aim_turn); //chasis aim turn sign
 
-            if (!follower.isBusy()) {
+            if (!follower.isBusy()) { //
                 set_motor_power_zero(); //pedro is off as per the if so this is nececary. without pedro it'll go exponential.
-
-                leftFront.setPower(leftFront.getPower() + chasis_aim_turn);//+(zero_power_turn*cats));
-                leftBack.setPower(leftBack.getPower() + chasis_aim_turn);//+(zero_power_turn*cats));
-                rightFront.setPower(rightFront.getPower() - chasis_aim_turn);//-(zero_power_turn*cats));
-                rightBack.setPower(rightBack.getPower() - chasis_aim_turn);//-(zero_power_turn*cats));
             }
+            leftFront.setPower(leftFront.getPower() + chasis_aim_turn);//+(zero_power_turn*cats));
+            leftBack.setPower(leftBack.getPower() + chasis_aim_turn);//+(zero_power_turn*cats));
+            rightFront.setPower(rightFront.getPower() - chasis_aim_turn);//-(zero_power_turn*cats));
+            rightBack.setPower(rightBack.getPower() - chasis_aim_turn);//-(zero_power_turn*cats));
             //take the shot - once you've started, don't stop!
 
             boolean left_speed_met_easy = Math.abs(launcherSpeed + left_current_speed) < max_current_error_lazy;

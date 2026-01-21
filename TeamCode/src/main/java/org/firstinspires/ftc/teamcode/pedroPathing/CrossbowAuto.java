@@ -63,10 +63,10 @@ public class CrossbowAuto extends CrossbowMain{
         super.loop();
         auto_current_pose = follower.getPose();
         limelight_code();
-        if (fire_artifact) {
-            //this thing is for drive motors
-            set_motor_power_zero();
-        }
+//        if (fire_artifact) {
+//            //this thing is for drive motors
+//            set_motor_power_zero();
+//        }
         boolean launcher_override = (timeSinceShot.seconds() > insanity_time);
         launcher_code(fire_artifact, launcher_override);
 
