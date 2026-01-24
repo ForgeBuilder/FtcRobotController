@@ -126,8 +126,10 @@ public class CrossbowTeleop extends CrossbowMain {
         panelsTelemetry.addData("spin intake",spin_intake);
         panelsTelemetry.addData("reverse intake",reverse_intake);
 
-          if (gamepad2.aWasPressed() || gamepad1.leftBumperWasPressed()) {
-            spin_intake = !spin_intake;
+        if (gamepad2.a||gamepad1.left_bumper){
+            spin_intake = true;
+        } else {
+            spin_intake = false;
         }
 
         if (!spin_intake && (gamepad2.a || gamepad1.left_bumper)) {
