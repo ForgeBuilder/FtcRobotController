@@ -344,11 +344,11 @@ public class CrossbowMain extends OpMode {
 
             if (!follower.isBusy()) { //
                 set_motor_power_zero(); //pedro is off as per the if so this is nececary. without pedro it'll go exponential.
+                leftFront.setPower(leftFront.getPower() + chasis_aim_turn);//+(zero_power_turn*cats));
+                leftBack.setPower(leftBack.getPower() + chasis_aim_turn);//+(zero_power_turn*cats));
+                rightFront.setPower(rightFront.getPower() - chasis_aim_turn);//-(zero_power_turn*cats));
+                rightBack.setPower(rightBack.getPower() - chasis_aim_turn);//-(zero_power_turn*cats));
             }
-            leftFront.setPower(leftFront.getPower() + chasis_aim_turn);//+(zero_power_turn*cats));
-            leftBack.setPower(leftBack.getPower() + chasis_aim_turn);//+(zero_power_turn*cats));
-            rightFront.setPower(rightFront.getPower() - chasis_aim_turn);//-(zero_power_turn*cats));
-            rightBack.setPower(rightBack.getPower() - chasis_aim_turn);//-(zero_power_turn*cats));
             //take the shot - once you've started, don't stop!
 
             boolean left_speed_met_easy = Math.abs(launcherSpeed + left_current_speed) < max_current_error_lazy;
