@@ -412,7 +412,7 @@ public class CrossbowMain extends OpMode {
     }
 
     public void rangefind(){
-        if (estimated_distance < 50){
+        if (estimated_distance < 60){
             launcherSpeed = super_near_shot_speed;
             limelight_x_offset = 0;
         } else if (estimated_distance < 130){
