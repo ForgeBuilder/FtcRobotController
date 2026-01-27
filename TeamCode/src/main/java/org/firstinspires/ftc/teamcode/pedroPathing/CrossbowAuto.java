@@ -223,6 +223,7 @@ public class CrossbowAuto extends CrossbowMain{
                     .addPath(new BezierLine(current_pose, next_pose))
                     .setLinearHeadingInterpolation(current_pose.getHeading(), next_pose.getHeading(), 0.5)
                     .addPath(new BezierLine(next_pose, current_pose))
+                    .setConstantHeadingInterpolation(next_pose.getHeading())
                     .build();
             follower.setMaxPower(drivetrain_pickup_speed);
             follower.followPath(center_path);

@@ -15,8 +15,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
             .mass(12.7)
-            .forwardZeroPowerAcceleration(-35.65)
-            .lateralZeroPowerAcceleration(-75.26);
+            .forwardZeroPowerAcceleration(-29.578)
+            .lateralZeroPowerAcceleration(-67.625);
     //I think I need to tune path constraints so pedro stops overshooting the target position.
     //I want final position and final rotation to be more reliable.
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
@@ -39,8 +39,8 @@ public class Constants {
             .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .xVelocity(51.74)
-            .yVelocity(38.67);
+            .xVelocity(59.589)
+            .yVelocity(48.035);
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)
                 .pinpointLocalizer(localizerConstants)
