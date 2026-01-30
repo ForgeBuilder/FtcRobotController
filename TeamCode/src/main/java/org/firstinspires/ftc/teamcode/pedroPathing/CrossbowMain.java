@@ -36,10 +36,10 @@ public class CrossbowMain extends OpMode {
 
     public static double the_time_it_takes_to_open_the_door_in_seconds = 0.6;
 
-    public static int super_near_shot_speed = 1100;
+    public static int super_near_shot_speed = 1120;
 
     public static int near_shot_speed = 1200;
-    public static int far_shot_speed = 1450;
+    public static int far_shot_speed = 1550;
 
     public boolean launcher_freeze_movement = false;
     // Declare OpMode members.
@@ -412,7 +412,7 @@ public class CrossbowMain extends OpMode {
     }
 
     public void rangefind(){
-        if (estimated_distance < 60){
+        if (estimated_distance < 50){
             launcherSpeed = super_near_shot_speed;
             limelight_x_offset = 0;
         } else if (estimated_distance < 130){

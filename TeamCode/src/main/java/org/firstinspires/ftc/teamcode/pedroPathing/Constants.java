@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(12.7)
+            .mass(9)
             .forwardZeroPowerAcceleration(-29.578)
             .lateralZeroPowerAcceleration(-67.625);
     //I think I need to tune path constraints so pedro stops overshooting the target position.
