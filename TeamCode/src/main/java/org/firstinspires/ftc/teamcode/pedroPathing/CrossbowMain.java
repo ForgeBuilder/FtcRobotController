@@ -305,10 +305,13 @@ public class CrossbowMain extends OpMode {
         //left_speed_met = left_speed_met && (Math.abs(left_speed_average_error)<max_average_error);
 
         double chasis_angular_velocity = pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES);
+        double chasis_linear_velocity_odd = pinpoint.getVelY(DistanceUnit.INCH)+pinpoint.getVelY(DistanceUnit.INCH);
+        panelsTelemetry.addData("chasis_linear_velocity_odd",chasis_linear_velocity_odd);
 
         boolean speed_ready = right_speed_met || left_speed_met;
         boolean limelight_ready = (Math.abs(launch_angle_error) < max_limelight_tx_error)&&LLresult.isValid();
         boolean angular_velocity_acceptable = Math.abs(chasis_angular_velocity) < max_angular_velocity;
+        boolean linear_velocity_acceptable = Math.abs(chasis_linear_velocity_odd) < 0.2;
 
 
 
@@ -356,7 +359,7 @@ public class CrossbowMain extends OpMode {
             boolean basic_speed_met = left_speed_met_easy&&right_speed_met_easy;
 
 
-            boolean open_door_conditions = ((speed_ready && ((angular_velocity_acceptable && limelight_ready) || (override_shot && basic_speed_met))));
+            boolean open_door_conditions = ((speed_ready && ((angular_velocity_acceptable && follower.isBusy() && limelight_ready) || (override_shot && basic_speed_met))));
             //If the speed goes back down.. too bad. door stays open.
             boolean keep_door_open = open_door && fire;
 

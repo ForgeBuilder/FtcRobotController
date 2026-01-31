@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 //but I allways could inherit the class bwahaha
 public class CrossbowAuto extends CrossbowMain{
 
+    public String far_near = "near";
+    public Pose launch_pose;
     public static Pose auto_current_pose;
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -45,7 +47,7 @@ public class CrossbowAuto extends CrossbowMain{
 
     private int intake_round = 0;
 
-    double drivetrain_pickup_speed = 0.6;
+    double drivetrain_pickup_speed = 0.4;
 
     double resume_time = 200;
 
@@ -92,9 +94,13 @@ public class CrossbowAuto extends CrossbowMain{
         if (step == 0) {
             //go to the launching position
             Pose current_pose = follower.getPose();
-            Pose launch_pose;
-//            launch_pose = new Pose(84, -44 * apm, Math.PI + 1 * apm); //62 inches from goal
-            launch_pose = new Pose(99.5, -29.5 * apm, Math.PI + 1 * apm); //40 inches ish from goal
+            if (far_near == "far"){
+                //launch_pose = new Pose(84, -44 * apm, Math.PI + 1 * apm); //62 inches from goal
+                launch_pose = new Pose(100, -46 * apm, Math.PI + 1.2 * apm); //62 inches from goal
+            } else {
+                launch_pose = new Pose(99.5, -29.5 * apm, Math.PI + 1 * apm); //40 inches ish from goal
+            }
+
 //            if (intake_round == 0){
 //                launch_pose = new Pose(100,-40*apm,1.2*apm);
 //            } else {
@@ -172,7 +178,7 @@ public class CrossbowAuto extends CrossbowMain{
         } else if (step == 6 && steptimer.seconds() > 0.5) {
             //go to intake bar 2
             fire_artifact = false;
-            Pose next_pose = new Pose(50.5, -40 * apm, Math.PI + apm * (Math.PI / -2.0));
+            Pose next_pose = new Pose(51, -40 * apm, Math.PI + apm * (Math.PI / -2.0));
             Pose current_pose = follower.getPose();
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))

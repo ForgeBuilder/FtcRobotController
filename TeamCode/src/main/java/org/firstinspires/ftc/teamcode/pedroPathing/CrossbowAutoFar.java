@@ -6,5 +6,6 @@ public class CrossbowAutoFar extends CrossbowAuto{
     @Override public void start(){
         super.start();
         follower.setPose(new Pose(-2,-56*apm, Math.toRadians((180-(90*apm)))));
+        far_near = "far";
     }
 }
