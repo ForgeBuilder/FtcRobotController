@@ -47,7 +47,7 @@ public class CrossbowAuto extends CrossbowMain{
 
     private int intake_round = 0;
 
-    double drivetrain_pickup_speed = 0.4;
+    double drivetrain_pickup_speed = 0.3;
 
     double resume_time = 200;
 
@@ -97,8 +97,8 @@ public class CrossbowAuto extends CrossbowMain{
             if (far_near == "far"){
                 //launch_pose = new Pose(84, -44 * apm, Math.PI + 1 * apm); //62 inches from goal
                 launch_pose = new Pose(100, -46 * apm, Math.PI + 1.2 * apm); //62 inches from goal
-            } else {
-                launch_pose = new Pose(99.5, -29.5 * apm, Math.PI + 1 * apm); //40 inches ish from goal
+            } else { //"near"
+                launch_pose = new Pose(98, -31 * apm, Math.PI + 1 * apm); //40 inches ish from goal
             }
 
 //            if (intake_round == 0){
@@ -148,7 +148,7 @@ public class CrossbowAuto extends CrossbowMain{
         } else if (step == 3 && steptimer.seconds() > 0.5) {
             //go to intake bar 1
             fire_artifact = false;
-            Pose next_pose = new Pose(74, -40 * apm, Math.PI + apm * (Math.PI / -2.0));
+            Pose next_pose = new Pose(77, -40 * apm, Math.PI + apm * (Math.PI / -2.0));
             Pose current_pose = follower.getPose();
             PathChain center_path = follower.pathBuilder()
                     .addPath(new BezierLine(current_pose, next_pose))
