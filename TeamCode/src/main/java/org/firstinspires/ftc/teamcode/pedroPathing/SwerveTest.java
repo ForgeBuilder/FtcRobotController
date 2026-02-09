@@ -164,11 +164,22 @@ public class SwerveTest extends OpMode {
                 small_diff_bevel_teeth
         );
 
+        rightSwerve = new SwervePod(
+                Encoder_resolution,
+                hardwareMap.get(DcMotorEx.class,"RSwerveUp"),
+                hardwareMap.get(DcMotorEx.class,"RSwerveDown"),
+                motor_gear_teeth,
+                large_diff_spur_teeth,
+                small_diff_bevel_teeth,
+                small_diff_bevel_teeth
+        );
+
     }
 
     @Override public void init_loop(){
         if (gamepad1.xWasPressed()){
             leftSwerve.setHeadingZero();
+            rightSwerve.setHeadingZero();
         }
         //leftSwerve.updatePod(0,0,0);
 
@@ -183,5 +194,6 @@ public class SwerveTest extends OpMode {
         double yaw = gamepad1.right_stick_x;
 
         leftSwerve.updatePod(translational_x,translational_y,yaw);
+        rightSwerve.updatePod(translational_x,translational_y,yaw);
     }
 }
