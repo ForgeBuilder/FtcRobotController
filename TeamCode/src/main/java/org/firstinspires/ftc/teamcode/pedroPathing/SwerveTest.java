@@ -44,6 +44,8 @@ public class SwerveTest extends OpMode {
 
     private double l_rotation_target_jumps = 0; //This will be increments of 0.5. could be an int but im lazy with type conversions.
 
+    double l_desired_rotation_turns = 0;
+
     @Override public void loop(){
 
         if (gamepad1.xWasPressed()){
@@ -79,13 +81,9 @@ public class SwerveTest extends OpMode {
 
         double l_forward = 0;
 
-        double l_desired_rotation_turns; //turns is the unit
-
         if ((Math.abs(translational_y)+Math.abs(translational_x))>0){ //Math.pow and sqrt for length but we don't need that so this is easier on the computer
             l_desired_rotation_turns = Math.atan2(translational_y,translational_x)/(Math.PI*2);
-        } else {
-            l_desired_rotation_turns = l_rotation;
-        }
+        } //else do nothing
 
         //avoids turning more than we need. Should ensure forward always faces where we want! 0.5 means the wheel allways faces forward, with 0.25 we can reverse the wheel and it can be w
         boolean condition_greater = true;
