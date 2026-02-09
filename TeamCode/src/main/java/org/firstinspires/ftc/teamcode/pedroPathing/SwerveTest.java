@@ -46,6 +46,21 @@ public class SwerveTest extends OpMode {
 
     double l_desired_rotation_turns = 0;
 
+    @Override public void init_loop(){
+        if (gamepad1.xWasPressed()){
+//            reset encoders
+            l_swerve_up.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            l_swerve_down.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            l_swerve_up.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            l_swerve_down.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            r_swerve_up.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            r_swerve_down.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            r_swerve_up.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            r_swerve_down.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+    }
+
     @Override public void loop(){
 
         if (gamepad1.xWasPressed()){
@@ -114,6 +129,9 @@ public class SwerveTest extends OpMode {
 
         double l_turn = l_rotation_pid.update(l_desired_rotation_turns+l_rotation_target_jumps,l_rotation); //This is in 360 turns, not radians.
         ; //clockwise/right +
+        telemetry.addData("l_desired_rotation_turns",l_desired_rotation_turns);
+        telemetry.addData("l_rotation_target_jumps",l_rotation_target_jumps);
+
 
         double l_swerve_up_power = -l_forward+l_turn;
         double l_swerve_down_power = l_forward+l_turn;
