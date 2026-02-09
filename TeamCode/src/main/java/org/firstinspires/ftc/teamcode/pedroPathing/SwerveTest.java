@@ -96,30 +96,32 @@ public class SwerveTest extends OpMode {
 
         double l_forward = 0;
 
-        if ((Math.abs(translational_y)+Math.abs(translational_x))>0){ //Math.pow and sqrt for length but we don't need that so this is easier on the computer
+        if ((Math.abs(translational_y)+Math.abs(translational_x))>0) { //Math.pow and sqrt for length but we don't need that so this is easier on the computer
             l_desired_rotation_turns = Math.atan2(translational_y,translational_x)/(Math.PI*2);
-        }// else {
-//            l_desired_rotation_turns = l_rotation;
-//        }
+        } else {
+            l_desired_rotation_turns = l_rotation;
+        }
 
         //avoids turning more than we need. Should ensure forward always faces where we want! 0.5 means the wheel allways faces forward, with 0.25 we can reverse the wheel and it can be w
         boolean condition_greater = true;
+        while (condition_greater){
+            condition_greater = (l_rotation-(l_desired_rotation_turns+l_rotation_target_jumps))>0.25;
+            if (condition_greater){
+                l_rotation_target_jumps += 0.5;
+            }
+        }
         boolean condition_lesser = true;
-        while (condition_greater || condition_lesser){
-             condition_greater = (l_rotation-(l_desired_rotation_turns+l_rotation_target_jumps))>0.25;
+        while (condition_lesser){
              condition_lesser = (l_rotation-(l_desired_rotation_turns+l_rotation_target_jumps))<-0.25;
-
-             if (condition_greater){
-                 l_rotation_target_jumps += 0.5;
-             }
              if (condition_lesser){
                  l_rotation_target_jumps -= 0.5;
              }
+             telemetry.addData("changing this!","true");
         }
 
         boolean drive_flip; //is the drive wheel 180 the wrong way and we need to drive reverse?
 
-        if (Math.abs(l_rotation_target_jumps)/2 != Math.floor(Math.abs(l_rotation_target_jumps)/2)){
+        if (Math.abs(l_rotation_target_jumps) != Math.floor(Math.abs(l_rotation_target_jumps))){
             drive_flip = true;
         } else {
             drive_flip = false;
