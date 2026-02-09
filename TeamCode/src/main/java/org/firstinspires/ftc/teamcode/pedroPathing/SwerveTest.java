@@ -134,6 +134,10 @@ public class SwerveTest extends OpMode {
             telemetry.addData("l_rotation_target_jumps", heading_target_jumps);
 
             double forward = gamepad1.right_trigger-gamepad1.left_trigger;
+            
+            if (drive_flip){
+                forward *= -1;
+            }
 
             double up_power = -forward+turn;
             double down_power = forward+turn;
