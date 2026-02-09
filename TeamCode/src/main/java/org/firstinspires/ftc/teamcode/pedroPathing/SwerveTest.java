@@ -98,9 +98,9 @@ public class SwerveTest extends OpMode {
 
         if ((Math.abs(translational_y)+Math.abs(translational_x))>0){ //Math.pow and sqrt for length but we don't need that so this is easier on the computer
             l_desired_rotation_turns = Math.atan2(translational_y,translational_x)/(Math.PI*2);
-        } else {
-            l_desired_rotation_turns = l_rotation;
-        }
+        }// else {
+//            l_desired_rotation_turns = l_rotation;
+//        }
 
         //avoids turning more than we need. Should ensure forward always faces where we want! 0.5 means the wheel allways faces forward, with 0.25 we can reverse the wheel and it can be w
         boolean condition_greater = true;
