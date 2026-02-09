@@ -74,6 +74,7 @@ public class SwerveTest extends OpMode {
             this.large_diff_bevel_teeth = large_diff_bevel_teeth;
             this.small_diff_bevel_teeth = small_diff_bevel_teeth;
             this.rotation_encoder_ratio = (motor_gear_teeth/large_diff_spur_teeth)/(Encoder_resolution);
+            this.target_heading = this.start_rotation;
 
             up_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             down_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
