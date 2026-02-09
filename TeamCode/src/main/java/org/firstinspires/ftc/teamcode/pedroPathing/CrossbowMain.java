@@ -372,7 +372,7 @@ public class CrossbowMain extends OpMode {
             }
         } else {
             launcher_freeze_movement = false;
-            spin_launcher = false;
+//            spin_launcher = false;
             trying_to_fire = false;
             open_door = false;
             telemetry.addData("speed_ready"," -N/A-");
