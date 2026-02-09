@@ -96,11 +96,14 @@ public class SwerveTest extends OpMode {
         }
 
         try {
-            if (Math.floorMod(1, (long) l_rotation_target_jumps)*2 == 0.5) {
+            long mod_result = Math.floorMod(1, (long) l_rotation_target_jumps)*2;
+            if (mod_result == 0.5) {
                 telemetry.addData("flip", "flip");
             }
+            telemetry.addData("mod_result",mod_result);
+
         } catch (ArithmeticException e){
-            telemetry.addData("Arithmetic error", e.getMessage());
+            telemetry.addData("Arithmetic error", e.getMessage()); //likley just a div0, so its finee
         } finally {
             //again, don't care
         }
