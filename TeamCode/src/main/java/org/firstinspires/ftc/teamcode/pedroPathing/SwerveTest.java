@@ -31,6 +31,8 @@ public class SwerveTest extends OpMode {
         double center_x_offset = 0;
         double center_y_offset = 0;
 
+        public PID heading_pid = new PID(5,0.2,0);
+
         ///Must provide to work VV
 
         //motors
@@ -45,6 +47,10 @@ public class SwerveTest extends OpMode {
         double small_diff_bevel_teeth = 18;
 
         double rotation_encoder_ratio;
+
+        /// prohibited from being altered
+        private double rotation_target_jumps = 0; //This will be increments of 0.5. could be an int but im lazy with type conversions.
+        double desired_rotation_turns = 0;
 
         ///Constructor(s)
 
@@ -83,7 +89,7 @@ public class SwerveTest extends OpMode {
             up_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             down_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
-        public void updatePod(double translational_y,double translational_x, double yaw){
+        public void updatePod(double translational_x,double translational_y, double yaw){
             //1 Swerve pod code
 
             //gear math operations
@@ -94,50 +100,48 @@ public class SwerveTest extends OpMode {
             double l_forward = 0;
 
             if ((Math.abs(translational_y)+Math.abs(translational_x))>0) { //Math.pow and sqrt for length but we don't need that so this is easier on the computer
-                l_desired_rotation_turns = Math.atan2(translational_y,translational_x)/(Math.PI*2);
-            } else {
-                l_desired_rotation_turns = heading;
+                desired_rotation_turns = Math.atan2(translational_y,translational_x)/(Math.PI*2);
             }
 
             //avoids turning more than we need. Should ensure forward always faces where we want! 0.5 means the wheel allways faces forward, with 0.25 we can reverse the wheel and it can be w
             boolean condition_greater = true;
             while (condition_greater){
-                condition_greater = (heading -(l_desired_rotation_turns+l_rotation_target_jumps))>0.25;
+                condition_greater = (heading -(desired_rotation_turns + rotation_target_jumps))>0.25;
                 if (condition_greater){
-                    l_rotation_target_jumps += 0.5;
+                    rotation_target_jumps += 0.5;
                 }
             }
             boolean condition_lesser = true;
             while (condition_lesser){
-                condition_lesser = (heading -(l_desired_rotation_turns+l_rotation_target_jumps))<-0.25;
+                condition_lesser = (heading -(desired_rotation_turns + rotation_target_jumps))<-0.25;
                 if (condition_lesser){
-                    l_rotation_target_jumps -= 0.5;
+                    rotation_target_jumps -= 0.5;
                 }
-//                telemetry.addData("changing this!","true");
+                telemetry.addData("changing this!","true");
             }
 
             boolean drive_flip; //is the drive wheel 180 the wrong way and we need to drive reverse?
 
-            if (Math.abs(l_rotation_target_jumps) != Math.floor(Math.abs(l_rotation_target_jumps))){
+            if (Math.abs(rotation_target_jumps) != Math.floor(Math.abs(rotation_target_jumps))){
                 drive_flip = true;
             } else {
                 drive_flip = false;
             }
-//            telemetry.addData("flip: ",drive_flip);
+            telemetry.addData("flip: ",drive_flip);
 
-            double turn = l_rotation_pid.update(l_desired_rotation_turns+l_rotation_target_jumps, heading); //This is in 360 turns, not radians.
-            ; //clockwise/right +
-//            telemetry.addData("l_desired_rotation_turns",l_desired_rotation_turns);
-//            telemetry.addData("l_rotation_target_jumps",l_rotation_target_jumps);
+            double turn = heading_pid.update(desired_rotation_turns + rotation_target_jumps, heading); //This is in 360 turns, not radians.
+             //clockwise/right +
+            telemetry.addData("l_desired_rotation_turns",desired_rotation_turns);
+            telemetry.addData("l_rotation_target_jumps",rotation_target_jumps);
 
             double up_power = -l_forward+turn;
             double down_power = l_forward+turn;
 
             up_motor.setPower(up_power);
             down_motor.setPower(down_power);
-//            telemetry.addData("Top MotorPower:",up_power);
-//            telemetry.addData("Bottom MotorPower:",down_power);
-//            telemetry.addData("pod rotation: ", heading);
+            telemetry.addData("Top MotorPower:",up_power);
+            telemetry.addData("Bottom MotorPower:",down_power);
+            telemetry.addData("pod rotation: ", heading);
         }
     }
 
@@ -160,12 +164,6 @@ public class SwerveTest extends OpMode {
         );
 
     }
-
-    public static PID l_rotation_pid = new PID(5,0.2,0);
-
-    private double l_rotation_target_jumps = 0; //This will be increments of 0.5. could be an int but im lazy with type conversions.
-
-    double l_desired_rotation_turns = 0;
 
     @Override public void init_loop(){
         if (gamepad1.xWasPressed()){
