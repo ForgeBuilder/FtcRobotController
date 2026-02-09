@@ -34,8 +34,20 @@ public class SwerveTest extends OpMode {
 
 
 
+        r_swerve_up.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        r_swerve_down.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        r_swerve_up.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        r_swerve_down.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
 
-        //reset encoders
+    public static PID l_rotation_pid = new PID(5,0.2,0);
+
+    private double l_rotation_target_jumps = 0; //This will be increments of 0.5. could be an int but im lazy with type conversions.
+
+    @Override public void loop(){
+
+        if (gamepad1.xWasPressed()){
+//            reset encoders
         l_swerve_up.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         l_swerve_down.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         l_swerve_up.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -45,18 +57,8 @@ public class SwerveTest extends OpMode {
         r_swerve_down.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         r_swerve_up.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         r_swerve_down.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
 
-        r_swerve_up.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        r_swerve_down.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        r_swerve_up.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        r_swerve_down.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    }
-
-    public static PID l_rotation_pid = new PID(5,0,0);
-
-    private double l_rotation_target_jumps = 0; //This will be increments of 0.5. could be an int but im lazy with type conversions.
-
-    @Override public void loop(){
 
         //gear math
         double r_average_encoder_position = (l_swerve_up.getCurrentPosition()+ l_swerve_down.getCurrentPosition())/2;
@@ -86,11 +88,21 @@ public class SwerveTest extends OpMode {
         }
 
         //avoids turning more than we need. Should ensure forward always faces where we want! 0.5 means the wheel allways faces forward, with 0.25 we can reverse the wheel and it can be w
-        if ((l_rotation-(l_desired_rotation_turns+l_rotation_target_jumps))>0.5){
-            l_rotation_target_jumps += 1;
+        if ((l_rotation-(l_desired_rotation_turns+l_rotation_target_jumps))>0.25){
+            l_rotation_target_jumps += 0.5;
         }
-        if ((l_rotation-(l_desired_rotation_turns+l_rotation_target_jumps))<-0.5){
-            l_rotation_target_jumps -= 1;
+        if ((l_rotation-(l_desired_rotation_turns+l_rotation_target_jumps))<-0.25){
+            l_rotation_target_jumps -= 0.5;
+        }
+
+        try {
+            if (Math.floorMod(1, (long) l_rotation_target_jumps)*2 == 0.5) {
+                telemetry.addData("flip", "flip");
+            }
+        } catch (ArithmeticException e){
+            telemetry.addData("Arithmetic error", e.getMessage());
+        } finally {
+            //again, don't care
         }
 
 
