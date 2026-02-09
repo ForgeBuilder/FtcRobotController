@@ -88,25 +88,30 @@ public class SwerveTest extends OpMode {
         }
 
         //avoids turning more than we need. Should ensure forward always faces where we want! 0.5 means the wheel allways faces forward, with 0.25 we can reverse the wheel and it can be w
-        if ((l_rotation-(l_desired_rotation_turns+l_rotation_target_jumps))>0.25){
-            l_rotation_target_jumps += 0.5;
-        }
-        if ((l_rotation-(l_desired_rotation_turns+l_rotation_target_jumps))<-0.25){
-            l_rotation_target_jumps -= 0.5;
+        boolean condition_greater = true;
+        boolean condition_lesser = true;
+        while (condition_greater || condition_lesser){
+             condition_greater = (l_rotation-(l_desired_rotation_turns+l_rotation_target_jumps))>0.25;
+             condition_lesser = (l_rotation-(l_desired_rotation_turns+l_rotation_target_jumps))<-0.25;
+
+             if (condition_greater){
+                 l_rotation_target_jumps += 0.5;
+             }
+             if (condition_lesser){
+                 l_rotation_target_jumps -= 0.5;
+             }
         }
 
-        try {
-            long mod_result = Math.floorMod(1, (long) l_rotation_target_jumps)*2;
-            if (mod_result == 0.5) {
-                telemetry.addData("flip", "flip");
-            }
-            telemetry.addData("mod_result",mod_result);
+        boolean drive_flip; //is the drive wheel 180 the wrong way and we need to drive reverse?
 
-        } catch (ArithmeticException e){
-            telemetry.addData("Arithmetic error", e.getMessage()); //likley just a div0, so its finee
-        } finally {
-            //again, don't care
+        if (Math.abs(l_rotation_target_jumps)/2 != Math.floor(Math.abs(l_rotation_target_jumps)/2)){
+            drive_flip = true;
+        } else {
+            drive_flip = false;
         }
+        telemetry.addData("flip: ",drive_flip);
+
+
 
 
         double l_turn = l_rotation_pid.update(l_desired_rotation_turns+l_rotation_target_jumps,l_rotation); //This is in 360 turns, not radians.
