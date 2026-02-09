@@ -79,7 +79,7 @@ public class SwerveTest extends OpMode {
 
         //gear math
         double r_average_encoder_position = (l_swerve_up.getCurrentPosition()+ l_swerve_down.getCurrentPosition())/2;
-        double r_rotation_encoder_ratio = (motor_gear_teeth/large_diff_bevel_teeth)/(Encoder_resolution);
+        double r_rotation_encoder_ratio = (motor_gear_teeth/large_diff_spur_teeth)/(Encoder_resolution);
 
 
         //translation and rotation desires
@@ -98,7 +98,9 @@ public class SwerveTest extends OpMode {
 
         if ((Math.abs(translational_y)+Math.abs(translational_x))>0){ //Math.pow and sqrt for length but we don't need that so this is easier on the computer
             l_desired_rotation_turns = Math.atan2(translational_y,translational_x)/(Math.PI*2);
-        } //else do nothing
+        } else {
+            l_desired_rotation_turns = l_rotation;
+        }
 
         //avoids turning more than we need. Should ensure forward always faces where we want! 0.5 means the wheel allways faces forward, with 0.25 we can reverse the wheel and it can be w
         boolean condition_greater = true;
