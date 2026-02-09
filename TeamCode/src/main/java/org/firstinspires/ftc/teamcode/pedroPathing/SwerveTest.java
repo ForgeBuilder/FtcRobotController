@@ -98,8 +98,6 @@ public class SwerveTest extends OpMode {
 
             heading = start_rotation + r_average_encoder_position* rotation_encoder_ratio; //This is in 360 turns, not radians.
 
-            double l_forward = 0;
-
             if ((Math.abs(translational_y)+Math.abs(translational_x))>0) { //Math.pow and sqrt for length but we don't need that so this is easier on the computer
                 target_heading = Math.atan2(translational_y,translational_x)/(Math.PI*2);
             }
@@ -135,8 +133,10 @@ public class SwerveTest extends OpMode {
             telemetry.addData("l_desired_rotation_turns", target_heading);
             telemetry.addData("l_rotation_target_jumps", heading_target_jumps);
 
-            double up_power = -l_forward+turn;
-            double down_power = l_forward+turn;
+            double forward = gamepad1.right_trigger-gamepad1.left_trigger;
+
+            double up_power = -forward+turn;
+            double down_power = forward+turn;
 
             up_motor.setPower(up_power);
             down_motor.setPower(down_power);
