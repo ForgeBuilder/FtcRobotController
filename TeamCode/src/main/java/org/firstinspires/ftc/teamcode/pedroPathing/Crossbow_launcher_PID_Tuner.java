@@ -5,11 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-import java.sql.Array;
-
-import dalvik.system.DelegateLastClassLoader;
 
 @Configurable
 @TeleOp(name="LauncherPIDtuner")
@@ -48,6 +43,8 @@ public class Crossbow_launcher_PID_Tuner extends CrossbowTeleop{
             launcherCoefficients = new PIDFCoefficients(PIDFCoefficientsList[0],PIDFCoefficientsList[1],PIDFCoefficientsList[2],PIDFCoefficientsList[3]);
             leftLaunchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,launcherCoefficients);
             rightLaunchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,launcherCoefficients);
+
+            update_chasis_pid(chassis_pid_coefficients[0], chassis_pid_coefficients[1], chassis_pid_coefficients[2]);
         }
 
         //append to telemetry without clearing previous

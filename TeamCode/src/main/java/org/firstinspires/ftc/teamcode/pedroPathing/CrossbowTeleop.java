@@ -59,6 +59,9 @@ public class CrossbowTeleop extends CrossbowMain {
             }
         }
 
+        if (gamepad1.aWasPressed()){
+            fire_launcher = !fire_launcher;
+        }
 
         //handels limelight
         limelight_code();

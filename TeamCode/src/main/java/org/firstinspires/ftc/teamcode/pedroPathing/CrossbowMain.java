@@ -185,7 +185,7 @@ public class CrossbowMain extends OpMode {
     //the initial remembered pose
 
 
-    boolean spin_launcher = true;
+    boolean spin_launcher = false;
 
     public boolean kick = false;
     public ElapsedTime timeSinceShot = new ElapsedTime();
@@ -258,6 +258,17 @@ public class CrossbowMain extends OpMode {
     protected boolean open_door = false;
 
     protected ElapsedTime door_open_timer = new ElapsedTime();
+
+
+    double limelight_chasis_rotation_multiplier = 0.02; //old system
+    private PID chasis_pid = new PID(0.02,0.001,0);
+
+    public static double[] chassis_pid_coefficients = {
+            0.2,0.001,0,0
+    };
+    public void update_chasis_pid(double P, double I, double D){
+        chasis_pid = new PID(P,I,D);
+    }
 
     public void launcher_code(boolean fire,boolean override_shot){
         rangefind();
@@ -340,17 +351,17 @@ public class CrossbowMain extends OpMode {
 
             //do the lineup
 
-            double limelight_chasis_rotation_multiplier = 0.02;
+            double chasis_pid_output = chasis_pid.update(0,tx);
+            chasis_aim_turn = chasis_pid_output; //meshing old system into new system
 
-            chasis_aim_turn= limelight_chasis_rotation_multiplier*(tx); //This could be a PID and it would be better
             double cats = chasis_aim_turn/Math.abs(chasis_aim_turn); //chasis aim turn sign
 
             if (!follower.isBusy()) { //
                 set_motor_power_zero(); //pedro is off as per the if so this is nececary. without pedro it'll go exponential.
-                leftFront.setPower(leftFront.getPower() + chasis_aim_turn);//+(zero_power_turn*cats));
-                leftBack.setPower(leftBack.getPower() + chasis_aim_turn);//+(zero_power_turn*cats));
-                rightFront.setPower(rightFront.getPower() - chasis_aim_turn);//-(zero_power_turn*cats));
-                rightBack.setPower(rightBack.getPower() - chasis_aim_turn);//-(zero_power_turn*cats));
+                leftFront.setPower(leftFront.getPower() - chasis_aim_turn);//+(zero_power_turn*cats));
+                leftBack.setPower(leftBack.getPower() - chasis_aim_turn);//+(zero_power_turn*cats));
+                rightFront.setPower(rightFront.getPower() + chasis_aim_turn);//-(zero_power_turn*cats));
+                rightBack.setPower(rightBack.getPower() + chasis_aim_turn);//-(zero_power_turn*cats));
             }
             //take the shot - once you've started, don't stop!
 
