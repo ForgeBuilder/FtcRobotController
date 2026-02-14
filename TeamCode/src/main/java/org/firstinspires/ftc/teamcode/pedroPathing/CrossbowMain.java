@@ -370,7 +370,7 @@ public class CrossbowMain extends OpMode {
             boolean basic_speed_met = left_speed_met_easy&&right_speed_met_easy;
 
 
-            boolean open_door_conditions = ((speed_ready && ((angular_velocity_acceptable && follower.isBusy() && limelight_ready) || (override_shot && basic_speed_met))));
+            boolean open_door_conditions = ((speed_ready && ((angular_velocity_acceptable && !follower.isBusy() && limelight_ready) || (override_shot && basic_speed_met))));
             //If the speed goes back down.. too bad. door stays open.
             boolean keep_door_open = open_door && fire;
 
