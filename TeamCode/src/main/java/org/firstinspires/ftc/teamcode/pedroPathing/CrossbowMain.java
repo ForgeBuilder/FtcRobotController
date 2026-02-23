@@ -229,16 +229,16 @@ public class CrossbowMain extends OpMode {
     public boolean trying_to_fire = false;
 
 
-    private int launcher_moving_average_range = 8;
+    private int launcher_moving_average_range = 3;
     private MovingAverage left_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by AI
     private MovingAverage right_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by AI
 
     public static int max_average_error = 15;
-    public static int max_current_error = 80; //there is no 30 so this is goofy but whatever
-    public static int max_current_error_lazy = 100; //there is no 30 so this is goofy but whatever
+    public static int max_current_error = 40; //there is no 30 so this is goofy but whatever
 
     //how fast can the robot be rotating and still fire?
-    double max_angular_velocity = 10;
+    public static double max_angular_velocity = 10;
+    public static double max_linear_velocity = 0.2;
 
     double chasis_aim_turn = 0;
 
@@ -282,18 +282,12 @@ public class CrossbowMain extends OpMode {
         left_speed_average.addValue(left_current_speed);
         double left_speed_average_error = left_speed_average.getAverageError();
         panelsTelemetry.addData("l_speed_avg_error", left_speed_average_error);
-        telemetry.addData("l_speed_avg_error",left_speed_average_error);
+//        telemetry.addData("l_speed_avg_error",left_speed_average_error);
 
         right_speed_average.addValue(left_current_speed);
         double right_speed_average_error = left_speed_average.getAverageError();
         panelsTelemetry.addData("r_speed_avg_error", right_speed_average_error);
-        telemetry.addData("r_speed_avg_error",right_speed_average_error);
-
-        telemetry.addData("right_speed",right_current_speed);
-        telemetry.addData("left_speed",left_current_speed);
-
-//        telemetry.addData("left_speed_met_count",left_speed_met_count);
-//        telemetry.addData("right_speed_met_count",right_speed_met_count);
+//        telemetry.addData("r_speed_avg_error",right_speed_average_error);
 
         //This allows us to see the speeds of the left and right motor and tune the PIDs
         panelsTelemetry.addData("right_current_speed", right_current_speed);
@@ -311,10 +305,10 @@ public class CrossbowMain extends OpMode {
         //new system does not need the superchecks
 
         boolean right_speed_met = Math.abs(launcherSpeed - right_current_speed) < max_current_error;
-        //right_speed_met = right_speed_met && (Math.abs(right_speed_average_error)<max_average_error);
+        right_speed_met = right_speed_met && (Math.abs(right_speed_average_error)<max_average_error);
 //
         boolean left_speed_met = Math.abs(launcherSpeed + left_current_speed) < max_current_error;
-        //left_speed_met = left_speed_met && (Math.abs(left_speed_average_error)<max_average_error);
+        left_speed_met = left_speed_met && (Math.abs(left_speed_average_error)<max_average_error);
 
         double chasis_angular_velocity = pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES);
         double chasis_linear_velocity_odd = pinpoint.getVelY(DistanceUnit.INCH)+pinpoint.getVelY(DistanceUnit.INCH);
@@ -323,7 +317,7 @@ public class CrossbowMain extends OpMode {
         boolean speed_ready = right_speed_met || left_speed_met;
         boolean limelight_ready = (Math.abs(launch_angle_error) < max_limelight_tx_error)&&LLresult.isValid();
         boolean angular_velocity_acceptable = Math.abs(chasis_angular_velocity) < max_angular_velocity;
-        boolean linear_velocity_acceptable = Math.abs(chasis_linear_velocity_odd) < 0.2;
+        boolean linear_velocity_acceptable = Math.abs(chasis_linear_velocity_odd) < max_linear_velocity;
 
 
 
@@ -336,14 +330,15 @@ public class CrossbowMain extends OpMode {
             telemetry.addData("limelight_error,tx",tx);
         }
 
-        panelsTelemetry.addData("chasis_angular_velocity",chasis_angular_velocity);
         telemetry.addData("chasis_angular_velocity",chasis_angular_velocity);
-
         panelsTelemetry.addData("chasis_angular_velocity",chasis_angular_velocity);
+        panelsTelemetry.addData("chasis_linear_velocity_odd",chasis_linear_velocity_odd);
+
 
         panelsTelemetry.addData("speed_ready",speed_ready);
         panelsTelemetry.addData("limelight_ready",limelight_ready);
         panelsTelemetry.addData("angular_velocity_acceptable",angular_velocity_acceptable);
+        panelsTelemetry.addData("linear_velocity_acceptable",linear_velocity_acceptable);
         panelsTelemetry.addData("override_shot",override_shot);
 
 
@@ -370,8 +365,8 @@ public class CrossbowMain extends OpMode {
 
             //take the shot - once you've started, don't stop!
 
-            boolean left_speed_met_easy = Math.abs(launcherSpeed + left_current_speed) < max_current_error_lazy;
-            boolean right_speed_met_easy = Math.abs(launcherSpeed - right_current_speed) < max_current_error_lazy;
+            boolean left_speed_met_easy = Math.abs(launcherSpeed + left_current_speed) < max_current_error;
+            boolean right_speed_met_easy = Math.abs(launcherSpeed - right_current_speed) < max_current_error;
             boolean basic_speed_met = left_speed_met_easy&&right_speed_met_easy;
 
 
