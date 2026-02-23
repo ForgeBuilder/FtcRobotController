@@ -314,15 +314,16 @@ public class CrossbowMain extends OpMode {
         double chasis_linear_velocity_odd = pinpoint.getVelY(DistanceUnit.INCH)+pinpoint.getVelY(DistanceUnit.INCH);
         panelsTelemetry.addData("chasis_linear_velocity_odd",chasis_linear_velocity_odd);
 
-        boolean speed_ready = right_speed_met || left_speed_met;
-        boolean limelight_ready = (Math.abs(launch_angle_error) < max_limelight_tx_error)&&LLresult.isValid();
+        boolean flywheel_speed_acceptable = right_speed_met || left_speed_met;
+        boolean limelight_error_acceptable = (Math.abs(launch_angle_error) < max_limelight_tx_error)&&LLresult.isValid();
+
         boolean angular_velocity_acceptable = Math.abs(chasis_angular_velocity) < max_angular_velocity;
         boolean linear_velocity_acceptable = Math.abs(chasis_linear_velocity_odd) < max_linear_velocity;
 
 
 
-        telemetry.addData("speed_ready",speed_ready);
-        if (limelight_ready) {
+        telemetry.addData("speed_ready",flywheel_speed_acceptable);
+        if (limelight_error_acceptable) {
             telemetry.addData("limelight_ready,tx",tx);
         } else if (!LLresult.isValid()){
             telemetry.addData("limelight_error_tag","No Tag");
@@ -335,8 +336,8 @@ public class CrossbowMain extends OpMode {
         panelsTelemetry.addData("chasis_linear_velocity_odd",chasis_linear_velocity_odd);
 
 
-        panelsTelemetry.addData("speed_ready",speed_ready);
-        panelsTelemetry.addData("limelight_ready",limelight_ready);
+        panelsTelemetry.addData("speed_ready",flywheel_speed_acceptable);
+        panelsTelemetry.addData("limelight_ready",limelight_error_acceptable);
         panelsTelemetry.addData("angular_velocity_acceptable",angular_velocity_acceptable);
         panelsTelemetry.addData("linear_velocity_acceptable",linear_velocity_acceptable);
         panelsTelemetry.addData("override_shot",override_shot);
@@ -355,26 +356,23 @@ public class CrossbowMain extends OpMode {
             chasis_aim_turn-=zero_power_movement_constant;
         }
 
+        boolean left_speed_met_easy = Math.abs(launcherSpeed + left_current_speed) < max_current_error;
+        boolean right_speed_met_easy = Math.abs(launcherSpeed - right_current_speed) < max_current_error;
+        boolean basic_speed_met = left_speed_met_easy&&right_speed_met_easy;
+
         if (fire) {
             trying_to_fire = true;
             spin_launcher = true;
 
             //do the lineup
 
-
-
             //take the shot - once you've started, don't stop!
 
-            boolean left_speed_met_easy = Math.abs(launcherSpeed + left_current_speed) < max_current_error;
-            boolean right_speed_met_easy = Math.abs(launcherSpeed - right_current_speed) < max_current_error;
-            boolean basic_speed_met = left_speed_met_easy&&right_speed_met_easy;
-
-
-            boolean open_door_conditions = ((speed_ready && ((angular_velocity_acceptable && (!follower.isBusy()) && limelight_ready) || (override_shot && basic_speed_met))));
-            //If the speed goes back down.. too bad. door stays open.b
+            boolean open_door_conditions = ((flywheel_speed_acceptable && linear_velocity_acceptable && angular_velocity_acceptable && !follower.isBusy() && limelight_error_acceptable) || (override_shot && basic_speed_met));
+            //If the speed goes back down.. too bad. door stays open. not in use rn because I think it causes missing when we get defended.
             boolean keep_door_open = open_door && fire;
 
-            open_door = open_door_conditions || keep_door_open;
+            open_door = open_door_conditions; //|| keep_door_open;
 
             if (open_door){  // //the right bumper serves as an override
                     launcher_freeze_movement = true;
