@@ -34,7 +34,7 @@ public class CrossbowMain extends OpMode {
 
 //    public PanelsField panelsField = PanelsField.INSTANCE;
 
-    public static double the_time_it_takes_to_open_the_door_in_seconds = 0.6;
+    public static double the_time_it_takes_to_open_the_door_in_seconds = 0;
 
     public static int super_near_shot_speed = 1120;
 
@@ -229,7 +229,7 @@ public class CrossbowMain extends OpMode {
     public boolean trying_to_fire = false;
 
 
-    private int launcher_moving_average_range = 3;
+    private int launcher_moving_average_range = 8;
     private MovingAverage left_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by AI
     private MovingAverage right_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by AI
 
@@ -238,8 +238,8 @@ public class CrossbowMain extends OpMode {
     public static int max_current_error_lazy = 60; //there is no 30 so this is goofy but whatever
 
     //how fast can the robot be rotating and still fire?
-    public static double max_angular_velocity = 10;
-    public static double max_linear_velocity = 0.2;
+    public static double max_angular_velocity = 5;
+    public static double max_linear_velocity = 12;
 
     double chasis_aim_turn = 0;
 
@@ -341,12 +341,12 @@ public class CrossbowMain extends OpMode {
         panelsTelemetry.addData("chasis_linear_velocity_odd",chasis_linear_velocity_odd);
 
 
-        panelsTelemetry.addData("basic_speed_acceptable",basic_speed_met);
-        panelsTelemetry.addData("speed_ready",flywheel_speed_acceptable);
-        panelsTelemetry.addData("limelight_ready",limelight_error_acceptable);
-        panelsTelemetry.addData("angular_velocity_acceptable",angular_velocity_acceptable);
-        panelsTelemetry.addData("linear_velocity_acceptable",linear_velocity_acceptable);
-        panelsTelemetry.addData("override_shot",override_shot);
+        panelsTelemetry.addData("basic_speed_acceptable",bool_spike(basic_speed_met));
+        panelsTelemetry.addData("speed_ready",bool_spike(flywheel_speed_acceptable));
+        panelsTelemetry.addData("limelight_ready",bool_spike(limelight_error_acceptable));
+        panelsTelemetry.addData("angular_velocity_acceptable",bool_spike(angular_velocity_acceptable));
+        panelsTelemetry.addData("linear_velocity_acceptable",bool_spike(linear_velocity_acceptable));
+        panelsTelemetry.addData("override_shot",bool_spike(override_shot));
 
 
 
@@ -619,5 +619,13 @@ public class CrossbowMain extends OpMode {
 
     public int int_clamp(int value,int min,int max){
         return Math.min((Math.max(value,min)),max);
+    }
+
+    public int bool_spike(boolean value){
+        if (value){
+            return (100);
+        } else {
+            return (0);
+        }
     }
 }
