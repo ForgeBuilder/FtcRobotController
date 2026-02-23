@@ -37,7 +37,6 @@ public class CrossbowMain extends OpMode {
     public static double the_time_it_takes_to_open_the_door_in_seconds = 0;
 
     public static int super_near_shot_speed = 1120;
-
     public static int near_shot_speed = 1200;
     public static int far_shot_speed = 1550;
 
@@ -235,10 +234,10 @@ public class CrossbowMain extends OpMode {
 
     public static int max_average_error = 15;
     public static int max_current_error = 40; //there is no 30 so this is goofy but whatever
-    public static int max_current_error_lazy = 60; //there is no 30 so this is goofy but whatever
+    public static int max_current_error_lazy = 100; //there is no 30 so this is goofy but whatever
 
     //how fast can the robot be rotating and still fire?
-    public static double max_angular_velocity = 5;
+    public static double max_angular_velocity = 10;
     public static double max_linear_velocity = 12;
 
     double chasis_aim_turn = 0;
@@ -251,7 +250,8 @@ public class CrossbowMain extends OpMode {
     }
     double zero_power_turn = 0.001;
 
-    double max_limelight_tx_error = 1;
+    public static double max_limelight_tx_error_init = 1;
+    public static double max_limelight_tx_error_sustain = 2;
 
     public static boolean debug_kicker = false;
     public static boolean override_kick = false;
@@ -316,7 +316,8 @@ public class CrossbowMain extends OpMode {
         panelsTelemetry.addData("chasis_linear_velocity_odd",chasis_linear_velocity_odd);
 
         boolean flywheel_speed_acceptable = right_speed_met || left_speed_met;
-        boolean limelight_error_acceptable = (Math.abs(launch_angle_error) < max_limelight_tx_error)&&LLresult.isValid();
+        boolean limelight_error_acceptable_init = (Math.abs(launch_angle_error) < max_limelight_tx_error_init)&&LLresult.isValid();
+        boolean limelight_error_acceptable_sustain = (Math.abs(launch_angle_error) < max_limelight_tx_error_init)&&LLresult.isValid();
 
         boolean angular_velocity_acceptable = Math.abs(chasis_angular_velocity) < max_angular_velocity;
         boolean linear_velocity_acceptable = Math.abs(chasis_linear_velocity_odd) < max_linear_velocity;
@@ -324,7 +325,7 @@ public class CrossbowMain extends OpMode {
 
 
         telemetry.addData("speed_ready",flywheel_speed_acceptable);
-        if (limelight_error_acceptable) {
+        if (limelight_error_acceptable_init) {
             telemetry.addData("limelight_ready,tx",tx);
         } else if (!LLresult.isValid()){
             telemetry.addData("limelight_error_tag","No Tag");
@@ -334,16 +335,17 @@ public class CrossbowMain extends OpMode {
 
         boolean left_speed_met_easy = Math.abs(launcherSpeed + left_current_speed) < max_current_error_lazy;
         boolean right_speed_met_easy = Math.abs(launcherSpeed - right_current_speed) < max_current_error_lazy;
-        boolean basic_speed_met = left_speed_met_easy&&right_speed_met_easy;
+        boolean basic_speed_acceptable = left_speed_met_easy&&right_speed_met_easy;
 
         telemetry.addData("chasis_angular_velocity",chasis_angular_velocity);
+
         panelsTelemetry.addData("chasis_angular_velocity",chasis_angular_velocity);
         panelsTelemetry.addData("chasis_linear_velocity_odd",chasis_linear_velocity_odd);
 
 
-        panelsTelemetry.addData("basic_speed_acceptable",bool_spike(basic_speed_met));
-        panelsTelemetry.addData("speed_ready",bool_spike(flywheel_speed_acceptable));
-        panelsTelemetry.addData("limelight_ready",bool_spike(limelight_error_acceptable));
+        panelsTelemetry.addData("basic_speed_acceptable",bool_spike(basic_speed_acceptable));
+        panelsTelemetry.addData("flywheel_speed_acceptable",bool_spike(flywheel_speed_acceptable));
+        panelsTelemetry.addData("limelight_error_acceptable",bool_spike(limelight_error_acceptable_init));
         panelsTelemetry.addData("angular_velocity_acceptable",bool_spike(angular_velocity_acceptable));
         panelsTelemetry.addData("linear_velocity_acceptable",bool_spike(linear_velocity_acceptable));
         panelsTelemetry.addData("override_shot",bool_spike(override_shot));
@@ -370,11 +372,11 @@ public class CrossbowMain extends OpMode {
 
             //take the shot - once you've started, don't stop!
 
-            boolean non_flywheel_conditions = (linear_velocity_acceptable && angular_velocity_acceptable && !follower.isBusy() && limelight_error_acceptable);
+            boolean non_flywheel_conditions = (linear_velocity_acceptable && angular_velocity_acceptable && !follower.isBusy());
 
-            boolean open_door_conditions = ((flywheel_speed_acceptable && non_flywheel_conditions) || (override_shot && basic_speed_met));
+            boolean open_door_conditions = ((limelight_error_acceptable_init && flywheel_speed_acceptable && non_flywheel_conditions) || (override_shot && basic_speed_acceptable));
             //If the speed goes back down.. too bad. door stays open. not in use rn because I think it causes missing when we get defended.
-            boolean keep_door_open_conditions = (non_flywheel_conditions && basic_speed_met);
+            boolean keep_door_open_conditions = (non_flywheel_conditions && limelight_error_acceptable_sustain && basic_speed_acceptable);
 
             open_door = open_door_conditions || (keep_door_open_conditions && open_door);
 
