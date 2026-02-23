@@ -235,6 +235,7 @@ public class CrossbowMain extends OpMode {
 
     public static int max_average_error = 15;
     public static int max_current_error = 40; //there is no 30 so this is goofy but whatever
+    public static int max_current_error_lazy = 60; //there is no 30 so this is goofy but whatever
 
     //how fast can the robot be rotating and still fire?
     public static double max_angular_velocity = 10;
@@ -331,11 +332,16 @@ public class CrossbowMain extends OpMode {
             telemetry.addData("limelight_error,tx",tx);
         }
 
+        boolean left_speed_met_easy = Math.abs(launcherSpeed + left_current_speed) < max_current_error_lazy;
+        boolean right_speed_met_easy = Math.abs(launcherSpeed - right_current_speed) < max_current_error_lazy;
+        boolean basic_speed_met = left_speed_met_easy&&right_speed_met_easy;
+
         telemetry.addData("chasis_angular_velocity",chasis_angular_velocity);
         panelsTelemetry.addData("chasis_angular_velocity",chasis_angular_velocity);
         panelsTelemetry.addData("chasis_linear_velocity_odd",chasis_linear_velocity_odd);
 
 
+        panelsTelemetry.addData("basic_speed_acceptable",basic_speed_met);
         panelsTelemetry.addData("speed_ready",flywheel_speed_acceptable);
         panelsTelemetry.addData("limelight_ready",limelight_error_acceptable);
         panelsTelemetry.addData("angular_velocity_acceptable",angular_velocity_acceptable);
@@ -356,10 +362,6 @@ public class CrossbowMain extends OpMode {
             chasis_aim_turn-=zero_power_movement_constant;
         }
 
-        boolean left_speed_met_easy = Math.abs(launcherSpeed + left_current_speed) < max_current_error;
-        boolean right_speed_met_easy = Math.abs(launcherSpeed - right_current_speed) < max_current_error;
-        boolean basic_speed_met = left_speed_met_easy&&right_speed_met_easy;
-
         if (fire) {
             trying_to_fire = true;
             spin_launcher = true;
@@ -368,11 +370,13 @@ public class CrossbowMain extends OpMode {
 
             //take the shot - once you've started, don't stop!
 
-            boolean open_door_conditions = ((flywheel_speed_acceptable && linear_velocity_acceptable && angular_velocity_acceptable && !follower.isBusy() && limelight_error_acceptable) || (override_shot && basic_speed_met));
-            //If the speed goes back down.. too bad. door stays open. not in use rn because I think it causes missing when we get defended.
-            boolean keep_door_open = open_door && fire;
+            boolean non_flywheel_conditions = (linear_velocity_acceptable && angular_velocity_acceptable && !follower.isBusy() && limelight_error_acceptable);
 
-            open_door = open_door_conditions; //|| keep_door_open;
+            boolean open_door_conditions = ((flywheel_speed_acceptable && non_flywheel_conditions) || (override_shot && basic_speed_met));
+            //If the speed goes back down.. too bad. door stays open. not in use rn because I think it causes missing when we get defended.
+            boolean keep_door_open_conditions = (non_flywheel_conditions && basic_speed_met);
+
+            open_door = open_door_conditions || (keep_door_open_conditions && open_door);
 
             if (open_door){  // //the right bumper serves as an override
                     launcher_freeze_movement = true;
