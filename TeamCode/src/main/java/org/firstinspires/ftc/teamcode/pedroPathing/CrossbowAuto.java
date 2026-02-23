@@ -69,8 +69,9 @@ public class CrossbowAuto extends CrossbowMain{
 //            //this thing is for drive motors
 //            set_motor_power_zero();
 //        }
-        boolean launcher_override = (timeSinceShot.seconds() > insanity_time);
+        boolean launcher_override = false; //(timeSinceShot.seconds() > insanity_time);
         launcher_code(fire_artifact, launcher_override);
+        if (fire_artifact && !follower.isBusy()) {manual_drive(0,0,0,0);}
 
         Pose current_posee = follower.getPose();
         telemetry.addData("Pedro Pose: ", current_posee.getX() + ", " + current_posee.getY() + ", " + current_posee.getHeading());

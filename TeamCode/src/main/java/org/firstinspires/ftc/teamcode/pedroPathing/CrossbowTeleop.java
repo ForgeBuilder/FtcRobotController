@@ -43,21 +43,22 @@ public class CrossbowTeleop extends CrossbowMain {
         super.loop();
 
 
+//this vvv should not be in loop
 
-        try {
-            if (team == "blue"){
-                autopose = CrossbowAutoBlue.auto_current_pose;
-            } else if (team == "red"){
-                autopose = CrossbowAutoRed.auto_current_pose;
-            }
-
-        } finally {
-            if (autopose != null){
-                telemetry.addData("auto_pose",autopose);
-            } else {
-                telemetry.addData("auto_pose","no auto pose found");
-            }
-        }
+//        try {
+//            if (team == "blue"){
+//                autopose = CrossbowAutoBlue.auto_current_pose;
+//            } else if (team == "red"){
+//                autopose = CrossbowAutoRed.auto_current_pose;
+//            }
+//
+//        } finally {
+//            if (autopose != null){
+//                telemetry.addData("auto_pose",autopose);
+//            } else {
+//                telemetry.addData("auto_pose","no auto pose found");
+//            }
+//        }
 
         if (gamepad1.aWasPressed()){
             fire_launcher = !fire_launcher;
@@ -79,12 +80,11 @@ public class CrossbowTeleop extends CrossbowMain {
             //and made the motors public. It is what it is.. this is how we learn!
 
             //For the teleop functions I could just have them in here and give them refrences to what they need.
-            drive_with_teleop(
+            manual_drive(
                     gamepad1.left_stick_y,
                     gamepad1.left_stick_x,
                     gamepad1.right_stick_x,
-                    gamepad1.left_trigger,
-                    ((gamepad1.right_trigger > 0.1) || (gamepad2.right_trigger > 0.1))
+                    gamepad1.left_trigger
             );
         }
         //must go after drivetrain

@@ -261,10 +261,11 @@ public class CrossbowMain extends OpMode {
 
 
     double limelight_chasis_rotation_multiplier = 0.02; //old system
-    private PID chasis_pid = new PID(0.02,0.001,0);
+    private PID chasis_pid = new PID(0.01,0,0);
 
+    public static double zero_power_movement_constant = 0.08;
     public static double[] chassis_pid_coefficients = {
-            0.2,0.001,0,0
+            0.02,0.001,0
     };
     public void update_chasis_pid(double P, double I, double D){
         chasis_pid = new PID(P,I,D);
@@ -345,24 +346,28 @@ public class CrossbowMain extends OpMode {
         panelsTelemetry.addData("angular_velocity_acceptable",angular_velocity_acceptable);
         panelsTelemetry.addData("override_shot",override_shot);
 
+
+
+        double chasis_pid_output = chasis_pid.update(0,tx);
+
+        chasis_aim_turn = chasis_pid_output; //integration of Zero power movement
+
+        double zeropower_deadzone = 0.01;
+
+        if (chasis_pid_output > zeropower_deadzone){
+            chasis_aim_turn+=zero_power_movement_constant;
+        } else if (chasis_pid_output < -zeropower_deadzone){
+            chasis_aim_turn-=zero_power_movement_constant;
+        }
+
         if (fire) {
             trying_to_fire = true;
             spin_launcher = true;
 
             //do the lineup
 
-            double chasis_pid_output = chasis_pid.update(0,tx);
-            chasis_aim_turn = chasis_pid_output; //meshing old system into new system
 
-            double cats = chasis_aim_turn/Math.abs(chasis_aim_turn); //chasis aim turn sign
 
-            if (!follower.isBusy()) { //
-                set_motor_power_zero(); //pedro is off as per the if so this is nececary. without pedro it'll go exponential.
-                leftFront.setPower(leftFront.getPower() - chasis_aim_turn);//+(zero_power_turn*cats));
-                leftBack.setPower(leftBack.getPower() - chasis_aim_turn);//+(zero_power_turn*cats));
-                rightFront.setPower(rightFront.getPower() + chasis_aim_turn);//-(zero_power_turn*cats));
-                rightBack.setPower(rightBack.getPower() + chasis_aim_turn);//-(zero_power_turn*cats));
-            }
             //take the shot - once you've started, don't stop!
 
             boolean left_speed_met_easy = Math.abs(launcherSpeed + left_current_speed) < max_current_error_lazy;
@@ -370,8 +375,8 @@ public class CrossbowMain extends OpMode {
             boolean basic_speed_met = left_speed_met_easy&&right_speed_met_easy;
 
 
-            boolean open_door_conditions = ((speed_ready && ((angular_velocity_acceptable && !follower.isBusy() && limelight_ready) || (override_shot && basic_speed_met))));
-            //If the speed goes back down.. too bad. door stays open.
+            boolean open_door_conditions = ((speed_ready && ((angular_velocity_acceptable && (!follower.isBusy()) && limelight_ready) || (override_shot && basic_speed_met))));
+            //If the speed goes back down.. too bad. door stays open.b
             boolean keep_door_open = open_door && fire;
 
             open_door = open_door_conditions || keep_door_open;
@@ -383,6 +388,7 @@ public class CrossbowMain extends OpMode {
             }
         } else {
             launcher_freeze_movement = false;
+            chasis_aim_turn = 0;
 //            spin_launcher = false;
             trying_to_fire = false;
             open_door = false;
@@ -455,7 +461,6 @@ public class CrossbowMain extends OpMode {
         telemetry.addData("current pipeline",LLresult.getPipelineIndex());
         if ((LLresult != null) && LLresult.isValid()) {
             tx = LLresult.getTx()+limelight_x_offset; // How far left or right the target is (degrees)
-            telemetry.addData("tx",tx);
 
 //            telemetry.addData("tx",tx);
 
@@ -495,7 +500,7 @@ public class CrossbowMain extends OpMode {
         //do a \n for each line of telemetry you put above so wheather or not lime has a target it takes the same space.
             tx = 0;
         }
-        launch_angle_error = tx;
+        telemetry.addData("tx",tx);
     }
 
     protected boolean spin_intake = false;
@@ -576,7 +581,7 @@ public class CrossbowMain extends OpMode {
     }
 
     //manual control for drive, will use user input if pedro is not executing a task.
-    public void drive_with_teleop(double forward,double strafe,double turn,double slowdown,boolean fire){
+    public void manual_drive(double forward, double strafe, double turn, double slowdown){
         if (follower_was_just_busy){
             rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -587,15 +592,13 @@ public class CrossbowMain extends OpMode {
 
         //if we are trying to fire, line up with the goal.
 
-
         //slowdown should probably be in teleop..
         double slowdown_multiplier = 1 - (slowdown * .75);
-
 
         //had to make it negitive for now to account for weird pedro reversal stuff. figure this out more later.
         forward = -forward*slowdown_multiplier;
         strafe = -strafe*slowdown_multiplier;
-        turn = -turn*slowdown_multiplier;
+        turn = (-turn*slowdown_multiplier)+chasis_aim_turn;
 
         leftFront.setPower(forward - strafe - turn);
         leftBack.setPower(forward + strafe - turn);
