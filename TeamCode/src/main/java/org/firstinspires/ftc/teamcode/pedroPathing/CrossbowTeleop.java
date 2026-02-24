@@ -68,7 +68,7 @@ public class CrossbowTeleop extends CrossbowMain {
         limelight_code();
 
         //handles saving position and making return path to saved position
-        teleop_return_to_position();
+        //teleop_return_to_position();
 
         //drivetrain stuff
         if (follower.isBusy()) {

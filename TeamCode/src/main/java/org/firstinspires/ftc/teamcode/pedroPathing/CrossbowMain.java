@@ -57,7 +57,7 @@ public class CrossbowMain extends OpMode {
     private DcMotorEx rightLaunchMotor;
     private DcMotorEx leftLaunchMotor;
 
-    public PIDFCoefficients launcherCoefficients = new PIDFCoefficients(100,1,1,0);
+    public PIDFCoefficients launcherCoefficients = new PIDFCoefficients(100,0,0,11.2);
 
     public DcMotorEx intakeMotor;
 
@@ -114,10 +114,12 @@ public class CrossbowMain extends OpMode {
         rightLaunchMotor = hardwareMap.get(DcMotorEx.class,"lm1");
         rightLaunchMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightLaunchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherCoefficients);
+        rightLaunchMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); //don't waste energy braking on 0 power bro
 
         leftLaunchMotor = hardwareMap.get(DcMotorEx.class,"lm2");
         leftLaunchMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftLaunchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherCoefficients);
+        leftLaunchMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         intakeMotor = hardwareMap.get(DcMotorEx.class,"intake");
 
@@ -184,7 +186,7 @@ public class CrossbowMain extends OpMode {
     //the initial remembered pose
 
 
-    boolean spin_launcher = false;
+    protected boolean spin_launcher = false;
 
     public boolean kick = false;
     public ElapsedTime timeSinceShot = new ElapsedTime();
@@ -234,7 +236,7 @@ public class CrossbowMain extends OpMode {
 
     public static int max_average_error = 15;
     public static int max_current_error = 40; //there is no 30 so this is goofy but whatever
-    public static int max_current_error_lazy = 100; //there is no 30 so this is goofy but whatever
+    public static int max_current_error_lazy = 300; //there is no 30 so this is goofy but whatever
 
     //how fast can the robot be rotating and still fire?
     public static double max_angular_velocity = 10;
@@ -316,8 +318,8 @@ public class CrossbowMain extends OpMode {
         panelsTelemetry.addData("chasis_linear_velocity_odd",chasis_linear_velocity_odd);
 
         boolean flywheel_speed_acceptable = right_speed_met || left_speed_met;
-        boolean limelight_error_acceptable_init = (Math.abs(launch_angle_error) < max_limelight_tx_error_init)&&LLresult.isValid();
-        boolean limelight_error_acceptable_sustain = (Math.abs(launch_angle_error) < max_limelight_tx_error_init)&&LLresult.isValid();
+        boolean limelight_error_acceptable_init = (Math.abs(tx) < max_limelight_tx_error_init)&&LLresult.isValid();
+        boolean limelight_error_acceptable_sustain = (Math.abs(tx) < max_limelight_tx_error_init)&&LLresult.isValid();
 
         boolean angular_velocity_acceptable = Math.abs(chasis_angular_velocity) < max_angular_velocity;
         boolean linear_velocity_acceptable = Math.abs(chasis_linear_velocity_odd) < max_linear_velocity;
@@ -388,7 +390,7 @@ public class CrossbowMain extends OpMode {
         } else {
             launcher_freeze_movement = false;
             chasis_aim_turn = 0;
-//            spin_launcher = false;
+            if (gamepad1.b){ spin_launcher = false;}
             trying_to_fire = false;
             open_door = false;
             telemetry.addData("speed_ready"," -N/A-");
@@ -417,7 +419,7 @@ public class CrossbowMain extends OpMode {
         }
 
         if (spin_launcher){
-            rightLaunchMotor.setPower(1);
+            rightLaunchMotor.setPower(1); //try to reduce how often we set these later, I hear it can be taxing.
             rightLaunchMotor.setVelocity(launcherSpeed); //ticks/s
             leftLaunchMotor.setPower(1);
             leftLaunchMotor.setVelocity(-1*launcherSpeed); //ticks/s
@@ -431,16 +433,21 @@ public class CrossbowMain extends OpMode {
     }
 
     public void rangefind(){
-        if (estimated_distance < 50){
-            launcherSpeed = super_near_shot_speed;
-            limelight_x_offset = 0;
-        } else if (estimated_distance < 130){
-            launcherSpeed = near_shot_speed;
-            limelight_x_offset = 0;
-        } else {
-            launcherSpeed = far_shot_speed;
-            limelight_x_offset = -2*apm;
-        }
+        launcherSpeed = (int) (2.51183*estimated_distance+1031);
+        launcherSpeed = Math.floorMod(launcherSpeed,20);
+
+        panelsTelemetry.addData("launcherTargetSpeed",launcherSpeed);
+
+//        if (estimated_distance < 50){
+//            launcherSpeed = super_near_shot_speed;
+//            limelight_x_offset = 0;
+//        } else if (estimated_distance < 130){
+//            launcherSpeed = near_shot_speed;
+//            limelight_x_offset = 0;
+//        } else {
+//            launcherSpeed = far_shot_speed;
+//            limelight_x_offset = -2*apm;
+//        }
     }
 
     public LLResult LLresult;
