@@ -209,7 +209,7 @@ public class CrossbowMain extends OpMode {
     double right_speed_at_kick = 0.0;
 
 
-    public static double KickerLaunchAngle = 0.2;
+    public static double KickerLaunchAngle = 0.3;
     public static double KickerIdleAngle = 0;
 
     private int launcherSpeed = 780;
@@ -241,15 +241,18 @@ public class CrossbowMain extends OpMode {
 
 
     private int launcher_moving_average_range = 8;
+    private int limelight_error_moving_average_range = 8;
     private MovingAverage left_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by AI
-    private MovingAverage right_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by AI
+    private MovingAverage right_speed_average = new MovingAverage(launcher_moving_average_range); //this class was written by
+
+    private MovingAverage limelight_error_average = new MovingAverage(limelight_error_moving_average_range); //this class was written by AI
 
     public static int max_average_error = 15;
     public static int max_current_error = 40; //there is no 30 so this is goofy but whatever
     public static int max_current_error_lazy = 300; //there is no 30 so this is goofy but whatever
 
     //how fast can the robot be rotating and still fire?
-    public static double max_angular_velocity = 10;
+    public static double max_angular_velocity = 12;
     public static double max_linear_velocity = 12;
 
     double chasis_aim_turn = 0;
@@ -262,9 +265,10 @@ public class CrossbowMain extends OpMode {
     }
     double zero_power_turn = 0.001;
 
-    public static double max_limelight_tx_error_init = 1;
+    public static double max_limelight_tx_error_init = 0.5;
     public static double max_limelight_tx_error_sustain = 2;
 
+    public static double max_limelight_average_error = 1;
     public static boolean debug_kicker = false;
     public static boolean override_kick = false;
 
@@ -328,8 +332,13 @@ public class CrossbowMain extends OpMode {
         panelsTelemetry.addData("chasis_linear_velocity_odd",chasis_linear_velocity_odd);
 
         boolean flywheel_speed_acceptable = right_speed_met || left_speed_met;
-        boolean limelight_error_acceptable_init = (Math.abs(tx) < max_limelight_tx_error_init)&&LLresult.isValid();
-        boolean limelight_error_acceptable_sustain = (Math.abs(tx) < max_limelight_tx_error_init)&&LLresult.isValid();
+
+
+
+        boolean limelight_average_error_acceptable = Math.abs(limelight_error_average.getAverageError()) < max_limelight_average_error;
+
+        boolean limelight_error_acceptable_init = limelight_average_error_acceptable && (Math.abs(tx) < max_limelight_tx_error_init)&&LLresult.isValid();
+        boolean limelight_error_acceptable_sustain = (Math.abs(tx) < max_limelight_tx_error_sustain)&&LLresult.isValid();
 
         boolean angular_velocity_acceptable = Math.abs(chasis_angular_velocity) < max_angular_velocity;
         boolean linear_velocity_acceptable = Math.abs(chasis_linear_velocity_odd) < max_linear_velocity;
@@ -447,8 +456,8 @@ public class CrossbowMain extends OpMode {
 //https://www.desmos.com/calculator/wz3ai30ujx
     public static double[] rangefinder_constants = {
             0.000588967,
-            2.42018,
-            1034.61992
+            3,
+            940
     };
     public void rangefind(){
         double unrounded_launcher_speed = rangefinder_constants[0]*Math.pow(estimated_distance,2)+rangefinder_constants[1]*estimated_distance+rangefinder_constants[2];
@@ -534,6 +543,7 @@ public class CrossbowMain extends OpMode {
         //do a \n for each line of telemetry you put above so wheather or not lime has a target it takes the same space.
             tx = 0;
         }
+        limelight_error_average.addValue(tx);
         telemetry.addData("tx",tx);
     }
 
