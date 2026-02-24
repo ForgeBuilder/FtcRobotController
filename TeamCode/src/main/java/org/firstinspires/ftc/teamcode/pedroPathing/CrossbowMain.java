@@ -432,8 +432,18 @@ public class CrossbowMain extends OpMode {
 //        telemetry.addData("launchmotor2 velocity", leftLaunchMotor.getVelocity());//ticks/s
     }
 
+
+    //rangefinder curve fit constants
+//https://www.desmos.com/calculator/wz3ai30ujx
+    public static double[] rangefinder_constants = {
+            0.000588967,
+            2.42018,
+            1034.61992
+    };
     public void rangefind(){
-        launcherSpeed = Math.round((long) ((2.51183*estimated_distance+1031)/20))*20;
+        double unrounded_launcher_speed = rangefinder_constants[0]*Math.pow(estimated_distance,2)+rangefinder_constants[1]*estimated_distance+rangefinder_constants[0];
+        launcherSpeed = Math.round((long) (unrounded_launcher_speed/20))*20;
+
 
         panelsTelemetry.addData("launcherTargetSpeed",launcherSpeed);
 
