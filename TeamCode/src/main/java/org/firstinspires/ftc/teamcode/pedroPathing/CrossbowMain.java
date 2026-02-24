@@ -36,9 +36,16 @@ public class CrossbowMain extends OpMode {
 
     public static double the_time_it_takes_to_open_the_door_in_seconds = 0;
 
-    public static int super_near_shot_speed = 1120;
+
+
+    //these rough estimates are now outdated and should only be used as a starting point
+
+//    public static int super_near_shot_speed = 1120;
     public static int near_shot_speed = 1200;
-    public static int far_shot_speed = 1550;
+
+//    public static int far_shot_speed = 1550;
+
+
 
     public boolean launcher_freeze_movement = false;
     // Declare OpMode members.
@@ -441,7 +448,7 @@ public class CrossbowMain extends OpMode {
             1034.61992
     };
     public void rangefind(){
-        double unrounded_launcher_speed = rangefinder_constants[0]*Math.pow(estimated_distance,2)+rangefinder_constants[1]*estimated_distance+rangefinder_constants[0];
+        double unrounded_launcher_speed = rangefinder_constants[0]*Math.pow(estimated_distance,2)+rangefinder_constants[1]*estimated_distance+rangefinder_constants[2];
         launcherSpeed = Math.round((long) (unrounded_launcher_speed/20))*20;
 
 
