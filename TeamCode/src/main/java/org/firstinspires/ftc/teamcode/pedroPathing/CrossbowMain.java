@@ -433,8 +433,7 @@ public class CrossbowMain extends OpMode {
     }
 
     public void rangefind(){
-        launcherSpeed = (int) (2.51183*estimated_distance+1031);
-        launcherSpeed = Math.floorMod(launcherSpeed,20);
+        launcherSpeed = Math.round((long) ((2.51183*estimated_distance+1031)/20))*20;
 
         panelsTelemetry.addData("launcherTargetSpeed",launcherSpeed);
 
