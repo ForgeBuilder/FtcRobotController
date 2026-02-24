@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 
 //import com.bylazar.field.PanelsField;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.ftc.PoseConverter;
 import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.PedroCoordinates;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.PoseTracker;
 import com.pedropathing.paths.PathChain;
@@ -18,6 +20,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
@@ -508,6 +511,15 @@ public class CrossbowMain extends OpMode {
 
             //trig solution
             Pose3D limelight_botpose = LLresult.getBotpose_MT2();
+            Position llbpposition = limelight_botpose.getPosition();
+            Pose2D llpose2d = new Pose2D(DistanceUnit.METER,llbpposition.x,llbpposition.y,AngleUnit.DEGREES,limelight_botpose.getOrientation().getYaw());
+            Pose pedro_pose_from_limelight = PoseConverter.pose2DToPose(llpose2d, PedroCoordinates.INSTANCE);
+
+            panelsTelemetry.addData("pedro_pose_from_limelight x",pedro_pose_from_limelight.getX());
+            panelsTelemetry.addData("pedro_pose_from_limelight y",pedro_pose_from_limelight.getY());
+            panelsTelemetry.addData("pedro_pose_from_limelight heading",pedro_pose_from_limelight.getHeading());
+
+
             Position limelight_position = limelight_botpose.getPosition();
             Position goal_position = new Position(DistanceUnit.INCH,65,65,0,0);
 
