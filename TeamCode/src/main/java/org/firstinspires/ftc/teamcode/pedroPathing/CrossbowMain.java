@@ -512,13 +512,13 @@ public class CrossbowMain extends OpMode {
             turret_motor_runmode = DcMotor.RunMode.RUN_USING_ENCODER;
             turret_motor.setMode(turret_motor_runmode);
         }
-        turret_motor.setPower(power);
         if (magnetic_limit_switch_left.getValue() == 1){
-
+            power = Math.max(power, 0);
         }
         if (magnetic_limit_switch_right.getValue() == 1){
-
+            power = Math.min(power, 0);
         }
+        turret_motor.setPower(power);
     }
     public void limelight_code(){
         //limelight stuff - should always run
