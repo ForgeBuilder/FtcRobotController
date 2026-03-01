@@ -58,6 +58,9 @@ public class CrossbowMain extends OpMode {
 
     private GoBildaPinpointDriver pinpoint;
 
+    private DcMotorEx turret_motor;
+    private DcMotor.RunMode turret_motor_runmode = DcMotor.RunMode.RUN_USING_ENCODER;
+
     private DcMotor rightFront;
     private DcMotor rightBack;
 
@@ -111,6 +114,9 @@ public class CrossbowMain extends OpMode {
     @Override
     public void init() {
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
+
+        turret_motor = hardwareMap.get(DcMotorEx.class, "turret");
+        turret_motor.setMode(turret_motor_runmode);
 
         rightFront = hardwareMap.get(DcMotor.class, "rf");
         rightBack = hardwareMap.get(DcMotor.class, "rb");
@@ -486,6 +492,14 @@ public class CrossbowMain extends OpMode {
     public double limelight_x_offset = 0.0;
 
     public double estimated_distance = 0;
+
+    public void spin_turret_simple(double power){
+        if (turret_motor_runmode != DcMotor.RunMode.RUN_USING_ENCODER){
+            turret_motor_runmode = DcMotor.RunMode.RUN_USING_ENCODER;
+            turret_motor.setMode(turret_motor_runmode);
+        }
+        turret_motor.setPower(power);
+    }
     public void limelight_code(){
         //limelight stuff - should always run
 
@@ -643,6 +657,17 @@ public class CrossbowMain extends OpMode {
         forward = -forward*slowdown_multiplier;
         strafe = -strafe*slowdown_multiplier;
         turn = (-turn*slowdown_multiplier)+chasis_aim_turn;
+
+        //field centric
+//        double pinpoint_heading = follower.getHeading();
+//
+//        panelsTelemetry.addData("pinpoint_heading",pinpoint_heading);
+//
+//        double field_forward = forward*Math.sin(pinpoint_heading)-strafe*Math.cos(pinpoint_heading);
+//        double field_strafe = forward*Math.cos(pinpoint_heading)+strafe*Math.sin(pinpoint_heading);
+//
+//        forward = field_forward;
+//        strafe = field_strafe;
 
         leftFront.setPower(forward - strafe - turn);
         leftBack.setPower(forward + strafe - turn);

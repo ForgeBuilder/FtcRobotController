@@ -89,6 +89,14 @@ public class CrossbowTeleop extends CrossbowMain {
         }
         //must go after drivetrain
 
+        //launcher and turret stuff
+
+        //turret
+
+        spin_turret_simple(gamepad2.right_stick_x);
+
+        //launcher
+
         fire_launcher = (gamepad2.right_trigger > 0.1) || (gamepad1.right_trigger > 0.1) || debug_fire;
 
         launcher_code(fire_launcher, gamepad1.right_bumper);

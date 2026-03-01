@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 @TeleOp(name="LauncherPIDtuner")
 public class Crossbow_launcher_PID_Tuner extends CrossbowTeleop{
 
-    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(0.0,0.0,0.0,0.0);
+    private PIDFCoefficients launcherCoefficients = new PIDFCoefficients(100,0.0,0.0,11.2);
     private int selector = 0;
 
     private DcMotorEx leftLaunchMotor;
