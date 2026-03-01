@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
 //import com.bylazar.field.PanelsField;
+import android.text.method.Touch;
+
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ftc.PoseConverter;
 import com.pedropathing.geometry.BezierLine;
@@ -14,6 +16,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -70,6 +73,9 @@ public class CrossbowMain extends OpMode {
     private DcMotorEx rightLaunchMotor;
     private DcMotorEx leftLaunchMotor;
 
+    private TouchSensor magnetic_limit_switch_left;
+    private TouchSensor magnetic_limit_switch_right;
+
     public PIDFCoefficients launcherCoefficients = new PIDFCoefficients(100,0,0,11.2);
 
     public DcMotorEx intakeMotor;
@@ -95,6 +101,7 @@ public class CrossbowMain extends OpMode {
 
     public double apm;
 
+
     public void set_team(String team){
         if (team == "red"){
             backboard_pipeline = 3;
@@ -113,6 +120,10 @@ public class CrossbowMain extends OpMode {
 
     @Override
     public void init() {
+
+        magnetic_limit_switch_left = hardwareMap.get(TouchSensor.class,"magL");
+        magnetic_limit_switch_right = hardwareMap.get(TouchSensor.class,"magR");
+
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
 
         turret_motor = hardwareMap.get(DcMotorEx.class, "turret");
@@ -180,6 +191,9 @@ public class CrossbowMain extends OpMode {
     public void loop() {
         follower_code();
         intake_code();
+
+        panelsTelemetry.addData("magnetic_limit_switch_left", magnetic_limit_switch_left.getValue());
+        panelsTelemetry.addData("magnetic_limit_switch_right",magnetic_limit_switch_right.getValue());
     }
 
     //exists purely for organisation, part of loop.
@@ -499,6 +513,12 @@ public class CrossbowMain extends OpMode {
             turret_motor.setMode(turret_motor_runmode);
         }
         turret_motor.setPower(power);
+        if (magnetic_limit_switch_left.getValue() == 1){
+
+        }
+        if (magnetic_limit_switch_right.getValue() == 1){
+
+        }
     }
     public void limelight_code(){
         //limelight stuff - should always run
