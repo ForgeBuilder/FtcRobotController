@@ -97,9 +97,9 @@ public class CrossbowTeleop extends CrossbowMain {
 
         //launcher
 
-        fire_launcher = (gamepad2.right_trigger > 0.1) || (gamepad1.right_trigger > 0.1) || debug_fire;
+        fire_launcher = gamepad1.y || (gamepad2.right_trigger > 0.1) || (gamepad1.right_bumper) || debug_fire;
 
-        launcher_code(fire_launcher, gamepad1.right_bumper);
+        launcher_code(fire_launcher, gamepad1.y);
 
         if (gamepad1.dpadUpWasPressed()) {
             set_launcher_speed(get_launcher_speed() + 40);
@@ -116,9 +116,9 @@ public class CrossbowTeleop extends CrossbowMain {
                 telemetry.addData("MT2 Location\n", "x: " + x * meters_to_inches + "\ny: " + y * meters_to_inches + "\nyaw: " + yaw);
             }
         }
-        if (gamepad1.yWasPressed()) {
-            limelight_set_pose();
-        }
+//        if (gamepad1.yWasPressed()) {
+//            limelight_set_pose();
+//        }
 
         // Show the elapsed game time and update telemetry so we can see it
         telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -137,20 +137,22 @@ public class CrossbowTeleop extends CrossbowMain {
         panelsTelemetry.addData("spin intake",spin_intake);
         panelsTelemetry.addData("reverse intake",reverse_intake);
 
-        if (gamepad2.a||gamepad1.left_bumper){
+        boolean activate = (gamepad1.right_trigger > 0.1) || gamepad2.a;
+
+        if (activate){
             spin_intake = true;
         } else {
             spin_intake = false;
         }
 
-        if (!spin_intake && (gamepad2.a || gamepad1.left_bumper)) {
-            if (intake_reverse_timer.seconds()>1){
-                reverse_intake = true;
-            }
-        } else {
-            reverse_intake = false;
-            intake_reverse_timer.reset();
-        }
+//        if (!spin_intake && activate) {
+//            if (intake_reverse_timer.seconds()>1){
+//                reverse_intake = true;
+//            }
+//        } else {
+//            reverse_intake = false;
+//            intake_reverse_timer.reset();
+//        }
         super.intake_code();
     }
 }
