@@ -61,8 +61,19 @@ public class CrossbowMain extends OpMode {
 
     private GoBildaPinpointDriver pinpoint;
 
+///turret variables
     private DcMotorEx turret_motor;
     private DcMotor.RunMode turret_motor_runmode = DcMotor.RunMode.RUN_USING_ENCODER;
+
+    private double turret_motor_ppr = 537.7;
+
+    private int turret_large_gear_teeth;
+
+    private int turret_small_gear_teeth;
+
+    private double turret_ppr;
+
+    private int turret_max_ticks;
 
     private DcMotor rightFront;
     private DcMotor rightBack;
@@ -121,23 +132,22 @@ public class CrossbowMain extends OpMode {
     @Override
     public void init() {
 
+    /// pedro
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
+        follower = Constants.createFollower(hardwareMap);
+        pose_tracker = follower.getPoseTracker();
+
+    /// turret rotation
         magnetic_limit_switch_left = hardwareMap.get(TouchSensor.class,"magL");
         magnetic_limit_switch_right = hardwareMap.get(TouchSensor.class,"magR");
-
-        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
 
         turret_motor = hardwareMap.get(DcMotorEx.class, "turret");
         turret_motor.setMode(turret_motor_runmode);
 
-        rightFront = hardwareMap.get(DcMotor.class, "rf");
-        rightBack = hardwareMap.get(DcMotor.class, "rb");
+        turret_ppr = turret_motor_ppr*turret_large_gear_teeth/turret_small_gear_teeth;
+        turret_max_ticks = (int) Math.floor(turret_ppr*(3/4));
 
-        leftFront = hardwareMap.get(DcMotor.class, "lf");
-        leftBack = hardwareMap.get(DcMotor.class, "lb");
-
-        launchKickServo1 = hardwareMap.get(Servo.class,"lks1");
-        launchKickServo2 = hardwareMap.get(Servo.class,"lks2");
-
+    /// launch motors
         rightLaunchMotor = hardwareMap.get(DcMotorEx.class,"lm1");
         rightLaunchMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightLaunchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherCoefficients);
@@ -148,27 +158,33 @@ public class CrossbowMain extends OpMode {
         leftLaunchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherCoefficients);
         leftLaunchMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        intakeMotor = hardwareMap.get(DcMotorEx.class,"intake");
+    /// limelight camera
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.start();
 
-        telemetry.addData("Status", "Initialized");
+    /// door servos
+        launchKickServo1 = hardwareMap.get(Servo.class,"lks1");
+        launchKickServo2 = hardwareMap.get(Servo.class,"lks2");
+        //servo start position
+        launchKickServo1.setPosition(0);
+        launchKickServo2.setPosition(1);
+    /// drive motors
+
+        rightFront = hardwareMap.get(DcMotor.class, "rf");
+        rightBack = hardwareMap.get(DcMotor.class, "rb");
+
+        leftFront = hardwareMap.get(DcMotor.class, "lf");
+        leftBack = hardwareMap.get(DcMotor.class, "lb");
 
         leftFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.REVERSE);
 
+    /// intake
+        intakeMotor = hardwareMap.get(DcMotorEx.class,"intake");
+
+    /// end telemetry
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
-
-        //pedro
-        follower = Constants.createFollower(hardwareMap);
-        pose_tracker = follower.getPoseTracker();
-
-        //servo start position
-        launchKickServo1.setPosition(0);
-        launchKickServo2.setPosition(1);
-
-        //limelight camera
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.start();
     }
 
     /*
