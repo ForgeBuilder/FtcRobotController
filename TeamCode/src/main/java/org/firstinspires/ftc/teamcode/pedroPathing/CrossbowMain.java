@@ -546,6 +546,8 @@ public class CrossbowMain extends OpMode {
 
         //This will probably need an offset
         limelight.updateRobotOrientation((pinpoint.getHeading(AngleUnit.DEGREES)+get_turret_rotation_degrees())%360);
+        //check if the compas is clockwise or not and make the turret rotation match that!
+
         LLresult = limelight.getLatestResult();
         telemetry.addData("current pipeline",LLresult.getPipelineIndex());
         if ((LLresult != null) && LLresult.isValid()) {
