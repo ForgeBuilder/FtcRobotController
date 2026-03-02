@@ -190,6 +190,7 @@ public class CrossbowMain extends OpMode {
     /*
      * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
      */
+
     @Override
     public void init_loop() {
         limelight.start();
@@ -536,11 +537,15 @@ public class CrossbowMain extends OpMode {
         }
         turret_motor.setPower(power);
     }
+
+    public double get_turret_rotation_degrees(){
+        return (turret_motor.getCurrentPosition()/3226.2)*360;
+    }
     public void limelight_code(){
         //limelight stuff - should always run
 
         //This will probably need an offset
-        limelight.updateRobotOrientation(pinpoint.getHeading(AngleUnit.DEGREES));
+        limelight.updateRobotOrientation((pinpoint.getHeading(AngleUnit.DEGREES)+get_turret_rotation_degrees())%360);
         LLresult = limelight.getLatestResult();
         telemetry.addData("current pipeline",LLresult.getPipelineIndex());
         if ((LLresult != null) && LLresult.isValid()) {
