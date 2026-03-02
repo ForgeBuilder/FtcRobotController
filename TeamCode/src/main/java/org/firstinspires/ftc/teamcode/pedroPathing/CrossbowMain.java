@@ -14,6 +14,7 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -87,7 +88,7 @@ public class CrossbowMain extends OpMode {
     private TouchSensor magnetic_limit_switch_left;
     private TouchSensor magnetic_limit_switch_right;
 
-    public PIDFCoefficients launcherCoefficients = new PIDFCoefficients(100,0,0,11.2);
+    public PIDFCoefficients launcherCoefficients = new PIDFCoefficients(100,0,0,12.9);
 
     public DcMotorEx intakeMotor;
 
@@ -142,7 +143,10 @@ public class CrossbowMain extends OpMode {
         magnetic_limit_switch_right = hardwareMap.get(TouchSensor.class,"magR");
 
         turret_motor = hardwareMap.get(DcMotorEx.class, "turret");
+        turret_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turret_motor.setMode(turret_motor_runmode);
+        turret_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        turret_motor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         turret_ppr = turret_motor_ppr*turret_large_gear_teeth/turret_small_gear_teeth;
         turret_max_ticks = (int) Math.floor(turret_ppr*(3/4));
@@ -493,8 +497,8 @@ public class CrossbowMain extends OpMode {
 //https://www.desmos.com/calculator/wz3ai30ujx
     public static double[] rangefinder_constants = {
             0.000588967,
-            3,
-            940
+            3.4,
+            1000
     };
     public void rangefind(){
         double unrounded_launcher_speed = rangefinder_constants[0]*Math.pow(estimated_distance,2)+rangefinder_constants[1]*estimated_distance+rangefinder_constants[2];
@@ -524,16 +528,17 @@ public class CrossbowMain extends OpMode {
 
     public double estimated_distance = 0;
 
+    public static double min_turret_power_limit = 0.05;
     public void spin_turret_simple(double power){
         if (turret_motor_runmode != DcMotor.RunMode.RUN_USING_ENCODER){
             turret_motor_runmode = DcMotor.RunMode.RUN_USING_ENCODER;
             turret_motor.setMode(turret_motor_runmode);
         }
         if (magnetic_limit_switch_left.getValue() == 1){
-            power = Math.max(power, 0);
+            power = Math.max(power, -min_turret_power_limit);
         }
         if (magnetic_limit_switch_right.getValue() == 1){
-            power = Math.min(power, 0);
+            power = Math.min(power, min_turret_power_limit);
         }
         turret_motor.setPower(power);
         panelsTelemetry.addData("turret_rotation_degrees",get_turret_rotation_degrees());

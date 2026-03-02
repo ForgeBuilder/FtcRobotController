@@ -93,7 +93,7 @@ public class CrossbowTeleop extends CrossbowMain {
 
         //turret
 
-        spin_turret_simple(gamepad2.right_stick_x);
+        spin_turret_simple(-gamepad2.right_stick_x);
 
         //launcher
 
