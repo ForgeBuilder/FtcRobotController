@@ -536,6 +536,7 @@ public class CrossbowMain extends OpMode {
             power = Math.min(power, 0);
         }
         turret_motor.setPower(power);
+        panelsTelemetry.addData("turret_rotation_degrees",get_turret_rotation_degrees());
     }
 
     public double get_turret_rotation_degrees(){
