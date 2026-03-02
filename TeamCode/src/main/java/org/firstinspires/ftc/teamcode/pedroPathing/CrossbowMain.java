@@ -60,7 +60,7 @@ public class CrossbowMain extends OpMode {
     private Servo launchKickServo1;
     private Servo launchKickServo2;
 
-    private GoBildaPinpointDriver pinpoint;
+    protected GoBildaPinpointDriver pinpoint;
 
 ///turret variables
     private DcMotorEx turret_motor;
@@ -96,6 +96,7 @@ public class CrossbowMain extends OpMode {
 
     //universal pedro stuff
 
+    protected Pose current_pedro_pose;
     public static Follower follower;
     public static PoseTracker pose_tracker;
 
@@ -213,13 +214,14 @@ public class CrossbowMain extends OpMode {
         follower_code();
         intake_code();
 
-        panelsTelemetry.addData("magnetic_limit_switch_left", magnetic_limit_switch_left.getValue());
-        panelsTelemetry.addData("magnetic_limit_switch_right",magnetic_limit_switch_right.getValue());
+//        panelsTelemetry.addData("magnetic_limit_switch_left", magnetic_limit_switch_left.getValue());
+//        panelsTelemetry.addData("magnetic_limit_switch_right",magnetic_limit_switch_right.getValue());
     }
 
     //exists purely for organisation, part of loop.
     private boolean follower_was_just_busy = true; //true if follower is not busy and it just was
     public void follower_code(){
+        current_pedro_pose = follower.getPose();
         if (follower.isBusy()){
             follower_was_just_busy = true;
             follower.update();
@@ -350,11 +352,8 @@ public class CrossbowMain extends OpMode {
         //This allows us to see the speeds of the left and right motor and tune the PIDs
         panelsTelemetry.addData("right_current_speed", right_current_speed);
         panelsTelemetry.addData("left_current_speed", left_current_speed);
-        if (kick) {
-            panelsTelemetry.addData("kick", 1.0*launcherSpeed);
-        } else {
-            panelsTelemetry.addData("kick", 0.0);
-        }
+        panelsTelemetry.addData("kick",bool_spike(kick));
+
         panelsTelemetry.addData("right_target_speed", launcherSpeed);
         panelsTelemetry.addData("left_target_speed", -launcherSpeed);
 
@@ -529,6 +528,41 @@ public class CrossbowMain extends OpMode {
     public double estimated_distance = 0;
 
     public static double min_turret_power_limit = 0.05;
+
+    public void spin_to_rotation_radians(double angle){
+        double temp_tick_target = (angle/(Math.PI*2)*1); //1 should be turret ppr but its evil?
+
+        int tick_target = (int) Math.round(temp_tick_target);
+
+        turret_motor.setTargetPosition(tick_target);
+
+
+        panelsTelemetry.addData("turret_target_tick",temp_tick_target);
+        panelsTelemetry.addData("turret_target_radians",angle);
+
+        if (turret_motor_runmode != DcMotor.RunMode.RUN_TO_POSITION){
+            turret_motor_runmode = DcMotor.RunMode.RUN_TO_POSITION;
+            turret_motor.setMode(turret_motor_runmode);
+        }
+
+        if ((magnetic_limit_switch_left.getValue() == 1)||(magnetic_limit_switch_right.getValue() == 1)){
+            turret_motor.setPower(0);
+        } else {
+            turret_motor.setPower(1);
+        }
+//            //write offset code to handle this later
+
+//        if (magnetic_limit_switch_left.getValue() == 1){
+//            //write offset code to handle this
+//        }
+//        if (magnetic_limit_switch_right.getValue() == 1){
+//            //write offset code to handle this
+//        }
+
+        //this could be smarter (more math efficient) by finding a ticks-per-radian instead of ticks-per-revolution
+
+        panelsTelemetry.addData("turret_rotation_degrees",get_turret_rotation_degrees());
+    }
     public void spin_turret_simple(double power){
         if (turret_motor_runmode != DcMotor.RunMode.RUN_USING_ENCODER){
             turret_motor_runmode = DcMotor.RunMode.RUN_USING_ENCODER;
@@ -599,8 +633,8 @@ public class CrossbowMain extends OpMode {
             double dy = goal_position.y-limelight_position.y;
 
             double desired_angle = Math.atan2(dx,dy);
-            panelsTelemetry.addData("desired_angle",desired_angle);
-            panelsTelemetry.addData("current_angle",pinpoint.getHeading(AngleUnit.RADIANS));
+            //panelsTelemetry.addData("desired_angle",desired_angle);
+            //panelsTelemetry.addData("current_angle",pinpoint.getHeading(AngleUnit.RADIANS));
         } else {
             telemetry.addData("Limelight", "No Targets");
         //do a \n for each line of telemetry you put above so wheather or not lime has a target it takes the same space.
