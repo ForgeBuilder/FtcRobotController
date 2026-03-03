@@ -35,13 +35,13 @@ import com.bylazar.configurables.annotations.Configurable;
 
 //@TeleOp(name="DecodeTeleopMain")
 
-    ///IMPORTANT DEBUG INFO
+    ///IMPORTANT DEBUG INFO - put these into your browser while on robot wifi to see them
 
     //here is the IP address for PANELS and for LIMELIGHT
 
     //  http://192.168.43.1:5801/    - limelight
 
-    //  http://192.168.43.1:8001/    - pannels
+    //  http://192.168.43.1:8001/    - panels
 
 
 @Configurable
