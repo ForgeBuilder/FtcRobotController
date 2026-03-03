@@ -35,6 +35,15 @@ import com.bylazar.configurables.annotations.Configurable;
 
 //@TeleOp(name="DecodeTeleopMain")
 
+    ///IMPORTANT DEBUG INFO
+
+    //here is the IP address for PANELS and for LIMELIGHT
+
+    //  http://192.168.43.1:5801/    - limelight
+
+    //  http://192.168.43.1:8001/    - pannels
+
+
 @Configurable
 public class CrossbowMain extends OpMode {
 
