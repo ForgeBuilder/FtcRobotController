@@ -5,7 +5,6 @@ import com.bylazar.gamepad.PanelsGamepad;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 
@@ -95,7 +94,7 @@ public class CrossbowTeleop extends CrossbowMain {
         //turret
 
 //        spin_turret_simple(-gamepad2.right_stick_x);
-        spin_to_rotation_radians(-current_pedro_pose.getHeading());
+        turret_spin_to_rotation_radians(-current_pedro_pose.getHeading());
 
         //launcher
 

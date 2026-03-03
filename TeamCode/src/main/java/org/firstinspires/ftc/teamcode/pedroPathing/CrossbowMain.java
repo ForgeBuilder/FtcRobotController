@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
 //import com.bylazar.field.PanelsField;
-import android.text.method.Touch;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ftc.PoseConverter;
@@ -68,9 +67,9 @@ public class CrossbowMain extends OpMode {
 
     private double turret_motor_ppr = 537.7;
 
-    private int turret_large_gear_teeth;
+    private int turret_large_gear_teeth = 72;
 
-    private int turret_small_gear_teeth;
+    private int turret_small_gear_teeth = 12;
 
     private double turret_ppr;
 
@@ -529,23 +528,30 @@ public class CrossbowMain extends OpMode {
 
     public static double min_turret_power_limit = 0.05;
 
-    public void spin_to_rotation_radians(double angle){
-        double temp_tick_target = (angle/(Math.PI*2)*1); //1 should be turret ppr but its evil?
+    public void turret_spin_to_rotation_radians(double angle){
+        panelsTelemetry.addData("turret_target_radians",angle);
+
+        double temp_tick_target = (angle/(Math.PI*2)*3226.2); //1 should be turret ppr but its evil?
 
         int tick_target = (int) Math.round(temp_tick_target);
 
         turret_motor.setTargetPosition(tick_target);
 
-
         panelsTelemetry.addData("turret_target_tick",temp_tick_target);
-        panelsTelemetry.addData("turret_target_radians",angle);
+
 
         if (turret_motor_runmode != DcMotor.RunMode.RUN_TO_POSITION){
             turret_motor_runmode = DcMotor.RunMode.RUN_TO_POSITION;
             turret_motor.setMode(turret_motor_runmode);
         }
 
-        if ((magnetic_limit_switch_left.getValue() == 1)||(magnetic_limit_switch_right.getValue() == 1)){
+        double turret_position_ticks = turret_motor.getCurrentPosition();
+
+        if (
+                ((magnetic_limit_switch_left.getValue() == 1)&&(turret_position_ticks<tick_target))
+                ||
+                ((magnetic_limit_switch_right.getValue() == 1)&&(turret_position_ticks>tick_target))
+        ){
             turret_motor.setPower(0);
         } else {
             turret_motor.setPower(1);
