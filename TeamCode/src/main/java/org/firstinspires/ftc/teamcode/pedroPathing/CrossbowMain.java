@@ -121,7 +121,10 @@ public class CrossbowMain extends OpMode {
 
     Pose backboard_pose;
 
-    public double apm;
+    Pose blue_backboard_pose = new Pose(-60, -60,0);
+    Pose red_backboard_pose = new Pose(-60, 60,0);
+
+        public double apm;
 
 
     public void set_team(String team){
@@ -129,13 +132,13 @@ public class CrossbowMain extends OpMode {
             backboard_pipeline = 3;
             backboard_id = 24;
             limelight.pipelineSwitch(backboard_pipeline);
-            backboard_pose = new Pose(121.35, -7.37,0);
+            backboard_pose = red_backboard_pose;
             apm = -1.0;
         } else if (team == "blue"){
             backboard_pipeline = 2;
             backboard_id = 20;
             limelight.pipelineSwitch(backboard_pipeline);
-            backboard_pose = new Pose(121.35, 7.37,0);
+            backboard_pose = blue_backboard_pose;
             apm = 1.0;
         }
     }
@@ -554,6 +557,7 @@ public class CrossbowMain extends OpMode {
         panelsTelemetry.addData("turret_target_radians",angle);
 
         angle = (angle + Math.PI)%(Math.PI*2)-Math.PI;
+        panelsTelemetry.addData("turret_target_radians_postmod",angle);
 
         double temp_tick_target = (angle/(Math.PI*2))*turret_ppr; //1 should be turret ppr but its evil?
 
@@ -609,7 +613,7 @@ public class CrossbowMain extends OpMode {
     }
 
     public double get_turret_rotation_degrees(){
-        return (turret_motor.getCurrentPosition()/3226.2)*360;
+        return (turret_motor.getCurrentPosition()/turret_ppr)*360;
     }
     public void limelight_code(){
         //limelight stuff - should always run

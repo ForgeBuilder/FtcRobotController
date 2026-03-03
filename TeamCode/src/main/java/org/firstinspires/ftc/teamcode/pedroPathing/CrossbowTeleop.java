@@ -103,7 +103,7 @@ public class CrossbowTeleop extends CrossbowMain {
         //negitive is to the right and positive is to the left
 
         if (LLresult.isValid()){
-//            double pedro_heading = current_pedro_pose.getHeading();
+            double pedro_heading = current_pedro_pose.getHeading();
 
 
             //goal_aim_pid_output +
@@ -112,15 +112,26 @@ public class CrossbowTeleop extends CrossbowMain {
             double turret_power = goal_aim_pid_output;
             //+ pinpoint_heading_velocity*chasis_turret_velocity_cancelation_constant;
 
-            spin_turret_simple(turret_power);
+//            spin_turret_simple(turret_power);
+
             panelsTelemetry.addData("pinpoint_heading_velocity",pinpoint_heading_velocity);
             panelsTelemetry.addData("goal_aim_pid_output",goal_aim_pid_output);
             panelsTelemetry.addData("turret_power",turret_power);
 
             //this should be changed to not always at some point - we only want to do this when we're still and sure it's gonna be a good picture.
-//            follower.setPose(pedro_pose_from_limelight.setHeading(pedro_heading));
+            if (gamepad2.y){
+                follower.setPose(pedro_pose_from_limelight.setHeading(pedro_heading));
+            }
+
         } else {
-            turret_spin_to_rotation_radians(-current_pedro_pose.getHeading());//-Math.atan2((backboard_pose.getY()-current_pedro_pose.getY()),(backboard_pose.getX()-current_pedro_pose.getX()))
+            //this will rotate the turret to face the direction we started facing, world pose
+            //
+
+            //this will face the intake direction (where the turret was relative to the robot at init)
+            if (!trying_to_fire && gamepad1.b) {
+//              turret_spin_to_rotation_radians(0);
+                turret_spin_to_rotation_radians(-current_pedro_pose.getHeading()+Math.atan2((backboard_pose.getY()-current_pedro_pose.getY()),(backboard_pose.getX()-current_pedro_pose.getX())));//
+            }
         }
 
 
