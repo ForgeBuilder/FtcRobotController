@@ -6,6 +6,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 
 
 // Inside your OpMode
@@ -37,6 +38,8 @@ public class CrossbowTeleop extends CrossbowMain {
     public static boolean debug_fire = false;
 
     private Pose autopose;
+
+    public static double chasis_turret_velocity_cancelation_constant = 1;
 
     @Override
     public void loop() {
@@ -97,13 +100,28 @@ public class CrossbowTeleop extends CrossbowMain {
 
         ///turret stuff
 
-//        if (LLresult.isValid()){
-//            turret_spin_to_rotation_radians(-current_pedro_pose.getHeading()+Math.atan2((backboard_pose.getY()-pedro_pose_from_limelight.getY()),(backboard_pose.getX()-pedro_pose_from_limelight.getX())));
-//            //this should be changed to not always at some point - we only want to do this when we're still and sure it's gonna be a good picture.
-//            follower.setPose(pedro_pose_from_limelight.setHeading(current_pedro_pose.getHeading()));
-//        } else {
-//            turret_spin_to_rotation_radians(-current_pedro_pose.getHeading()+Math.atan2((backboard_pose.getY()-current_pedro_pose.getY()),(backboard_pose.getX()-current_pedro_pose.getX())));
-//        }
+        //negitive is to the right and positive is to the left
+
+        if (LLresult.isValid()){
+//            double pedro_heading = current_pedro_pose.getHeading();
+
+
+            //goal_aim_pid_output +
+            double pinpoint_heading_velocity = pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.RADIANS);
+
+            double turret_power = goal_aim_pid_output;
+            //+ pinpoint_heading_velocity*chasis_turret_velocity_cancelation_constant;
+
+            spin_turret_simple(turret_power);
+            panelsTelemetry.addData("pinpoint_heading_velocity",pinpoint_heading_velocity);
+            panelsTelemetry.addData("goal_aim_pid_output",goal_aim_pid_output);
+            panelsTelemetry.addData("turret_power",turret_power);
+
+            //this should be changed to not always at some point - we only want to do this when we're still and sure it's gonna be a good picture.
+//            follower.setPose(pedro_pose_from_limelight.setHeading(pedro_heading));
+        } else {
+            turret_spin_to_rotation_radians(-current_pedro_pose.getHeading());//-Math.atan2((backboard_pose.getY()-current_pedro_pose.getY()),(backboard_pose.getX()-current_pedro_pose.getX()))
+        }
 
 
 

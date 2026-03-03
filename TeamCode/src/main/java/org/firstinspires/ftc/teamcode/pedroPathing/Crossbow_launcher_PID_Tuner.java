@@ -44,7 +44,7 @@ public class Crossbow_launcher_PID_Tuner extends CrossbowTeleop{
             leftLaunchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,launcherCoefficients);
             rightLaunchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER,launcherCoefficients);
 
-            update_chasis_pid(chassis_pid_coefficients[0], chassis_pid_coefficients[1], chassis_pid_coefficients[2]);
+            update_chasis_pid(aiming_pid_coeficients[0], aiming_pid_coeficients[1], aiming_pid_coeficients[2]);
         }
 
         //append to telemetry without clearing previous

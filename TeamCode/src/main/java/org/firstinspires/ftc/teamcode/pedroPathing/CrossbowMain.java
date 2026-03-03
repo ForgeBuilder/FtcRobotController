@@ -224,6 +224,10 @@ public class CrossbowMain extends OpMode {
     public void loop() {
         follower_code();
         intake_code();
+        if (update_chasis_pid_toggle){
+            update_chasis_pid_toggle = false;
+            chasis_pid = new PID(aiming_pid_coeficients[0], aiming_pid_coeficients[1], aiming_pid_coeficients[2]);
+        }
 
 //        panelsTelemetry.addData("magnetic_limit_switch_left", magnetic_limit_switch_left.getValue());
 //        panelsTelemetry.addData("magnetic_limit_switch_right",magnetic_limit_switch_right.getValue());
@@ -233,6 +237,10 @@ public class CrossbowMain extends OpMode {
     private boolean follower_was_just_busy = true; //true if follower is not busy and it just was
     public void follower_code(){
         current_pedro_pose = follower.getPose();
+
+        panelsTelemetry.addData("current_pedro_pose x",current_pedro_pose.getX());
+        panelsTelemetry.addData("current_pedro_pose y",current_pedro_pose.getY());
+        panelsTelemetry.addData("current_pedro_pose heading",current_pedro_pose.getHeading());
 
         if (follower.isBusy()){
             follower_was_just_busy = true;
@@ -310,8 +318,6 @@ public class CrossbowMain extends OpMode {
     public static double max_angular_velocity = 12;
     public static double max_linear_velocity = 12;
 
-    double chasis_aim_turn = 0;
-
     public void set_motor_power_zero() {
         leftFront.setPower(0);
         leftBack.setPower(0);
@@ -336,14 +342,16 @@ public class CrossbowMain extends OpMode {
     private PID chasis_pid = new PID(0.01,0,0);
 
     public static double zero_power_movement_constant = 0.08;
-    public static double[] chassis_pid_coefficients = {
+    public static double[] aiming_pid_coeficients = {
             0.02,0.001,0
     };
     public void update_chasis_pid(double P, double I, double D){
         chasis_pid = new PID(P,I,D);
     }
 
-    public void launcher_code(boolean fire,boolean override_shot){
+    public static boolean update_chasis_pid_toggle = false;
+    protected double goal_aim_pid_output = 0;
+        public void launcher_code(boolean fire,boolean override_shot){
         rangefind();
         //the return value of the function: did the robot fire the artifact
         telemetry.addData("Launcher Target Velocity:", "\n"+launcherSpeed); // \n makes the text go down a line
@@ -425,17 +433,19 @@ public class CrossbowMain extends OpMode {
 
 
 
-        double chasis_pid_output = chasis_pid.update(0,tx);
+        goal_aim_pid_output = chasis_pid.update(0,tx);
 
-        chasis_aim_turn = chasis_pid_output; //integration of Zero power movement
+        //goal_aim_pid_output = goal_aim_pid_output; //integration of Zero power
 
-        double zeropower_deadzone = 0.01;
+        //goal_aim_pid_output = 0; //integration of Zero power movement
 
-        if (chasis_pid_output > zeropower_deadzone){
-            chasis_aim_turn+=zero_power_movement_constant;
-        } else if (chasis_pid_output < -zeropower_deadzone){
-            chasis_aim_turn-=zero_power_movement_constant;
-        }
+//        double zeropower_deadzone = 0.01;
+//
+//        if (chasis_pid_output > zeropower_deadzone){
+//            goal_aim_pid_output +=zero_power_movement_constant;
+//        } else if (chasis_pid_output < -zeropower_deadzone){
+//            goal_aim_pid_output -=zero_power_movement_constant;
+//        }
 
         if (fire) {
             trying_to_fire = true;
@@ -460,7 +470,6 @@ public class CrossbowMain extends OpMode {
             }
         } else {
             launcher_freeze_movement = false;
-            chasis_aim_turn = 0;
             if (gamepad1.b){ spin_launcher = false;}
             trying_to_fire = false;
             open_door = false;
@@ -611,6 +620,7 @@ public class CrossbowMain extends OpMode {
 
         LLresult = limelight.getLatestResult();
         telemetry.addData("current pipeline",LLresult.getPipelineIndex());
+
         if ((LLresult != null) && LLresult.isValid()) {
             tx = LLresult.getTx()+limelight_x_offset; // How far left or right the target is (degrees)
 
@@ -637,7 +647,7 @@ public class CrossbowMain extends OpMode {
 //            telemetry.addData("Target X", tx);
 
             //turing the limelight pose into a pedro pose. was using MT2, now using MT1 for a bit. less acurate but not reliant on a gyro.
-            Pose3D limelight_botpose = LLresult.getBotpose();
+            Pose3D limelight_botpose = LLresult.getBotpose_MT2();
             Position llbpposition = limelight_botpose.getPosition();
             Pose2D llpose2d = new Pose2D(DistanceUnit.METER,llbpposition.x,llbpposition.y,AngleUnit.DEGREES,limelight_botpose.getOrientation().getYaw());
             pedro_pose_from_limelight = PoseConverter.pose2DToPose(llpose2d,PedroCoordinates.INSTANCE);
@@ -645,7 +655,6 @@ public class CrossbowMain extends OpMode {
             panelsTelemetry.addData("pedro_pose_from_limelight x",pedro_pose_from_limelight.getX());
             panelsTelemetry.addData("pedro_pose_from_limelight y",pedro_pose_from_limelight.getY());
             panelsTelemetry.addData("pedro_pose_from_limelight heading",pedro_pose_from_limelight.getHeading());
-
 
             Position limelight_position = limelight_botpose.getPosition();
             Position goal_position = new Position(DistanceUnit.INCH,65,65,0,0);
@@ -761,7 +770,10 @@ public class CrossbowMain extends OpMode {
         //had to make it negitive for now to account for weird pedro reversal stuff. figure this out more later.
         forward = -forward*slowdown_multiplier;
         strafe = -strafe*slowdown_multiplier;
-        turn = (-turn*slowdown_multiplier)+chasis_aim_turn;
+        turn = (-turn*slowdown_multiplier);
+
+        //chasis aim replaced with turret aim
+//      turn += goal_aim_pid_output;
 
         //field centric
 //        double pinpoint_heading = follower.getHeading();
