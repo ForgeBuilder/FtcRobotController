@@ -41,7 +41,8 @@ public class CrossbowTeleop extends CrossbowMain {
     @Override
     public void loop() {
         super.loop();
-
+        //handels limelight, should probably go in main at some point
+        limelight_code();
 
 //this vvv should not be in loop
 
@@ -64,8 +65,7 @@ public class CrossbowTeleop extends CrossbowMain {
             fire_launcher = !fire_launcher;
         }
 
-        //handels limelight
-        limelight_code();
+
 
         //handles saving position and making return path to saved position
         //teleop_return_to_position();
@@ -94,7 +94,16 @@ public class CrossbowTeleop extends CrossbowMain {
         //turret
 
 //        spin_turret_simple(-gamepad2.right_stick_x);
-        turret_spin_to_rotation_radians(-current_pedro_pose.getHeading());
+
+        ///turret stuff
+
+        if (LLresult.isValid()){
+            turret_spin_to_rotation_radians(Math.atan2((pedro_pose_from_limelight.getY()-pedro_pose_from_limelight.getY()),(backboard_pose.getX()-current_pedro_pose.getX())));
+        } else {
+            turret_spin_to_rotation_radians(Math.atan2((backboard_pose.getY()-current_pedro_pose.getY()),(backboard_pose.getX()-current_pedro_pose.getX())));
+        }
+
+
 
         //launcher
 
@@ -109,6 +118,7 @@ public class CrossbowTeleop extends CrossbowMain {
         }
         if (LLresult != null && LLresult.isValid()) {
             Pose3D botpose = LLresult.getBotpose_MT2();
+
             if (botpose != null) {
                 double x = botpose.getPosition().x;
                 double y = botpose.getPosition().y;

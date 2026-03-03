@@ -95,6 +95,7 @@ public class CrossbowMain extends OpMode {
 
     //universal pedro stuff
 
+    protected Pose pedro_pose_from_limelight;
     protected Pose current_pedro_pose;
     public static Follower follower;
     public static PoseTracker pose_tracker;
@@ -138,6 +139,11 @@ public class CrossbowMain extends OpMode {
         follower = Constants.createFollower(hardwareMap);
         pose_tracker = follower.getPoseTracker();
 
+    /// limelight camera
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.start();
+
+
     /// turret rotation
         magnetic_limit_switch_left = hardwareMap.get(TouchSensor.class,"magL");
         magnetic_limit_switch_right = hardwareMap.get(TouchSensor.class,"magR");
@@ -162,9 +168,6 @@ public class CrossbowMain extends OpMode {
         leftLaunchMotor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, launcherCoefficients);
         leftLaunchMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-    /// limelight camera
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.start();
 
     /// door servos
         launchKickServo1 = hardwareMap.get(Servo.class,"lks1");
@@ -221,6 +224,7 @@ public class CrossbowMain extends OpMode {
     private boolean follower_was_just_busy = true; //true if follower is not busy and it just was
     public void follower_code(){
         current_pedro_pose = follower.getPose();
+
         if (follower.isBusy()){
             follower_was_just_busy = true;
             follower.update();
@@ -531,7 +535,9 @@ public class CrossbowMain extends OpMode {
     public void turret_spin_to_rotation_radians(double angle){
         panelsTelemetry.addData("turret_target_radians",angle);
 
-        double temp_tick_target = (angle/(Math.PI*2)*3226.2); //1 should be turret ppr but its evil?
+        angle = (angle + Math.PI)%(Math.PI*2)-Math.PI;
+
+        double temp_tick_target = (angle/(Math.PI*2))*turret_ppr; //1 should be turret ppr but its evil?
 
         int tick_target = (int) Math.round(temp_tick_target);
 
@@ -625,7 +631,7 @@ public class CrossbowMain extends OpMode {
             Pose3D limelight_botpose = LLresult.getBotpose_MT2();
             Position llbpposition = limelight_botpose.getPosition();
             Pose2D llpose2d = new Pose2D(DistanceUnit.METER,llbpposition.x,llbpposition.y,AngleUnit.DEGREES,limelight_botpose.getOrientation().getYaw());
-            Pose pedro_pose_from_limelight = PoseConverter.pose2DToPose(llpose2d, PedroCoordinates.INSTANCE);
+            pedro_pose_from_limelight = PoseConverter.pose2DToPose(llpose2d, PedroCoordinates.INSTANCE);
 
             panelsTelemetry.addData("pedro_pose_from_limelight x",pedro_pose_from_limelight.getX());
             panelsTelemetry.addData("pedro_pose_from_limelight y",pedro_pose_from_limelight.getY());
@@ -643,6 +649,7 @@ public class CrossbowMain extends OpMode {
             //panelsTelemetry.addData("current_angle",pinpoint.getHeading(AngleUnit.RADIANS));
         } else {
             telemetry.addData("Limelight", "No Targets");
+            pedro_pose_from_limelight = null;
         //do a \n for each line of telemetry you put above so wheather or not lime has a target it takes the same space.
             tx = 0;
         }
