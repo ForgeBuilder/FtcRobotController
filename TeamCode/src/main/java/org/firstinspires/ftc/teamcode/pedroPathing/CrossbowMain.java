@@ -636,8 +636,8 @@ public class CrossbowMain extends OpMode {
             // gives the x offset from the limelight
 //            telemetry.addData("Target X", tx);
 
-            //trig solution
-            Pose3D limelight_botpose = LLresult.getBotpose_MT2();
+            //turing the limelight pose into a pedro pose. was using MT2, now using MT1 for a bit. less acurate but not reliant on a gyro.
+            Pose3D limelight_botpose = LLresult.getBotpose();
             Position llbpposition = limelight_botpose.getPosition();
             Pose2D llpose2d = new Pose2D(DistanceUnit.METER,llbpposition.x,llbpposition.y,AngleUnit.DEGREES,limelight_botpose.getOrientation().getYaw());
             pedro_pose_from_limelight = PoseConverter.pose2DToPose(llpose2d, PedroCoordinates.INSTANCE);

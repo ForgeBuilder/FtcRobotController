@@ -97,13 +97,13 @@ public class CrossbowTeleop extends CrossbowMain {
 
         ///turret stuff
 
-        if (LLresult.isValid()){
-            turret_spin_to_rotation_radians(-current_pedro_pose.getHeading()+Math.atan2((backboard_pose.getY()-pedro_pose_from_limelight.getY()),(backboard_pose.getX()-pedro_pose_from_limelight.getX())));
-            //this should be changed to not always at some point - we only want to do this when we're still and sure it's gonna be a good picture.
-            follower.setPose(pedro_pose_from_limelight);
-        } else {
-            turret_spin_to_rotation_radians(-current_pedro_pose.getHeading()+Math.atan2((backboard_pose.getY()-current_pedro_pose.getY()),(backboard_pose.getX()-current_pedro_pose.getX())));
-        }
+//        if (LLresult.isValid()){
+//            turret_spin_to_rotation_radians(-current_pedro_pose.getHeading()+Math.atan2((backboard_pose.getY()-pedro_pose_from_limelight.getY()),(backboard_pose.getX()-pedro_pose_from_limelight.getX())));
+//            //this should be changed to not always at some point - we only want to do this when we're still and sure it's gonna be a good picture.
+//            follower.setPose(pedro_pose_from_limelight.setHeading(current_pedro_pose.getHeading()));
+//        } else {
+//            turret_spin_to_rotation_radians(-current_pedro_pose.getHeading()+Math.atan2((backboard_pose.getY()-current_pedro_pose.getY()),(backboard_pose.getX()-current_pedro_pose.getX())));
+//        }
 
 
 
