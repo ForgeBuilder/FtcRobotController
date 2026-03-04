@@ -50,7 +50,9 @@ import com.bylazar.configurables.annotations.Configurable;
         //
         //use current_pedro_pose variables and pedro_pose_from_limelight to see if pinpoint is working
 
-            
+            //you can also just run any auto and see if it blows up
+
+
 
 
 @Configurable
