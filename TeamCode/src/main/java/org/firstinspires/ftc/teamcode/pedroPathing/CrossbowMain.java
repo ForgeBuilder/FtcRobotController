@@ -142,7 +142,7 @@ public class CrossbowMain extends OpMode {
                     double turret_velocity = turret_motor.getVelocity();
                     panelsTelemetry.addData("limit encountered",bool_spike(limit_encountered));
 
-                    if (limit_encountered){
+                    if (limit_encountered){ 
                         turret_motor.setPower(0.1);
                         if(turret_velocity < 0.05){
                             turret_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
