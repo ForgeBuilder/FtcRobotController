@@ -74,12 +74,21 @@ public class CrossbowMain extends OpMode {
 
 ///turret
     protected turret_class turret = new turret_class();
+
+    enum TurretState {
+        FINDING_LIMIT,RETURNING_TO_CENTER,CENTER_IDLE,TRACKING_TARGET_POSE,TRACKING_TARGET_GLOBAL_ROTATION;
+    }
+
+    enum TurretInstruction {
+        TRACK_GLOBAL_POSE,TRACK_LOCAL_ROTATION,TRACK_GLOBAL_ROTATION,IDLE;
+    }
     public class turret_class {
 
         public turret_class(){} //not customiszble
         private TouchSensor magnetic_limit_switch_left;
         private TouchSensor magnetic_limit_switch_right;
-        private String turret_state = "homing_to_magnet"; //"homing_to_center"; //"ready"
+
+
 
         private DcMotorEx turret_motor;
         private DcMotor.RunMode turret_motor_runmode = DcMotor.RunMode.RUN_USING_ENCODER;
@@ -94,6 +103,8 @@ public class CrossbowMain extends OpMode {
 
         private int turret_max_ticks;
 
+        private TurretState turret_current_state = TurretState.CENTER_IDLE;
+
         public void init(){
             magnetic_limit_switch_left = hardwareMap.get(TouchSensor.class,"magL");
             magnetic_limit_switch_right = hardwareMap.get(TouchSensor.class,"magR");
@@ -106,20 +117,75 @@ public class CrossbowMain extends OpMode {
 
             turret_ppr = turret_motor_ppr*turret_large_gear_teeth/turret_small_gear_teeth;
             turret_max_ticks = (int) Math.floor(turret_ppr*(3/4));
+
+            TurretState turret_current_state = TurretState.FINDING_LIMIT;
         }
-        public void spin_turret_simple(double power){
+
+        public double global_rotation_target;
+        public double local_rotation_target;
+        public Pose target_pose;
+        public Pose future_pose;
+
+        public boolean track_from_future_pose;
+
+        public void update(){
+            Pose tracking_from_pose;
+            if (track_from_future_pose){
+                tracking_from_pose = future_pose;
+            } else {
+                tracking_from_pose = current_pedro_pose;
+            }
+            panelsTelemetry.addData("turret state",turret_current_state);
+            switch(turret_current_state){
+                case FINDING_LIMIT:
+                    boolean limit_encountered = spin_turret_simple(1);
+                    if (limit_encountered && turret_motor.getVelocity() < 0.05){
+                        turret_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        turret_motor.setTargetPosition(-turret_max_ticks);
+                        turret_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        turret_current_state = TurretState.RETURNING_TO_CENTER;
+                    }
+
+                case RETURNING_TO_CENTER:
+                    if (turret_motor.getCurrentPosition() == turret_motor.getTargetPosition()){
+                        turret_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                        turret_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        turret_current_state = TurretState.CENTER_IDLE;
+                    }
+                case TRACKING_TARGET_POSE:
+                    double angle_to_goal_with_pedro = -tracking_from_pose.getHeading()+Math.atan2((backboard_pose.getY()-tracking_from_pose.getY()),(backboard_pose.getX()-tracking_from_pose.getX()));
+                    turret.turret_spin_to_rotation_radians(angle_to_goal_with_pedro);//
+                case TRACKING_TARGET_GLOBAL_ROTATION:
+                    turret_spin_to_rotation_radians(-tracking_from_pose.getHeading()+local_rotation_target);
+                default: //CENTER_IDLE
+                    turret_spin_to_rotation_radians(0);
+            }
+        }
+
+        public void set_turret_state(TurretState turret_state){
+            if (turret_state != TurretState.RETURNING_TO_CENTER && turret_state != TurretState.FINDING_LIMIT){
+                turret_current_state = turret_state;
+            }
+        }
+
+        //returns if a limit was encountered
+        public boolean spin_turret_simple(double power){
+            boolean limit_encountered = false;
             if (turret_motor_runmode != DcMotor.RunMode.RUN_USING_ENCODER){
                 turret_motor_runmode = DcMotor.RunMode.RUN_USING_ENCODER;
                 turret_motor.setMode(turret_motor_runmode);
             }
             if (magnetic_limit_switch_left.getValue() == 1){
                 power = Math.max(power, -min_turret_power_limit);
+                limit_encountered = true;
             }
             if (magnetic_limit_switch_right.getValue() == 1){
                 power = Math.min(power, min_turret_power_limit);
+                limit_encountered = true;
             }
             turret_motor.setPower(power);
             panelsTelemetry.addData("turret_rotation_degrees",get_turret_rotation_degrees());
+            return(limit_encountered);
         }
         public double get_turret_rotation_degrees(){
             return (turret_motor.getCurrentPosition()/turret_ppr)*360;
@@ -287,6 +353,7 @@ public class CrossbowMain extends OpMode {
 
     @Override
     public void init_loop() {
+        turret.update();
         limelight.start();
     }
 
@@ -302,6 +369,7 @@ public class CrossbowMain extends OpMode {
     public void loop() {
         follower_code();
         intake_code();
+        turret.update();
         if (update_chasis_pid_toggle){
             update_chasis_pid_toggle = false;
             chasis_pid = new PID(aiming_pid_coeficients[0], aiming_pid_coeficients[1], aiming_pid_coeficients[2]);

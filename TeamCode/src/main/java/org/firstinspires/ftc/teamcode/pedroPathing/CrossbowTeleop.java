@@ -101,53 +101,30 @@ public class CrossbowTeleop extends CrossbowMain {
 
         //launcher and turret stuff
 
-        //turret
-
-//        spin_turret_simple(-gamepad2.right_stick_x);
-
         ///turret stuff
 
-        //negitive is to the right and positive is to the left
+        //negitive is to the right and positive is to the left for the motor encoder
 
-        double pedro_heading = current_pedro_pose.getHeading();
-
-        if (gamepad1.b){
-            turret_spin_to_rotation_radians(0);//
-        } else {
-            if (LLresult.isValid()){
-                double angle_to_goal_with_limelight = -pedro_heading+Math.atan2((backboard_pose.getY()-pedro_pose_from_limelight.getY()),(backboard_pose.getX()-pedro_pose_from_limelight.getX()));
-                turret_spin_to_rotation_radians(angle_to_goal_with_limelight);//
-            } else {
-                double angle_to_goal_with_pedro = -pedro_heading+Math.atan2((backboard_pose.getY()-current_pedro_pose.getY()),(backboard_pose.getX()-current_pedro_pose.getX()));
-                turret_spin_to_rotation_radians(angle_to_goal_with_pedro);//
-            }
-
+        telemetry.addData("left ARE YOU KIDDING ME BRO",bool_spike(gamepad1.leftBumperWasPressed()));
+        if (gamepad1.leftBumperWasPressed()){
+            turret.set_turret_state(TurretState.FINDING_LIMIT);
         }
 
 
-        if (LLresult.isValid()){
-
-//            //goal_aim_pid_output +
-//            double pinpoint_heading_velocity = pinpoint.getHeadingVelocity(UnnormalizedAngleUnit.RADIANS);
-//
-//            double turret_power = goal_aim_pid_output;
-//            //+ pinpoint_heading_velocity*chasis_turret_velocity_cancelation_constant;
-//
-////            spin_turret_simple(turret_power);
-//
-//            panelsTelemetry.addData("pinpoint_heading_velocity",pinpoint_heading_velocity);
-//            panelsTelemetry.addData("goal_aim_pid_output",goal_aim_pid_output);
-//            panelsTelemetry.addData("turret_power",turret_power);
-
-            //this should be changed to not always at some point - we only want to do this when we're still and sure it's gonna be a good picture.
-            if (gamepad1.b){
-                follower.setPose(pedro_pose_from_limelight.setHeading(pedro_heading));
-            }
-
-        } else {
-
-        }
-
+//        if (gamepad1.bWasPressed()){
+//            //for centering when the started pose is wrong - doesn't override heading, need to implement
+//            if (LLresult.isValid()){
+//                follower.setPose(pedro_pose_from_limelight.setHeading(pedro_heading));
+//            }
+//        } else {
+//            if (LLresult.isValid()){
+//                double angle_to_goal_with_limelight = -pedro_heading+Math.atan2((backboard_pose.getY()-pedro_pose_from_limelight.getY()),(backboard_pose.getX()-pedro_pose_from_limelight.getX()));
+//                turret.turret_spin_to_rotation_radians(angle_to_goal_with_limelight);//
+//            } else {
+//                double angle_to_goal_with_pedro = -pedro_heading+Math.atan2((backboard_pose.getY()-current_pedro_pose.getY()),(backboard_pose.getX()-current_pedro_pose.getX()));
+//                turret.turret_spin_to_rotation_radians(angle_to_goal_with_pedro);//
+//            }
+//        }
 
 
         //launcher
