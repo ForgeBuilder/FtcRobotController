@@ -116,8 +116,8 @@ public class CrossbowMain extends OpMode {
             turret_motor.setDirection(DcMotorSimple.Direction.REVERSE);
 
             turret_ppr = turret_motor_ppr*turret_large_gear_teeth/turret_small_gear_teeth;
-            turret_max_ticks = (int) Math.floor(turret_ppr*(3/4));
-
+            turret_max_ticks = (int) Math.round(turret_ppr*(3/4));
+                                  
             TurretState turret_current_state = TurretState.FINDING_LIMIT;
         }
 
@@ -128,6 +128,11 @@ public class CrossbowMain extends OpMode {
 
         public boolean track_from_future_pose;
 
+        public void track_goal_from_current_position() {
+             track_from_future_pose = false;
+             target_pose = backboard_pose;
+        }
+
         public void update(){
             Pose tracking_from_pose;
             if (track_from_future_pose){
@@ -135,12 +140,18 @@ public class CrossbowMain extends OpMode {
             } else {
                 tracking_from_pose = current_pedro_pose;
             }
+
+            double turret_current_position_ticks = turret_motor.getCurrentPosition();
+            double turret_velocity = turret_motor.getVelocity();
+
             panelsTelemetry.addData("turret state",turret_current_state);
+            panelsTelemetry.addData("turret_tick_target",turret_current_position_ticks);
             switch(turret_current_state){
                 case FINDING_LIMIT:
                     boolean limit_encountered = get_right_limit()||get_left_limit();
-                    double turret_velocity = turret_motor.getVelocity();
+
                     panelsTelemetry.addData("limit encountered",bool_spike(limit_encountered));
+                    panelsTelemetry.addData("turret_max_ticks",turret_max_ticks);
 
                     if (limit_encountered){
                         turret_motor.setPower(0.1);
@@ -168,7 +179,7 @@ public class CrossbowMain extends OpMode {
                     turret_spin_to_rotation_radians(-tracking_from_pose.getHeading()+local_rotation_target);
                     break;
                 case CENTER_IDLE:
-//                    turret_spin_to_rotation_radians(0);
+                    turret_spin_to_rotation_radians(0);
                     break;
                 default:
             }
@@ -223,12 +234,9 @@ public class CrossbowMain extends OpMode {
             panelsTelemetry.addData("turret_target_radians_postmod",angle);
 
             double temp_tick_target = (angle/(Math.PI*2))*turret_ppr; //1 should be turret ppr but its evil?
-
             int tick_target = (int) Math.round(temp_tick_target);
 
             turret_motor.setTargetPosition(tick_target);
-
-            panelsTelemetry.addData("turret_target_tick",temp_tick_target);
 
 
             if (turret_motor_runmode != DcMotor.RunMode.RUN_TO_POSITION){

@@ -27,9 +27,25 @@ public class CrossbowTeleop extends CrossbowMain {
     @Override
     public void init() {
         super.init();
+        try {
+            if (team == "blue"){
+                autopose = CrossbowAutoBlue.auto_current_pose;
+            } else if (team == "red"){
+                autopose = CrossbowAutoRed.auto_current_pose;
+            }
+
+        } finally {
+            if (autopose != null){
+                telemetry.addData("auto_pose",autopose);
+            } else {
+                telemetry.addData("auto_pose","no auto pose found");
+            }
+        }
         Pose start_pose = new Pose(start_pose_members[0],start_pose_members[1],start_pose_members[2]);
         if (start_pose != new Pose(0,0,0)){
             follower.setPose(start_pose);
+        } else if (autopose!= null){
+            follower.setPose(autopose);
         }
         limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
         limelight.start(); // This tells Limelight to start looking!
@@ -53,23 +69,6 @@ public class CrossbowTeleop extends CrossbowMain {
         super.loop();
         //handels limelight, should probably go in main at some point
         limelight_code();
-
-//this vvv should not be in loop
-
-//        try {
-//            if (team == "blue"){
-//                autopose = CrossbowAutoBlue.auto_current_pose;
-//            } else if (team == "red"){
-//                autopose = CrossbowAutoRed.auto_current_pose;
-//            }
-//
-//        } finally {
-//            if (autopose != null){
-//                telemetry.addData("auto_pose",autopose);
-//            } else {
-//                telemetry.addData("auto_pose","no auto pose found");
-//            }
-//        }
 
         if (gamepad1.aWasPressed()){
             fire_launcher = !fire_launcher;
@@ -105,9 +104,10 @@ public class CrossbowTeleop extends CrossbowMain {
 
         //negitive is to the right and positive is to the left for the motor encoder
 
-        panelsTelemetry.addData("left ARE YOU KIDDING ME BRO",bool_spike(gamepad1.left_bumper));
+
         if (gamepad1.left_bumper){
             turret.set_turret_state(TurretState.FINDING_LIMIT);
+            turret.track_goal_from_current_position();
         }
 
 
