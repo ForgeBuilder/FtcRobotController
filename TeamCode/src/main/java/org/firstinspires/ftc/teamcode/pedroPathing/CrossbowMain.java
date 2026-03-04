@@ -138,31 +138,37 @@ public class CrossbowMain extends OpMode {
             panelsTelemetry.addData("turret state",turret_current_state);
             switch(turret_current_state){
                 case FINDING_LIMIT:
-                    turret_motor.setTargetPosition(turret_max_ticks*2);
                     boolean limit_encountered = get_right_limit()||get_left_limit();
                     double turret_velocity = turret_motor.getVelocity();
                     panelsTelemetry.addData("limit encountered",bool_spike(limit_encountered));
 
-//                    if (limit_encountered && (turret_velocity < 0.05)){
-//                        turret_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//                        turret_motor.setTargetPosition(-turret_max_ticks);
-//                        turret_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//                        turret_current_state = TurretState.RETURNING_TO_CENTER;
-//                    }
-
+                    if (limit_encountered){
+                        turret_motor.setPower(0.1);
+                        if(turret_velocity < 0.05){
+                            turret_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                            turret_motor.setTargetPosition(-turret_max_ticks);
+                            turret_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            turret_current_state = TurretState.RETURNING_TO_CENTER;
+                        }
+                    }
+                    break;
                 case RETURNING_TO_CENTER:
                     if (turret_motor.getCurrentPosition() == turret_motor.getTargetPosition()){
                         turret_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                         turret_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         turret_current_state = TurretState.CENTER_IDLE;
                     }
+                    break;
                 case TRACKING_TARGET_POSE:
                     double angle_to_goal_with_pedro = -tracking_from_pose.getHeading()+Math.atan2((backboard_pose.getY()-tracking_from_pose.getY()),(backboard_pose.getX()-tracking_from_pose.getX()));
                     turret.turret_spin_to_rotation_radians(angle_to_goal_with_pedro);//
+                    break;
                 case TRACKING_TARGET_GLOBAL_ROTATION:
                     turret_spin_to_rotation_radians(-tracking_from_pose.getHeading()+local_rotation_target);
+                    break;
                 case CENTER_IDLE:
 //                    turret_spin_to_rotation_radians(0);
+                    break;
                 default:
             }
         }
@@ -170,6 +176,9 @@ public class CrossbowMain extends OpMode {
         public void set_turret_state(TurretState turret_state){
             if ((turret_current_state != TurretState.RETURNING_TO_CENTER) && (turret_current_state != TurretState.FINDING_LIMIT)){
                 turret_current_state = turret_state;
+            }
+            if (turret_state == TurretState.FINDING_LIMIT){
+                turret_motor.setTargetPosition(turret_max_ticks*2);
             }
         }
 
