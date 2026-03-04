@@ -125,7 +125,7 @@ public class CrossbowMain extends OpMode {
         public double global_rotation_target;
         public double local_rotation_target;
         public Pose target_pose;
-        public Pose future_pose;
+        public Pose future_pose = new Pose(0,0,0);
 
         public boolean track_from_future_pose = false;
 
@@ -143,15 +143,17 @@ public class CrossbowMain extends OpMode {
 
         public void update(){
             Pose tracking_from_pose;
+            panelsTelemetry.addData("track_from_future_pose",track_from_future_pose);
             if (track_from_future_pose){
                 tracking_from_pose = future_pose;
             } else {
                 tracking_from_pose = current_pedro_pose;
             }
 
-            telemetry.addData("tracking_from_pose x",tracking_from_pose.getX());
-            telemetry.addData("tracking_from_pose y",tracking_from_pose.getY());
-            telemetry.addData("tracking_from_pose heading",tracking_from_pose.getHeading());
+
+            panelsTelemetry.addData("tracking_from_pose x",tracking_from_pose.getX());
+            panelsTelemetry.addData("tracking_from_pose y",tracking_from_pose.getY());
+            panelsTelemetry.addData("tracking_from_pose heading",tracking_from_pose.getHeading());
 
             double turret_current_position_ticks = turret_motor.getCurrentPosition();
             double turret_velocity = turret_motor.getVelocity();
@@ -160,7 +162,8 @@ public class CrossbowMain extends OpMode {
             panelsTelemetry.addData("turret_max_ticks_preround",turret_motor_ppr*turret_large_gear_teeth/turret_small_gear_teeth);
 
             panelsTelemetry.addData("turret state",turret_current_state);
-            panelsTelemetry.addData("turret_tick_target",turret_current_position_ticks);
+            panelsTelemetry.addData("turret_current_position_ticks",turret_current_position_ticks);
+            panelsTelemetry.addData("turret_current_power",turret_motor.getPower());
             switch(turret_current_state){
                 case FINDING_LIMIT:
                     boolean limit_encountered = get_right_limit()||get_left_limit();
@@ -215,7 +218,8 @@ public class CrossbowMain extends OpMode {
                     turret_current_state = TurretState.FINDING_LIMIT;
                     break;
                 case TRACKING_TARGET_POSE:
-                    if (!centering) {
+                    //this ensures it doesn't interfere with centering or keep reseting when already in right state
+                    if (!centering && !(turret_current_state == TurretState.TRACKING_TARGET_POSE)) {
                         turret_current_state = TurretState.TRACKING_TARGET_POSE;
                         turret_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         turret_motor.setPower(1);
@@ -271,6 +275,7 @@ public class CrossbowMain extends OpMode {
 
             double temp_tick_target = (angle/(Math.PI*2))*turret_ppr; //1 should be turret ppr but its evil?
             int tick_target = (int) Math.round(temp_tick_target);
+            panelsTelemetry.addData("turret_tick_target",tick_target);
 
             turret_motor.setTargetPosition(tick_target);
 
@@ -424,7 +429,6 @@ public class CrossbowMain extends OpMode {
 
     @Override
     public void init_loop() {
-        turret.update();
         limelight.start();
         if (gamepad1.left_bumper){
             turret.set_turret_state(TurretState.FINDING_LIMIT);
