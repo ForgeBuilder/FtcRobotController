@@ -104,12 +104,17 @@ public class CrossbowTeleop extends CrossbowMain {
 
         double pedro_heading = current_pedro_pose.getHeading();
 
-        double angle_to_goal_with_pose = -pedro_heading+Math.atan2((backboard_pose.getY()-current_pedro_pose.getY()),(backboard_pose.getX()-current_pedro_pose.getX()));
-
         if (gamepad1.b){
             turret_spin_to_rotation_radians(0);//
         } else {
-            turret_spin_to_rotation_radians(angle_to_goal_with_pose);//
+            if (LLresult.isValid()){
+                double angle_to_goal_with_limelight = -pedro_heading+Math.atan2((backboard_pose.getY()-pedro_pose_from_limelight.getY()),(backboard_pose.getX()-pedro_pose_from_limelight.getX()));
+                turret_spin_to_rotation_radians(angle_to_goal_with_limelight);//
+            } else {
+                double angle_to_goal_with_pedro = -pedro_heading+Math.atan2((backboard_pose.getY()-current_pedro_pose.getY()),(backboard_pose.getX()-current_pedro_pose.getX()));
+                turret_spin_to_rotation_radians(angle_to_goal_with_pedro);//
+            }
+
         }
 
 
