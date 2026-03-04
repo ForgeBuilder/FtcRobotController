@@ -127,7 +127,7 @@ public class CrossbowMain extends OpMode {
         public Pose target_pose;
         public Pose future_pose;
 
-        public boolean track_from_future_pose;
+        public boolean track_from_future_pose = false;
 
         public void track_goal_from_current_position() {
              track_from_future_pose = false;
@@ -148,6 +148,10 @@ public class CrossbowMain extends OpMode {
             } else {
                 tracking_from_pose = current_pedro_pose;
             }
+
+            telemetry.addData("tracking_from_pose x",tracking_from_pose.getX());
+            telemetry.addData("tracking_from_pose y",tracking_from_pose.getY());
+            telemetry.addData("tracking_from_pose heading",tracking_from_pose.getHeading());
 
             double turret_current_position_ticks = turret_motor.getCurrentPosition();
             double turret_velocity = turret_motor.getVelocity();
@@ -200,18 +204,30 @@ public class CrossbowMain extends OpMode {
 //            if ((turret_current_state != TurretState.RETURNING_TO_CENTER) && (turret_current_state != TurretState.FINDING_LIMIT)){
 //
 //            }
-            if (new_turret_state == TurretState.FINDING_LIMIT){
-                turret_motor.setPower(1);
-                turret_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                turret_current_state = TurretState.FINDING_LIMIT;
-            }
 
-            if (new_turret_state == TurretState.TRACKING_TARGET_POSE){
-                if (turret_current_state == TurretState.CENTER_IDLE){
-                    turret_current_state = TurretState.TRACKING_TARGET_POSE;
-                    turret_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            boolean centering = ((turret_current_state == TurretState.FINDING_LIMIT) || (turret_current_state == TurretState.RETURNING_TO_CENTER));
+            panelsTelemetry.addData("centering",centering);
+
+            switch (new_turret_state){
+                case FINDING_LIMIT:
                     turret_motor.setPower(1);
-                }
+                    turret_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    turret_current_state = TurretState.FINDING_LIMIT;
+                    break;
+                case TRACKING_TARGET_POSE:
+                    if (!centering) {
+                        turret_current_state = TurretState.TRACKING_TARGET_POSE;
+                        turret_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        turret_motor.setPower(1);
+                    }
+                    break;
+                case CENTER_IDLE:
+                    if (!centering) {
+                        turret_current_state = TurretState.CENTER_IDLE;
+                        turret_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        turret_motor.setPower(1);
+                    }
+                    break;
             }
         }
 
@@ -842,31 +858,31 @@ public class CrossbowMain extends OpMode {
         intakeMotor.setPower(speed);
     }
 
-    private Pose teleop_remembered_pose = new Pose(0,0,Math.toRadians(0));
+//    private Pose teleop_remembered_pose = new Pose(0,0,Math.toRadians(0));
     //run every tick with no arguments for ability to save and return to position in teleop
-    public void teleop_return_to_position(){
-        if (gamepad1.aWasPressed()){
-            pose_tracker.update();
-            teleop_remembered_pose = follower.getPose();
-        }
-        double x = teleop_remembered_pose.getX();//inches I think
-        double y = teleop_remembered_pose.getY();
-        double yaw = teleop_remembered_pose.getHeading(); //radians
-
-        telemetry.addData("saved pose x,y,yaw","("+x+","+y+","+yaw+")");
-
-        if (gamepad1.bWasPressed()){
-            if (teleop_remembered_pose != null){
-                pose_tracker.update();
-                Pose current_pose = follower.getPose();
-                PathChain path = follower.pathBuilder()
-                        .addPath(new BezierLine(current_pose, teleop_remembered_pose))
-                        .setLinearHeadingInterpolation(current_pose.getHeading(), teleop_remembered_pose.getHeading())
-                        .build();
-                follower.followPath(path);
-            }
-        }
-    }
+//    public void teleop_return_to_position(){
+//        if (gamepad1.aWasPressed()){
+//            pose_tracker.update();
+//            teleop_remembered_pose = follower.getPose();
+//        }
+//        double x = teleop_remembered_pose.getX();//inches I think
+//        double y = teleop_remembered_pose.getY();
+//        double yaw = teleop_remembered_pose.getHeading(); //radians
+//
+//        telemetry.addData("saved pose x,y,yaw","("+x+","+y+","+yaw+")");
+//
+//        if (gamepad1.bWasPressed()){
+//            if (teleop_remembered_pose != null){
+//                pose_tracker.update();
+//                Pose current_pose = follower.getPose();
+//                PathChain path = follower.pathBuilder()
+//                        .addPath(new BezierLine(current_pose, teleop_remembered_pose))
+//                        .setLinearHeadingInterpolation(current_pose.getHeading(), teleop_remembered_pose.getHeading())
+//                        .build();
+//                follower.followPath(path);
+//            }
+//        }
+//    }
     public void limelight_set_pose(){
         if (LLresult != null && LLresult.isValid()) {
             Pose3D limelight_botpose = LLresult.getBotpose_MT2();
