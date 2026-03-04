@@ -205,7 +205,7 @@ public class CrossbowMain extends OpMode {
                     turret.turret_spin_to_rotation_radians(angle_to_goal_with_pedro);//
                     break;
                 case TRACKING_TARGET_GLOBAL_ROTATION:
-                    turret_spin_to_rotation_radians(-tracking_from_pose.getHeading()+local_rotation_target);
+                    turret_spin_to_rotation_radians((-tracking_from_pose.getHeading()+local_rotation_target));
                     break;
                 case CENTER_IDLE:
                     turret_spin_to_rotation_radians(0);
@@ -276,12 +276,11 @@ public class CrossbowMain extends OpMode {
         public double get_turret_rotation_degrees(){
             return (turret_motor.getCurrentPosition()/turret_ppr)*360;
         }
-
         public boolean turret_spin_to_rotation_radians(double angle){
             boolean limit_encountered = false;
             panelsTelemetry.addData("turret_target_radians",angle);
 
-            angle = (angle + Math.PI)%(Math.PI*2)-Math.PI;
+            angle = ((angle + (mod_constant/4)*Math.PI)%(Math.PI*2))-(mod_constant/4)*Math.PI;
             panelsTelemetry.addData("turret_target_radians_postmod",angle);
 
             double temp_tick_target = (angle/(Math.PI*2))*turret_ppr; //1 should be turret ppr but its evil?
@@ -324,6 +323,7 @@ public class CrossbowMain extends OpMode {
         }
 }
 
+    public static double mod_constant = -4.0;
 
     private DcMotor rightFront;
     private DcMotor rightBack;
