@@ -104,27 +104,17 @@ public class CrossbowTeleop extends CrossbowMain {
 
         //negitive is to the right and positive is to the left for the motor encoder
 
+        turret.track_goal_from_current_position();
 
         if (gamepad1.left_bumper){
             turret.set_turret_state(TurretState.FINDING_LIMIT);
             turret.track_goal_from_current_position();
         }
 
-
-//        if (gamepad1.bWasPressed()){
-//            //for centering when the started pose is wrong - doesn't override heading, need to implement
-//            if (LLresult.isValid()){
-//                follower.setPose(pedro_pose_from_limelight.setHeading(pedro_heading));
-//            }
-//        } else {
-//            if (LLresult.isValid()){
-//                double angle_to_goal_with_limelight = -pedro_heading+Math.atan2((backboard_pose.getY()-pedro_pose_from_limelight.getY()),(backboard_pose.getX()-pedro_pose_from_limelight.getX()));
-//                turret.turret_spin_to_rotation_radians(angle_to_goal_with_limelight);//
-//            } else {
-//                double angle_to_goal_with_pedro = -pedro_heading+Math.atan2((backboard_pose.getY()-current_pedro_pose.getY()),(backboard_pose.getX()-current_pedro_pose.getX()));
-//                turret.turret_spin_to_rotation_radians(angle_to_goal_with_pedro);//
-//            }
-//        }
+        if (gamepad1.bWasPressed()){
+            //for centering when the started pose is wrong - doesn't override heading, need to implement
+            turret.find_pose_with_ll();
+        }
 
 
         //launcher

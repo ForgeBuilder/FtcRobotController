@@ -116,7 +116,8 @@ public class CrossbowMain extends OpMode {
             turret_motor.setDirection(DcMotorSimple.Direction.REVERSE);
 
             turret_ppr = turret_motor_ppr*turret_large_gear_teeth/turret_small_gear_teeth;
-            turret_max_ticks = (int) Math.round(turret_ppr*(3/4));
+            turret_max_ticks = (int) Math.round(turret_ppr*(3.0/4));
+            //I hate java. "integer division in double context!" like stfu and do math we are smart here cmon
                                   
             TurretState turret_current_state = TurretState.FINDING_LIMIT;
         }
@@ -131,6 +132,13 @@ public class CrossbowMain extends OpMode {
         public void track_goal_from_current_position() {
              track_from_future_pose = false;
              target_pose = backboard_pose;
+             set_turret_state(TurretState.TRACKING_TARGET_POSE);
+        }
+        public void find_pose_with_ll(){
+            turret.set_turret_state(TurretState.CENTER_IDLE);
+            if (LLresult.isValid()){
+                follower.setPose(pedro_pose_from_limelight.setHeading(current_pedro_pose.getHeading()));
+            }
         }
 
         public void update(){
@@ -144,6 +152,9 @@ public class CrossbowMain extends OpMode {
             double turret_current_position_ticks = turret_motor.getCurrentPosition();
             double turret_velocity = turret_motor.getVelocity();
 
+            panelsTelemetry.addData("turret_max_ticks",turret_max_ticks);
+            panelsTelemetry.addData("turret_max_ticks_preround",turret_motor_ppr*turret_large_gear_teeth/turret_small_gear_teeth);
+
             panelsTelemetry.addData("turret state",turret_current_state);
             panelsTelemetry.addData("turret_tick_target",turret_current_position_ticks);
             switch(turret_current_state){
@@ -151,14 +162,14 @@ public class CrossbowMain extends OpMode {
                     boolean limit_encountered = get_right_limit()||get_left_limit();
 
                     panelsTelemetry.addData("limit encountered",bool_spike(limit_encountered));
-                    panelsTelemetry.addData("turret_max_ticks",turret_max_ticks);
 
                     if (limit_encountered){
                         turret_motor.setPower(0.1);
                         panelsTelemetry.addData("turret_velocity",turret_velocity);
                         if(turret_velocity < 0.05){
                             turret_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                            turret_motor.setTargetPosition(-turret_max_ticks);
+                            turret_motor.setTargetPosition(-turret_max_ticks/2);
+                            turret_motor.setPower(1);
                             turret_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             turret_current_state = TurretState.RETURNING_TO_CENTER;
                         }
@@ -185,13 +196,22 @@ public class CrossbowMain extends OpMode {
             }
         }
 
-        public void set_turret_state(TurretState turret_state){
-            if ((turret_current_state != TurretState.RETURNING_TO_CENTER) && (turret_current_state != TurretState.FINDING_LIMIT)){
-                turret_current_state = turret_state;
-            }
-            if (turret_state == TurretState.FINDING_LIMIT){
+        public void set_turret_state(TurretState new_turret_state){
+//            if ((turret_current_state != TurretState.RETURNING_TO_CENTER) && (turret_current_state != TurretState.FINDING_LIMIT)){
+//
+//            }
+            if (new_turret_state == TurretState.FINDING_LIMIT){
                 turret_motor.setPower(1);
                 turret_motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                turret_current_state = TurretState.FINDING_LIMIT;
+            }
+
+            if (new_turret_state == TurretState.TRACKING_TARGET_POSE){
+                if (turret_current_state == TurretState.CENTER_IDLE){
+                    turret_current_state = TurretState.TRACKING_TARGET_POSE;
+                    turret_motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    turret_motor.setPower(1);
+                }
             }
         }
 
@@ -390,6 +410,10 @@ public class CrossbowMain extends OpMode {
     public void init_loop() {
         turret.update();
         limelight.start();
+        if (gamepad1.left_bumper){
+            turret.set_turret_state(TurretState.FINDING_LIMIT);
+            turret.track_goal_from_current_position();
+        }
     }
 
     /*
@@ -460,6 +484,7 @@ public class CrossbowMain extends OpMode {
     public int get_launcher_speed(){
         return launcherSpeed;
     }
+
 
     public void set_launcher_speed(int new_speed) {
         launcherSpeed = new_speed;
