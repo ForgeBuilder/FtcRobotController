@@ -138,9 +138,10 @@ public class CrossbowMain extends OpMode {
             panelsTelemetry.addData("turret state",turret_current_state);
             switch(turret_current_state){
                 case FINDING_LIMIT:
-                    boolean limit_encountered = spin_turret_simple(1);
+                    turret_motor.setTargetPosition(turret_max_ticks*2);
+                    boolean limit_encountered = get_right_limit()||get_left_limit();
                     double turret_velocity = turret_motor.getVelocity();
-//                    panelsTelemetry.addData("limit encountered",bool_spike(limit_encountered));
+                    panelsTelemetry.addData("limit encountered",bool_spike(limit_encountered));
 
 //                    if (limit_encountered && (turret_velocity < 0.05)){
 //                        turret_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -161,7 +162,7 @@ public class CrossbowMain extends OpMode {
                 case TRACKING_TARGET_GLOBAL_ROTATION:
                     turret_spin_to_rotation_radians(-tracking_from_pose.getHeading()+local_rotation_target);
                 case CENTER_IDLE:
-                    turret_spin_to_rotation_radians(0);
+//                    turret_spin_to_rotation_radians(0);
                 default:
             }
         }
@@ -170,6 +171,14 @@ public class CrossbowMain extends OpMode {
             if ((turret_current_state != TurretState.RETURNING_TO_CENTER) && (turret_current_state != TurretState.FINDING_LIMIT)){
                 turret_current_state = turret_state;
             }
+        }
+
+        public boolean get_left_limit(){
+            return magnetic_limit_switch_left.getValue() == 1;
+        }
+
+        public boolean get_right_limit(){
+            return magnetic_limit_switch_right.getValue() == 1;
         }
 
         //returns if a limit was encountered
@@ -195,7 +204,8 @@ public class CrossbowMain extends OpMode {
             return (turret_motor.getCurrentPosition()/turret_ppr)*360;
         }
 
-        public void turret_spin_to_rotation_radians(double angle){
+        public boolean turret_spin_to_rotation_radians(double angle){
+            boolean limit_encountered = false;
             panelsTelemetry.addData("turret_target_radians",angle);
 
             angle = (angle + Math.PI)%(Math.PI*2)-Math.PI;
@@ -217,14 +227,18 @@ public class CrossbowMain extends OpMode {
 
             double turret_position_ticks = turret_motor.getCurrentPosition();
 
+            panelsTelemetry.addData("turret_rotation_degrees",get_turret_rotation_degrees());
+
             if (
                     ((magnetic_limit_switch_left.getValue() == 1)&&(turret_position_ticks<tick_target))
-                            ||
-                            ((magnetic_limit_switch_right.getValue() == 1)&&(turret_position_ticks>tick_target))
+                    ||
+                    ((magnetic_limit_switch_right.getValue() == 1)&&(turret_position_ticks>tick_target))
             ){
                 turret_motor.setPower(0);
+                return true;
             } else {
                 turret_motor.setPower(1);
+                return false;
             }
 //            //write offset code to handle this later
 
@@ -236,8 +250,6 @@ public class CrossbowMain extends OpMode {
 //        }
 
             //this could be smarter (more math efficient) by finding a ticks-per-radian instead of ticks-per-revolution
-
-            panelsTelemetry.addData("turret_rotation_degrees",get_turret_rotation_degrees());
         }
 }
 
