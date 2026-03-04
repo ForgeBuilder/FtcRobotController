@@ -157,8 +157,9 @@ public class CrossbowMain extends OpMode {
                     turret.turret_spin_to_rotation_radians(angle_to_goal_with_pedro);//
                 case TRACKING_TARGET_GLOBAL_ROTATION:
                     turret_spin_to_rotation_radians(-tracking_from_pose.getHeading()+local_rotation_target);
-                default: //CENTER_IDLE
+                case CENTER_IDLE:
                     turret_spin_to_rotation_radians(0);
+                default:
             }
         }
 
