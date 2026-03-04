@@ -163,7 +163,7 @@ public class CrossbowMain extends OpMode {
         }
 
         public void set_turret_state(TurretState turret_state){
-            if (turret_state != TurretState.RETURNING_TO_CENTER && turret_state != TurretState.FINDING_LIMIT){
+            if ((turret_current_state != TurretState.RETURNING_TO_CENTER) && (turret_current_state != TurretState.FINDING_LIMIT)){
                 turret_current_state = turret_state;
             }
         }

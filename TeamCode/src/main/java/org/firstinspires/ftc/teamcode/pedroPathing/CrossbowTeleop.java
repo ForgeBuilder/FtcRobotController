@@ -105,7 +105,7 @@ public class CrossbowTeleop extends CrossbowMain {
 
         //negitive is to the right and positive is to the left for the motor encoder
 
-        telemetry.addData("left ARE YOU KIDDING ME BRO",bool_spike(gamepad1.leftBumperWasPressed()));
+        panelsTelemetry.addData("left ARE YOU KIDDING ME BRO",bool_spike(gamepad1.leftBumperWasPressed()));
         if (gamepad1.leftBumperWasPressed()){
             turret.set_turret_state(TurretState.FINDING_LIMIT);
         }
