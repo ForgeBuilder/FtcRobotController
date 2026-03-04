@@ -44,6 +44,8 @@ import com.bylazar.configurables.annotations.Configurable;
     //  http://192.168.43.1:8001/    - panels
 
 
+
+
 @Configurable
 public class CrossbowMain extends OpMode {
 
@@ -70,19 +72,105 @@ public class CrossbowMain extends OpMode {
 
     protected GoBildaPinpointDriver pinpoint;
 
-///turret variables
-    private DcMotorEx turret_motor;
-    private DcMotor.RunMode turret_motor_runmode = DcMotor.RunMode.RUN_USING_ENCODER;
+///turret
+    protected turret_class turret = new turret_class();
+    public class turret_class {
 
-    private double turret_motor_ppr = 537.7;
+        public turret_class(){} //not customiszble
+        private TouchSensor magnetic_limit_switch_left;
+        private TouchSensor magnetic_limit_switch_right;
+        private String turret_state = "homing_to_magnet"; //"homing_to_center"; //"ready"
 
-    private int turret_large_gear_teeth = 72;
+        private DcMotorEx turret_motor;
+        private DcMotor.RunMode turret_motor_runmode = DcMotor.RunMode.RUN_USING_ENCODER;
 
-    private int turret_small_gear_teeth = 12;
+        private double turret_motor_ppr = 537.7;
 
-    private double turret_ppr;
+        private int turret_large_gear_teeth = 72;
 
-    private int turret_max_ticks;
+        private int turret_small_gear_teeth = 12;
+
+        private double turret_ppr;
+
+        private int turret_max_ticks;
+
+        public void init(){
+            magnetic_limit_switch_left = hardwareMap.get(TouchSensor.class,"magL");
+            magnetic_limit_switch_right = hardwareMap.get(TouchSensor.class,"magR");
+
+            turret_motor = hardwareMap.get(DcMotorEx.class, "turret");
+            turret_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            turret_motor.setMode(turret_motor_runmode);
+            turret_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            turret_motor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+            turret_ppr = turret_motor_ppr*turret_large_gear_teeth/turret_small_gear_teeth;
+            turret_max_ticks = (int) Math.floor(turret_ppr*(3/4));
+        }
+        public void spin_turret_simple(double power){
+            if (turret_motor_runmode != DcMotor.RunMode.RUN_USING_ENCODER){
+                turret_motor_runmode = DcMotor.RunMode.RUN_USING_ENCODER;
+                turret_motor.setMode(turret_motor_runmode);
+            }
+            if (magnetic_limit_switch_left.getValue() == 1){
+                power = Math.max(power, -min_turret_power_limit);
+            }
+            if (magnetic_limit_switch_right.getValue() == 1){
+                power = Math.min(power, min_turret_power_limit);
+            }
+            turret_motor.setPower(power);
+            panelsTelemetry.addData("turret_rotation_degrees",get_turret_rotation_degrees());
+        }
+        public double get_turret_rotation_degrees(){
+            return (turret_motor.getCurrentPosition()/turret_ppr)*360;
+        }
+
+        public void turret_spin_to_rotation_radians(double angle){
+            panelsTelemetry.addData("turret_target_radians",angle);
+
+            angle = (angle + Math.PI)%(Math.PI*2)-Math.PI;
+            panelsTelemetry.addData("turret_target_radians_postmod",angle);
+
+            double temp_tick_target = (angle/(Math.PI*2))*turret_ppr; //1 should be turret ppr but its evil?
+
+            int tick_target = (int) Math.round(temp_tick_target);
+
+            turret_motor.setTargetPosition(tick_target);
+
+            panelsTelemetry.addData("turret_target_tick",temp_tick_target);
+
+
+            if (turret_motor_runmode != DcMotor.RunMode.RUN_TO_POSITION){
+                turret_motor_runmode = DcMotor.RunMode.RUN_TO_POSITION;
+                turret_motor.setMode(turret_motor_runmode);
+            }
+
+            double turret_position_ticks = turret_motor.getCurrentPosition();
+
+            if (
+                    ((magnetic_limit_switch_left.getValue() == 1)&&(turret_position_ticks<tick_target))
+                            ||
+                            ((magnetic_limit_switch_right.getValue() == 1)&&(turret_position_ticks>tick_target))
+            ){
+                turret_motor.setPower(0);
+            } else {
+                turret_motor.setPower(1);
+            }
+//            //write offset code to handle this later
+
+//        if (magnetic_limit_switch_left.getValue() == 1){
+//            //write offset code to handle this
+//        }
+//        if (magnetic_limit_switch_right.getValue() == 1){
+//            //write offset code to handle this
+//        }
+
+            //this could be smarter (more math efficient) by finding a ticks-per-radian instead of ticks-per-revolution
+
+            panelsTelemetry.addData("turret_rotation_degrees",get_turret_rotation_degrees());
+        }
+}
+
 
     private DcMotor rightFront;
     private DcMotor rightBack;
@@ -92,9 +180,6 @@ public class CrossbowMain extends OpMode {
 
     private DcMotorEx rightLaunchMotor;
     private DcMotorEx leftLaunchMotor;
-
-    private TouchSensor magnetic_limit_switch_left;
-    private TouchSensor magnetic_limit_switch_right;
 
     public PIDFCoefficients launcherCoefficients = new PIDFCoefficients(100,0,0,12.9);
 
@@ -157,17 +242,7 @@ public class CrossbowMain extends OpMode {
 
 
     /// turret rotation
-        magnetic_limit_switch_left = hardwareMap.get(TouchSensor.class,"magL");
-        magnetic_limit_switch_right = hardwareMap.get(TouchSensor.class,"magR");
-
-        turret_motor = hardwareMap.get(DcMotorEx.class, "turret");
-        turret_motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        turret_motor.setMode(turret_motor_runmode);
-        turret_motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        turret_motor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        turret_ppr = turret_motor_ppr*turret_large_gear_teeth/turret_small_gear_teeth;
-        turret_max_ticks = (int) Math.floor(turret_ppr*(3/4));
+        turret.init();
 
     /// launch motors
         rightLaunchMotor = hardwareMap.get(DcMotorEx.class,"lm1");
@@ -552,74 +627,11 @@ public class CrossbowMain extends OpMode {
     public double estimated_distance = 0;
 
     public static double min_turret_power_limit = 0.05;
-
-    public void turret_spin_to_rotation_radians(double angle){
-        panelsTelemetry.addData("turret_target_radians",angle);
-
-        angle = (angle + Math.PI)%(Math.PI*2)-Math.PI;
-        panelsTelemetry.addData("turret_target_radians_postmod",angle);
-
-        double temp_tick_target = (angle/(Math.PI*2))*turret_ppr; //1 should be turret ppr but its evil?
-
-        int tick_target = (int) Math.round(temp_tick_target);
-
-        turret_motor.setTargetPosition(tick_target);
-
-        panelsTelemetry.addData("turret_target_tick",temp_tick_target);
-
-
-        if (turret_motor_runmode != DcMotor.RunMode.RUN_TO_POSITION){
-            turret_motor_runmode = DcMotor.RunMode.RUN_TO_POSITION;
-            turret_motor.setMode(turret_motor_runmode);
-        }
-
-        double turret_position_ticks = turret_motor.getCurrentPosition();
-
-        if (
-                ((magnetic_limit_switch_left.getValue() == 1)&&(turret_position_ticks<tick_target))
-                ||
-                ((magnetic_limit_switch_right.getValue() == 1)&&(turret_position_ticks>tick_target))
-        ){
-            turret_motor.setPower(0);
-        } else {
-            turret_motor.setPower(1);
-        }
-//            //write offset code to handle this later
-
-//        if (magnetic_limit_switch_left.getValue() == 1){
-//            //write offset code to handle this
-//        }
-//        if (magnetic_limit_switch_right.getValue() == 1){
-//            //write offset code to handle this
-//        }
-
-        //this could be smarter (more math efficient) by finding a ticks-per-radian instead of ticks-per-revolution
-
-        panelsTelemetry.addData("turret_rotation_degrees",get_turret_rotation_degrees());
-    }
-    public void spin_turret_simple(double power){
-        if (turret_motor_runmode != DcMotor.RunMode.RUN_USING_ENCODER){
-            turret_motor_runmode = DcMotor.RunMode.RUN_USING_ENCODER;
-            turret_motor.setMode(turret_motor_runmode);
-        }
-        if (magnetic_limit_switch_left.getValue() == 1){
-            power = Math.max(power, -min_turret_power_limit);
-        }
-        if (magnetic_limit_switch_right.getValue() == 1){
-            power = Math.min(power, min_turret_power_limit);
-        }
-        turret_motor.setPower(power);
-        panelsTelemetry.addData("turret_rotation_degrees",get_turret_rotation_degrees());
-    }
-
-    public double get_turret_rotation_degrees(){
-        return (turret_motor.getCurrentPosition()/turret_ppr)*360;
-    }
     public void limelight_code(){
         //limelight stuff - should always run
 
         //This will probably need an offset
-        limelight.updateRobotOrientation((pinpoint.getHeading(AngleUnit.DEGREES)+get_turret_rotation_degrees())%360);
+        limelight.updateRobotOrientation((pinpoint.getHeading(AngleUnit.DEGREES)+turret.get_turret_rotation_degrees())%360);
         //check if the compas is clockwise or not and make the turret rotation match that!
 
         LLresult = limelight.getLatestResult();

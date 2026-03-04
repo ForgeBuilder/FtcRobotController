@@ -11,9 +11,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit
 
 // Inside your OpMode
 
+
 @Configurable
 public class CrossbowTeleop extends CrossbowMain {
     private ElapsedTime runtime = new ElapsedTime();
+
+    public static double[] start_pose_members = {0,0,0};
 
     @Override
     public void start() {
@@ -24,6 +27,10 @@ public class CrossbowTeleop extends CrossbowMain {
     @Override
     public void init() {
         super.init();
+        Pose start_pose = new Pose(start_pose_members[0],start_pose_members[1],start_pose_members[2]);
+        if (start_pose != new Pose(0,0,0)){
+            follower.setPose(start_pose);
+        }
         limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
         limelight.start(); // This tells Limelight to start looking!
     }
