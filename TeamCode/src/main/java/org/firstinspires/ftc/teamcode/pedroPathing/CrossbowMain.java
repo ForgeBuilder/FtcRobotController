@@ -4,11 +4,9 @@ package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ftc.PoseConverter;
-import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.PedroCoordinates;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.PoseTracker;
-import com.pedropathing.paths.PathChain;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -90,6 +88,10 @@ public class CrossbowMain extends OpMode {
 
     enum TurretInstruction {
         TRACK_GLOBAL_POSE,TRACK_LOCAL_ROTATION,TRACK_GLOBAL_ROTATION,IDLE;
+    }
+
+    public double get_range_with_pose(){
+        return Math.sqrt(Math.pow(current_pedro_pose.getX()-backboard_pose.getX(),2)+Math.pow(current_pedro_pose.getY()-backboard_pose.getY(),2));
     }
     public class turret_class {
 
@@ -756,7 +758,9 @@ public class CrossbowMain extends OpMode {
             1000
     };
     public void rangefind(){
-        double unrounded_launcher_speed = rangefinder_constants[0]*Math.pow(estimated_distance,2)+rangefinder_constants[1]*estimated_distance+rangefinder_constants[2];
+        //estimated_distance is old distance
+        double distance = get_range_with_pose();
+        double unrounded_launcher_speed = rangefinder_constants[0]*Math.pow(distance,2)+rangefinder_constants[1]*distance+rangefinder_constants[2];
         launcherSpeed = Math.round((long) (unrounded_launcher_speed/20))*20;
 
 
