@@ -8,6 +8,7 @@ import com.pedropathing.geometry.PedroCoordinates;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.PoseTracker;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -79,6 +80,8 @@ public class CrossbowMain extends OpMode {
 
     protected GoBildaPinpointDriver pinpoint;
 
+    protected Rev2mDistanceSensor ball_looker;
+
 ///turret
     protected turret_class turret = new turret_class();
 
@@ -93,6 +96,8 @@ public class CrossbowMain extends OpMode {
     public double get_range_with_pose(){
         return Math.sqrt(Math.pow(current_pedro_pose.getX()-backboard_pose.getX(),2)+Math.pow(current_pedro_pose.getY()-backboard_pose.getY(),2));
     }
+
+
     public class turret_class {
 
         public turret_class(){} //not customiszble
@@ -394,7 +399,8 @@ public class CrossbowMain extends OpMode {
         limelight.start();
 
 
-    /// turret rotation
+    /// turret
+        ball_looker = hardwareMap.get(Rev2mDistanceSensor.class,"ballLooker");
         turret.init();
 
     /// launch motors
@@ -464,6 +470,9 @@ public class CrossbowMain extends OpMode {
             update_chasis_pid_toggle = false;
             chasis_pid = new PID(aiming_pid_coeficients[0], aiming_pid_coeficients[1], aiming_pid_coeficients[2]);
         }
+        boolean ball_ready = ball_looker.getDistance(DistanceUnit.MM) < 170;
+
+        panelsTelemetry.addData("ball_ready",bool_spike(ball_ready));
 
 //        panelsTelemetry.addData("magnetic_limit_switch_left", magnetic_limit_switch_left.getValue());
 //        panelsTelemetry.addData("magnetic_limit_switch_right",magnetic_limit_switch_right.getValue());

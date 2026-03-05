@@ -36,5 +36,6 @@ public class BallistaPedroUnitTest extends CrossbowMain {
                     .build();
             follower.followPath(test_path);
         }
+        panelsTelemetry.update(telemetry);
     }
 }
