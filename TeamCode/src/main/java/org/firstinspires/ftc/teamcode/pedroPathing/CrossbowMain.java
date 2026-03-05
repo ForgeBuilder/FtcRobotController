@@ -172,11 +172,15 @@ public class CrossbowMain extends OpMode {
             }
 
 
+            try {
+                panelsTelemetry.addData("tracking_from_pose x", tracking_from_pose.getX());
+                panelsTelemetry.addData("tracking_from_pose y", tracking_from_pose.getY());
+                panelsTelemetry.addData("tracking_from_pose heading", tracking_from_pose.getHeading());
+            } catch (RuntimeException e) {
+                panelsTelemetry.addData("telemetry_error", e.getMessage());
+            } finally {
 
-            panelsTelemetry.addData("tracking_from_pose x",tracking_from_pose.getX());
-            panelsTelemetry.addData("tracking_from_pose y",tracking_from_pose.getY());
-            panelsTelemetry.addData("tracking_from_pose heading",tracking_from_pose.getHeading());
-
+            }
 
 
             double turret_current_position_ticks = turret_motor.getCurrentPosition();
@@ -214,9 +218,14 @@ public class CrossbowMain extends OpMode {
                     }
                     break;
                 case TRACKING_TARGET_POSE:
-                    double angle_to_goal_with_pedro = -tracking_from_pose.getHeading()+Math.atan2((goal_pose.getY()-tracking_from_pose.getY()),(goal_pose.getX()-tracking_from_pose.getX()));
-                    turret.turret_spin_to_rotation_radians(angle_to_goal_with_pedro);//
-                    break;
+                    try{
+                        double angle_to_goal_with_pedro = -tracking_from_pose.getHeading()+Math.atan2((goal_pose.getY()-tracking_from_pose.getY()),(goal_pose.getX()-tracking_from_pose.getX()));
+                        turret.turret_spin_to_rotation_radians(angle_to_goal_with_pedro);//
+                        break;
+                    } catch (RuntimeException e) {
+                        panelsTelemetry.addData("TRACKING_TARGET_POSE error",e);
+                    }
+
                 case TRACKING_TARGET_GLOBAL_ROTATION:
                     turret_spin_to_rotation_radians((-tracking_from_pose.getHeading()+local_rotation_target));
                     break;
