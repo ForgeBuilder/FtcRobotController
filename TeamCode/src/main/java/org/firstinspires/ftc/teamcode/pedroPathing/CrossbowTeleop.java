@@ -6,7 +6,6 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
-import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 
 
 // Inside your OpMode
@@ -119,26 +118,26 @@ public class CrossbowTeleop extends CrossbowMain {
         //aim adjustment
 
 
-        telemetry.addData("backboard_pose x",backboard_pose.getX());
-        telemetry.addData("backboard_pose y",backboard_pose.getY());
+        telemetry.addData("backboard_pose x", goal_pose.getX());
+        telemetry.addData("backboard_pose y", goal_pose.getY());
 
-        panelsTelemetry.addData("backboard_pose x",backboard_pose.getX());
-        panelsTelemetry.addData("backboard_pose y",backboard_pose.getY());
+        panelsTelemetry.addData("backboard_pose x", goal_pose.getX());
+        panelsTelemetry.addData("backboard_pose y", goal_pose.getY());
 
         //adjustment_size
 
         //backboard_pose = new Pose (backboard_pose.getX(),backboard_pose.getY());
 
         if(gamepad2.dpadUpWasPressed()){
-            backboard_pose = new Pose (backboard_pose.getX()-adjustment_size,backboard_pose.getY());
+            goal_pose_constants[0] -= adjustment_size;
         } else if (gamepad2.dpadLeftWasPressed()){
-            backboard_pose = new Pose (backboard_pose.getX(),backboard_pose.getY()-adjustment_size);
+            goal_pose_constants[1] -= adjustment_size;
         } else if(gamepad2.dpadDownWasPressed()){
-            backboard_pose = new Pose (backboard_pose.getX()+adjustment_size,backboard_pose.getY());
+            goal_pose_constants[0] -= adjustment_size;
         } else if (gamepad2.dpadRightWasPressed()){
-            backboard_pose = new Pose (backboard_pose.getX(),backboard_pose.getY()+adjustment_size);
+            goal_pose_constants[1] += adjustment_size;
         }
-
+        goal_pose = new Pose(goal_pose_constants[0],goal_pose_constants[1],0);
 
         //launcher
 

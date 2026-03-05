@@ -94,7 +94,7 @@ public class CrossbowMain extends OpMode {
     }
 
     public double get_range_with_pose(){
-        return Math.sqrt(Math.pow(current_pedro_pose.getX()-backboard_pose.getX(),2)+Math.pow(current_pedro_pose.getY()-backboard_pose.getY(),2));
+        return Math.sqrt(Math.pow(current_pedro_pose.getX()- goal_pose.getX(),2)+Math.pow(current_pedro_pose.getY()- goal_pose.getY(),2));
     }
 
 
@@ -147,7 +147,7 @@ public class CrossbowMain extends OpMode {
 
         public void track_goal_from_current_position() {
              track_from_future_pose = false;
-             target_pose = backboard_pose;
+             target_pose = goal_pose;
              set_turret_state(TurretState.TRACKING_TARGET_POSE);
         }
         public void find_pose_with_ll(){
@@ -206,7 +206,7 @@ public class CrossbowMain extends OpMode {
                     }
                     break;
                 case TRACKING_TARGET_POSE:
-                    double angle_to_goal_with_pedro = -tracking_from_pose.getHeading()+Math.atan2((backboard_pose.getY()-tracking_from_pose.getY()),(backboard_pose.getX()-tracking_from_pose.getX()));
+                    double angle_to_goal_with_pedro = -tracking_from_pose.getHeading()+Math.atan2((goal_pose.getY()-tracking_from_pose.getY()),(goal_pose.getX()-tracking_from_pose.getX()));
                     turret.turret_spin_to_rotation_radians(angle_to_goal_with_pedro);//
                     break;
                 case TRACKING_TARGET_GLOBAL_ROTATION:
@@ -364,30 +364,38 @@ public class CrossbowMain extends OpMode {
 
     protected ElapsedTime time_since_ball_ready;
 
-    Pose backboard_pose;
+    Pose goal_pose;
 
-    Pose blue_backboard_pose = new Pose(-56, -56,0);
-    Pose red_backboard_pose = new Pose(-56, 56,0);
+    public static double[] blue_goal_pose_constants = {-56,-56};
+    public static double[] red_goal_pose_constants = {-56,56};
 
-        public double apm;
+    public double[] goal_pose_constants = {0,0};
 
+    Pose blue_goal_pose = new Pose(blue_goal_pose_constants[0], blue_goal_pose_constants[1],0);
+    Pose red_goal_pose = new Pose(red_goal_pose_constants[0], red_goal_pose_constants[1],0);
+
+    public double apm;
 
     public void set_team(String team){
         if (team == "red"){
             backboard_pipeline = 3;
             backboard_id = 24;
             limelight.pipelineSwitch(backboard_pipeline);
-            backboard_pose = red_backboard_pose;
+            goal_pose = red_goal_pose;
+            goal_pose_constants = red_goal_pose_constants;
             apm = -1.0;
             mod_constant = 4.0;
         } else if (team == "blue"){
             backboard_pipeline = 2;
             backboard_id = 20;
             limelight.pipelineSwitch(backboard_pipeline);
-            backboard_pose = blue_backboard_pose;
+            goal_pose = blue_goal_pose;
+            goal_pose_constants = blue_goal_pose_constants;
             apm = 1.0;
             mod_constant = -4.0;
         }
+
+
     }
 
     @Override
@@ -771,11 +779,18 @@ public class CrossbowMain extends OpMode {
 
     //rangefinder curve fit constants
 //https://www.desmos.com/calculator/wz3ai30ujx
-    public static double[] rangefinder_constants = {
-            0.000588967,
-            3.4,
-            1000
-    };
+//    public static double[] rangefinder_constants = {
+//            0.000588967,
+//            3.4,
+//            1000
+//    };
+
+        // 3/5/2026 gobilda 30a yellow hood
+        public static double[] rangefinder_constants = {
+                -0.084,
+                19.91,
+                288.297
+        };
 
     public static int override_launch_speed;
 
