@@ -166,10 +166,18 @@ public class CrossbowMain extends OpMode {
                 tracking_from_pose = current_pedro_pose;
             }
 
+            //tracking_from_pose returns null at the start of auto and PID tuning for some reason
+            if (tracking_from_pose == null){
+                tracking_from_pose = new Pose(0,0,0);
+            }
+
+
 
             panelsTelemetry.addData("tracking_from_pose x",tracking_from_pose.getX());
             panelsTelemetry.addData("tracking_from_pose y",tracking_from_pose.getY());
             panelsTelemetry.addData("tracking_from_pose heading",tracking_from_pose.getHeading());
+
+
 
             double turret_current_position_ticks = turret_motor.getCurrentPosition();
             double turret_velocity = turret_motor.getVelocity();
@@ -366,8 +374,8 @@ public class CrossbowMain extends OpMode {
 
     Pose goal_pose;
 
-    public static double[] blue_goal_pose_constants = {-56,-56};
-    public static double[] red_goal_pose_constants = {-56,56};
+    public static double[] blue_goal_pose_constants = {-66,-55};
+    public static double[] red_goal_pose_constants = {-66,55};
 
     public double[] goal_pose_constants = {0,0};
 
