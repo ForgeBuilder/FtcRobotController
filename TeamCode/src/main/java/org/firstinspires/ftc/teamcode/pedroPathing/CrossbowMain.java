@@ -726,7 +726,7 @@ public class CrossbowMain extends OpMode {
             }
         } else {
             launcher_freeze_movement = false;
-            if (gamepad1.b){ spin_launcher = false;}
+            if (gamepad1.x){ spin_launcher = false;}
             trying_to_fire = false;
             open_door = false;
             telemetry.addData("speed_ready"," -N/A-");
@@ -737,12 +737,12 @@ public class CrossbowMain extends OpMode {
         telemetry.addData("right_speed_at_kick",right_speed_at_kick);
 
         //debug
-        if (debug_kicker) {
-            kick = override_kick;
-            if (gamepad1.xWasPressed()){
-                override_kick = !override_kick;
-            }
-        }
+//        if (debug_kicker) {
+//            kick = override_kick;
+//            if (gamepad1.xWasPressed()){
+//                override_kick = !override_kick;
+//            }
+//        }
 
         if (open_door) {
             launchKickServo1.setPosition(KickerLaunchAngle);
@@ -776,9 +776,18 @@ public class CrossbowMain extends OpMode {
             3.4,
             1000
     };
+
+    public static double override_launch_speed;
+
     public void rangefind(){
         //estimated_distance is old distance
-        double distance = get_range_with_pose();
+        double distance;
+        if (override_launch_speed == 0){
+            distance = get_range_with_pose();
+        } else {
+            distance = override_launch_speed;
+        }
+
         double unrounded_launcher_speed = rangefinder_constants[0]*Math.pow(distance,2)+rangefinder_constants[1]*distance+rangefinder_constants[2];
         launcherSpeed = Math.round((long) (unrounded_launcher_speed/20))*20;
 
