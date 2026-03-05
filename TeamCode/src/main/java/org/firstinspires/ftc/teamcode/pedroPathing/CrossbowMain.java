@@ -366,8 +366,8 @@ public class CrossbowMain extends OpMode {
 
     Pose backboard_pose;
 
-    Pose blue_backboard_pose = new Pose(-60, -60,0);
-    Pose red_backboard_pose = new Pose(-60, 60,0);
+    Pose blue_backboard_pose = new Pose(-56, -56,0);
+    Pose red_backboard_pose = new Pose(-56, 56,0);
 
         public double apm;
 

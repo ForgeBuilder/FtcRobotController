@@ -64,6 +64,8 @@ public class CrossbowTeleop extends CrossbowMain {
 
     public static double chasis_turret_velocity_cancelation_constant = 1;
 
+    public static double adjustment_size = 0.25;
+
     @Override
     public void loop() {
         super.loop();
@@ -112,6 +114,29 @@ public class CrossbowTeleop extends CrossbowMain {
             turret.find_pose_with_ll();
         } else {
             turret.track_goal_from_current_position();
+        }
+
+        //aim adjustment
+
+
+        telemetry.addData("backboard_pose x",backboard_pose.getX());
+        telemetry.addData("backboard_pose y",backboard_pose.getY());
+
+        panelsTelemetry.addData("backboard_pose x",backboard_pose.getX());
+        panelsTelemetry.addData("backboard_pose y",backboard_pose.getY());
+
+        //adjustment_size
+
+        //backboard_pose = new Pose (backboard_pose.getX(),backboard_pose.getY());
+
+        if(gamepad2.dpadUpWasPressed()){
+            backboard_pose = new Pose (backboard_pose.getX()-adjustment_size,backboard_pose.getY());
+        } else if (gamepad2.dpadLeftWasPressed()){
+            backboard_pose = new Pose (backboard_pose.getX(),backboard_pose.getY()-adjustment_size);
+        } else if(gamepad2.dpadDownWasPressed()){
+            backboard_pose = new Pose (backboard_pose.getX()+adjustment_size,backboard_pose.getY());
+        } else if (gamepad2.dpadRightWasPressed()){
+            backboard_pose = new Pose (backboard_pose.getX(),backboard_pose.getY()+adjustment_size);
         }
 
 
