@@ -379,12 +379,14 @@ public class CrossbowMain extends OpMode {
             limelight.pipelineSwitch(backboard_pipeline);
             backboard_pose = red_backboard_pose;
             apm = -1.0;
+            mod_constant = 4.0;
         } else if (team == "blue"){
             backboard_pipeline = 2;
             backboard_id = 20;
             limelight.pipelineSwitch(backboard_pipeline);
             backboard_pose = blue_backboard_pose;
             apm = 1.0;
+            mod_constant = -4.0;
         }
     }
 
@@ -479,6 +481,7 @@ public class CrossbowMain extends OpMode {
         }
 
         panelsTelemetry.addData("ball_ready",bool_spike(ball_ready));
+        panelsTelemetry.addData("time_since_ball_ready",time_since_ball_ready.seconds());
 
 //        panelsTelemetry.addData("magnetic_limit_switch_left", magnetic_limit_switch_left.getValue());
 //        panelsTelemetry.addData("magnetic_limit_switch_right",magnetic_limit_switch_right.getValue());
