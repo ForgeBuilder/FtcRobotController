@@ -777,20 +777,20 @@ public class CrossbowMain extends OpMode {
             1000
     };
 
-    public static double override_launch_speed;
+    public static int override_launch_speed;
 
     public void rangefind(){
         //estimated_distance is old distance
-        double distance;
+
         if (override_launch_speed == 0){
-            distance = get_range_with_pose();
+            double distance = get_range_with_pose();
+
+            double unrounded_launcher_speed = rangefinder_constants[0]*Math.pow(distance,2)+rangefinder_constants[1]*distance+rangefinder_constants[2];
+
+            launcherSpeed = Math.round((long) (unrounded_launcher_speed/20))*20;
         } else {
-            distance = override_launch_speed;
+            launcherSpeed = override_launch_speed;
         }
-
-        double unrounded_launcher_speed = rangefinder_constants[0]*Math.pow(distance,2)+rangefinder_constants[1]*distance+rangefinder_constants[2];
-        launcherSpeed = Math.round((long) (unrounded_launcher_speed/20))*20;
-
 
         panelsTelemetry.addData("launcherTargetSpeed",launcherSpeed);
 
