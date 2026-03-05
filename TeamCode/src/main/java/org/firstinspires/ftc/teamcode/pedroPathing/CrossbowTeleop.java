@@ -42,7 +42,7 @@ public class CrossbowTeleop extends CrossbowMain {
             }
         }
         Pose start_pose = new Pose(start_pose_members[0],start_pose_members[1],start_pose_members[2]);
-        if (start_pose != new Pose(0,0,0)){
+        if ((start_pose != new Pose(0,0,0)&&(start_pose!=null))){
             follower.setPose(start_pose);
         } else if (autopose!= null){
             follower.setPose(autopose);
