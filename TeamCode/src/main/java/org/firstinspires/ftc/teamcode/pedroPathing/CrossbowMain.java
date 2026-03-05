@@ -782,8 +782,11 @@ public class CrossbowMain extends OpMode {
     public void rangefind(){
         //estimated_distance is old distance
 
+        double distance = get_range_with_pose();
+        panelsTelemetry.addData("distance_to_goal",distance);
+
         if (override_launch_speed == 0){
-            double distance = get_range_with_pose();
+
 
             double unrounded_launcher_speed = rangefinder_constants[0]*Math.pow(distance,2)+rangefinder_constants[1]*distance+rangefinder_constants[2];
 
