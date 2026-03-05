@@ -652,8 +652,8 @@ public class CrossbowMain extends OpMode {
 
         boolean limelight_average_error_acceptable = Math.abs(limelight_error_average.getAverageError()) < max_limelight_average_error;
 
-        boolean limelight_error_acceptable_init = limelight_average_error_acceptable && (Math.abs(tx) < max_limelight_tx_error_init)&&LLresult.isValid();
-        boolean limelight_error_acceptable_sustain = (Math.abs(tx) < max_limelight_tx_error_sustain)&&LLresult.isValid();
+//        boolean limelight_error_acceptable_init = limelight_average_error_acceptable && (Math.abs(tx) < max_limelight_tx_error_init)&&LLresult.isValid();
+//        boolean limelight_error_acceptable_sustain = (Math.abs(tx) < max_limelight_tx_error_sustain)&&LLresult.isValid();
 
         boolean angular_velocity_acceptable = Math.abs(chasis_angular_velocity) < max_angular_velocity;
         boolean linear_velocity_acceptable = Math.abs(chasis_linear_velocity_odd) < max_linear_velocity;
@@ -661,13 +661,13 @@ public class CrossbowMain extends OpMode {
 
 
         telemetry.addData("speed_ready",flywheel_speed_acceptable);
-        if (limelight_error_acceptable_init) {
-            telemetry.addData("limelight_ready,tx",tx);
-        } else if (!LLresult.isValid()){
-            telemetry.addData("limelight_error_tag","No Tag");
-        } else {
-            telemetry.addData("limelight_error,tx",tx);
-        }
+//        if (limelight_error_acceptable_init) {
+//            telemetry.addData("limelight_ready,tx",tx);
+//        } else if (!LLresult.isValid()){
+//            telemetry.addData("limelight_error_tag","No Tag");
+//        } else {
+//            telemetry.addData("limelight_error,tx",tx);
+//        }
 
         boolean left_speed_met_easy = Math.abs(launcherSpeed + left_current_speed) < max_current_error_lazy;
         boolean right_speed_met_easy = Math.abs(launcherSpeed - right_current_speed) < max_current_error_lazy;
@@ -681,7 +681,7 @@ public class CrossbowMain extends OpMode {
 
         panelsTelemetry.addData("basic_speed_acceptable",bool_spike(basic_speed_acceptable));
         panelsTelemetry.addData("flywheel_speed_acceptable",bool_spike(flywheel_speed_acceptable));
-        panelsTelemetry.addData("limelight_error_acceptable",bool_spike(limelight_error_acceptable_init));
+//        panelsTelemetry.addData("limelight_error_acceptable",bool_spike(limelight_error_acceptable_init));
         panelsTelemetry.addData("angular_velocity_acceptable",bool_spike(angular_velocity_acceptable));
         panelsTelemetry.addData("linear_velocity_acceptable",bool_spike(linear_velocity_acceptable));
         panelsTelemetry.addData("override_shot",bool_spike(override_shot));
@@ -712,9 +712,10 @@ public class CrossbowMain extends OpMode {
 
             boolean non_flywheel_conditions = (linear_velocity_acceptable && angular_velocity_acceptable && !follower.isBusy());
 
-            boolean open_door_conditions = ((limelight_error_acceptable_init && flywheel_speed_acceptable && non_flywheel_conditions) || (override_shot && basic_speed_acceptable));
+            //replace true with the new "is turret aimed correctly" variable later
+            boolean open_door_conditions = ((true && flywheel_speed_acceptable && non_flywheel_conditions) || (override_shot && basic_speed_acceptable));
             //If the speed goes back down.. too bad. door stays open. not in use rn because I think it causes missing when we get defended.
-            boolean keep_door_open_conditions = (non_flywheel_conditions && limelight_error_acceptable_sustain && basic_speed_acceptable);
+            boolean keep_door_open_conditions = (non_flywheel_conditions && true && basic_speed_acceptable);
 
             open_door = open_door_conditions || (keep_door_open_conditions && open_door);
 

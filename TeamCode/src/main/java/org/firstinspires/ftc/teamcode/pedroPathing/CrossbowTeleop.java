@@ -109,7 +109,7 @@ public class CrossbowTeleop extends CrossbowMain {
         if (gamepad1.left_bumper) {
             turret.set_turret_state(TurretState.FINDING_LIMIT);
             turret.track_goal_from_current_position();
-        } else if (gamepad1.b){
+        } else if (gamepad1.x){
             //for centering when the started pose is wrong - doesn't override heading, need to implement
             turret.find_pose_with_ll();
         } else {
