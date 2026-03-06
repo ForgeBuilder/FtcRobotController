@@ -25,9 +25,9 @@ public class BallistaAutoFar extends BallistaAuto {
     }
 
 
-    public AutoStep current_auto_step = AutoStep.FireFirstVolley;
+    public AutoStep current_auto_step = AutoStep.None;
     enum AutoStep {
-        FireFirstVolley, HumanZoneIntakeOne, ReturnToFarLaunchOne,FireSecondVolley,IntakeZoneOne
+        None, FireFirstVolley, HumanZoneIntakeOne, ReturnToFarLaunchOne,FireSecondVolley,IntakeZoneOne
     }
 
     @Override public void start(){

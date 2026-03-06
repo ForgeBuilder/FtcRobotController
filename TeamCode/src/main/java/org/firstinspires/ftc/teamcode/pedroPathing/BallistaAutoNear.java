@@ -23,10 +23,10 @@ public class BallistaAutoNear extends BallistaAuto {
     }
 
 
-    public AutoStep current_auto_step;
+    public AutoStep current_auto_step = AutoStep.None;
 
     enum AutoStep {
-        ReturnToLaunchNearOne,FireFirstVolley,IntakeFarBar
+        None,ReturnToLaunchNearOne,FireFirstVolley,IntakeFarBar
     }
 
     @Override
