@@ -10,11 +10,12 @@ public class BallistaTurretAutoTest extends CrossbowMain {
 
     PathChain test_path;
 
-    private Pose starter_pose = new Pose(-47.515,-58.716,-Math.PI);
+    Pose starter_pose = new Pose(-47.515,-58.716,-Math.PI);
 
-    private Pose launch_pose = new Pose(-14.3,-16,-Math.PI);
+    Pose test_pose = new Pose(-42,-55,-Math.PI);
+    Pose launch_pose = new Pose(-14.3,-16,-Math.PI);
 
-    private Pose firing_pose = new Pose();
+    Pose firing_pose = new Pose();
 
     @Override public void init(){
         super.init();
@@ -24,7 +25,7 @@ public class BallistaTurretAutoTest extends CrossbowMain {
         super.start();
         follower.setStartingPose(starter_pose);
         PathChain to_first_launch = follower.pathBuilder()
-                .addPath(new BezierLine(starter_pose,launch_pose))
+                .addPath(new BezierLine(starter_pose,test_pose))
                 .setConstantHeadingInterpolation(-Math.PI)
                 .build();
         follower.followPath(to_first_launch);

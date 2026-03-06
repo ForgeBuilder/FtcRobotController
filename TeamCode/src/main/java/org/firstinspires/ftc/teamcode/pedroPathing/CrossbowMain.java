@@ -511,7 +511,7 @@ public class CrossbowMain extends OpMode {
 //        panelsTelemetry.addData("magnetic_limit_switch_left", magnetic_limit_switch_left.getValue());
 //        panelsTelemetry.addData("magnetic_limit_switch_right",magnetic_limit_switch_right.getValue());
     }
- 
+
     //exists purely for organisation, part of loop.
     private boolean follower_was_just_busy = true; //true if follower is not busy and it just was
     public void follower_code(){
