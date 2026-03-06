@@ -389,7 +389,8 @@ public class CrossbowMain extends OpMode {
 
     public String team = "blue";
 
-    protected ElapsedTime time_since_ball_ready;
+    protected boolean ball_ready = false;
+    protected ElapsedTime time_since_ball_ready = new ElapsedTime();
 
     Pose goal_pose;
 
@@ -428,7 +429,7 @@ public class CrossbowMain extends OpMode {
     @Override
     public void init() {
 
-        time_since_ball_ready = new ElapsedTime();
+        time_since_ball_ready.reset();
     /// pedro
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
         follower = Constants.createFollower(hardwareMap);
@@ -512,7 +513,7 @@ public class CrossbowMain extends OpMode {
             update_chasis_pid_toggle = false;
             chasis_pid = new PID(aiming_pid_coeficients[0], aiming_pid_coeficients[1], aiming_pid_coeficients[2]);
         }
-        boolean ball_ready = ball_looker.getDistance(DistanceUnit.MM) < 170;
+        ball_ready = ball_looker.getDistance(DistanceUnit.MM) < 170;
         if (ball_ready){
             time_since_ball_ready.reset();
         }

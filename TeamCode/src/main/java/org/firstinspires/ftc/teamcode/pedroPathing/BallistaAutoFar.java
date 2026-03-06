@@ -55,7 +55,7 @@ public class BallistaAutoFar extends BallistaAuto {
 
         switch (current_auto_step){
             case FireFirstVolley:
-                if (open_door && (time_since_ball_ready.seconds() > 1.0)){
+                if (open_door && (ball_ready)){
                     follower.breakFollowing();
                     fire_artifact = false;
                     set_step(AutoStep.HumanZoneIntakeOne);
