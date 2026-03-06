@@ -485,6 +485,7 @@ public class CrossbowMain extends OpMode {
 
     @Override
     public void init_loop() {
+        time_since_ball_ready.reset();
         limelight.start();
         if (gamepad1.left_bumper){
             turret.set_turret_state(TurretState.FINDING_LIMIT);
@@ -685,6 +686,7 @@ public class CrossbowMain extends OpMode {
         boolean flywheel_speed_acceptable = right_speed_met || left_speed_met;
 
         boolean turret_error_acceptable = Math.abs(turret.getTurretError()) < max_turret_error;
+        panelsTelemetry.addData("turret_error_acceptable",turret_error_acceptable);
 
         boolean limelight_average_error_acceptable = Math.abs(limelight_error_average.getAverageError()) < max_limelight_average_error;
 
@@ -734,7 +736,7 @@ public class CrossbowMain extends OpMode {
 
             //take the shot - once you've started, don't stop!
 
-            boolean non_flywheel_conditions = (linear_velocity_acceptable && angular_velocity_acceptable && !follower.isBusy());
+            boolean non_flywheel_conditions = (linear_velocity_acceptable && angular_velocity_acceptable); //&& !follower.isBusy() -- conflicts with parts of the auto. replace with something that says "still for x seconds" or just don't tell the shooter to fire before stationary. allways active fixes this so we should be good.
 
             //replace true with the new "is turret aimed correctly" variable later
             boolean open_door_conditions = ((turret_error_acceptable && flywheel_speed_acceptable && non_flywheel_conditions) || (override_shot && basic_speed_acceptable));
