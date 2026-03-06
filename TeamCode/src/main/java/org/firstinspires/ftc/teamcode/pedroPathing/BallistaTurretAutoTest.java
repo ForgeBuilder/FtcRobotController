@@ -18,11 +18,11 @@ public class BallistaTurretAutoTest extends CrossbowMain {
 
     @Override public void init(){
         super.init();
-        follower.setStartingPose(starter_pose);
     }
 
     @Override public void start(){
         super.start();
+        follower.setStartingPose(starter_pose);
         PathChain to_first_launch = follower.pathBuilder()
                 .addPath(new BezierLine(starter_pose,launch_pose))
                 .setConstantHeadingInterpolation(-Math.PI)
@@ -32,7 +32,7 @@ public class BallistaTurretAutoTest extends CrossbowMain {
 
     @Override public void loop(){
         super.loop();
-        turret.track_goal_from_current_position();
+//        turret.track_goal_from_current_position();
         panelsTelemetry.update(telemetry);
     }
 

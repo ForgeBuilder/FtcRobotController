@@ -22,6 +22,7 @@ public class BallistaPedroUnitTest extends CrossbowMain {
         super.start();
     }
     @Override public void loop(){
+        super.loop();
         if (!follower.isBusy()){
             follower.setMaxPower(0.3);
             test_path = follower.pathBuilder()

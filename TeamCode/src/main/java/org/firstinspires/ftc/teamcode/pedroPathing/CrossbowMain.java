@@ -383,8 +383,8 @@ public class CrossbowMain extends OpMode {
 
     Pose goal_pose;
 
-    public static double[] blue_goal_pose_constants = {-66,-55};
-    public static double[] red_goal_pose_constants = {-66,55};
+    public static double[] blue_goal_pose_constants = {-55,-55};
+    public static double[] red_goal_pose_constants = {-55,55};
 
     public double[] goal_pose_constants = {0,0};
 
