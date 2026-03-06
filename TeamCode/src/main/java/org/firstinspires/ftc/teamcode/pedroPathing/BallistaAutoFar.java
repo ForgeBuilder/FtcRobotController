@@ -5,8 +5,8 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name="BallistaFarTriangleRNDTest")
-public class BallistaFarTriangleRNDTest extends BallistaAuto {
+@Autonomous(name="BallistaAutoFar")
+public class BallistaAutoFar extends BallistaAuto {
     PathChain test_path;
 
     Pose starter_pose = new Pose(68.2,7.1,Math.PI/2);
