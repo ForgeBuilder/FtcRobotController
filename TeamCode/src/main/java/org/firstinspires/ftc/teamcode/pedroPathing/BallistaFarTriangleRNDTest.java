@@ -14,6 +14,8 @@ public class BallistaFarTriangleRNDTest extends CrossbowMain {
     Pose starter_pose = new Pose(68.2,7.1,Math.PI/2);
 
     Pose human_zone_corner_pose = new Pose(66,60,Math.PI/2);
+
+    Pose launch_2_pose = new Pose(65.5,15,Math.PI/2);
 //    Pose launch_pose = new Pose(-14.3,-16,Math.PI);
 
 //    Pose firing_pose = new Pose();
@@ -62,7 +64,7 @@ public class BallistaFarTriangleRNDTest extends CrossbowMain {
                 }
                 break;
             case HumanZoneIntakeOne:
-                if (!follower.isBusy())
+                if (!follower.isBusy() && time_since_ball_ready.seconds() == 0)
                     set_step(AutoStep.ReturnToFarLaunchOne);
                 break;
             case ReturnToFarLaunchOne:
@@ -73,7 +75,7 @@ public class BallistaFarTriangleRNDTest extends CrossbowMain {
                 if (open_door && (time_since_ball_ready.seconds() > 1.0)){
                     follower.breakFollowing();
                     fire_artifact = false;
-                    set_step(AutoStep.IntakeZoneOne);
+                    set_step(AutoStep.HumanZoneIntakeOne);
                 }
                 break;
         }
@@ -85,6 +87,7 @@ public class BallistaFarTriangleRNDTest extends CrossbowMain {
 
         switch (step){
             case FireFirstVolley:
+                time_since_ball_ready.reset();
                 follower.holdPoint(starter_pose);
                 spin_launcher = true;
                 fire_artifact = true;
@@ -102,20 +105,23 @@ public class BallistaFarTriangleRNDTest extends CrossbowMain {
                 current_auto_step = AutoStep.HumanZoneIntakeOne;
                 break;
             case ReturnToFarLaunchOne:
-                Pose launch_2_pose = new Pose(68.2,14,Math.PI/2);
                 PathChain return_to_launch_path = follower.pathBuilder()
-                        .addPath(new BezierLine(follower.getPose(),starter_pose))
-                        .setConstantHeadingInterpolation(starter_pose.getHeading())
-                        .addParametricCallback(0.3, () ->{
+                        .addPath(new BezierLine(follower.getPose(),launch_2_pose))
+                        .setConstantHeadingInterpolation(launch_2_pose.getHeading())
+                        .addParametricCallback(0.2, () ->{
                             spin_intake = false;
-                            follower.setMaxPower(0.4);
+                        })
+                        .addParametricCallback(0.5, () ->{
+                            follower.setMaxPower(0.2);
                         })
                         .build();
                 follower.followPath(return_to_launch_path);
                 current_auto_step = AutoStep.ReturnToFarLaunchOne;
                 break;
             case FireSecondVolley:
-                follower.holdPoint(starter_pose);
+                time_since_ball_ready.reset();
+                spin_intake = false;
+                follower.holdPoint(launch_2_pose);
                 spin_launcher = true;
                 fire_artifact = true;
                 current_auto_step = AutoStep.FireSecondVolley;
