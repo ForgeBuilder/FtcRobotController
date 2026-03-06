@@ -115,6 +115,11 @@ public class CrossbowTeleop extends CrossbowMain {
             turret.track_goal_from_current_position();
         }
 
+        //face the TV wall away from audience and hit back to recenter the compas
+        if (gamepad1.backWasPressed()){
+            follower.setPose(current_pedro_pose.setHeading(0));
+        }
+
         //aim adjustment
 
 

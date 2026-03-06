@@ -81,6 +81,7 @@ public class CrossbowMain extends OpMode {
     protected GoBildaPinpointDriver pinpoint;
 
     protected Rev2mDistanceSensor ball_looker;
+    protected Rev2mDistanceSensor ball_looker_intake;
 
 ///turret
     protected turret_class turret = new turret_class();
@@ -440,6 +441,7 @@ public class CrossbowMain extends OpMode {
 
     /// turret
         ball_looker = hardwareMap.get(Rev2mDistanceSensor.class,"ballLooker");
+        ball_looker_intake = hardwareMap.get(Rev2mDistanceSensor.class,"ballLookerIntake");
         turret.init();
 
     /// launch motors
@@ -514,6 +516,7 @@ public class CrossbowMain extends OpMode {
         if (ball_ready){
             time_since_ball_ready.reset();
         }
+        panelsTelemetry.addData("intake_ball_looker_distance",ball_looker_intake.getDistance(DistanceUnit.MM));
 
         panelsTelemetry.addData("ball_ready",bool_spike(ball_ready));
         panelsTelemetry.addData("time_since_ball_ready",time_since_ball_ready.seconds());

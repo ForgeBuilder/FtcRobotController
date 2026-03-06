@@ -11,9 +11,9 @@ public class BallistaFarTriangleRNDTest extends CrossbowMain {
     boolean fire_artifact;
     PathChain test_path;
 
-    Pose starter_pose = new Pose(68.5,7.318,Math.PI);
+    Pose starter_pose = new Pose(68.2,7.1,Math.PI/2);
 
-    Pose test_pose = new Pose(-42,-55,Math.PI);
+    Pose human_zone_corner_pose = new Pose(-42,-55,Math.PI);
 //    Pose launch_pose = new Pose(-14.3,-16,Math.PI);
 
 //    Pose firing_pose = new Pose();
