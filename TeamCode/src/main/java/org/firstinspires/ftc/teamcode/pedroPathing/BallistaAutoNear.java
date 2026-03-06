@@ -88,6 +88,13 @@ public class BallistaAutoNear extends BallistaAuto {
                 fire_artifact = true;
                 current_auto_step = AutoStep.FireFirstVolley;
                 break;
+            case IntakeFarBar:
+                PathChain to_intake_bar_one = follower.pathBuilder()
+                        .addPath(new BezierLine(launch_one_pose,intake_far_for_pose))
+                        .setConstantHeadingInterpolation(intake_far_for_pose.getHeading())
+                        .build();
+                follower.followPath(to_intake_bar_one);
+                break;
         }
     }
 }
