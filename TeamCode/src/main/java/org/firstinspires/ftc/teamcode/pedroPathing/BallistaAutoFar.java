@@ -55,14 +55,15 @@ public class BallistaAutoFar extends BallistaAuto {
 
         switch (current_auto_step){
             case FireFirstVolley:
-                if (open_door && (ball_ready)){
+                if (open_door && time_since_ball_ready.seconds() > 1.0){
                     follower.breakFollowing();
                     fire_artifact = false;
                     set_step(AutoStep.HumanZoneIntakeOne);
                 }
                 break;
             case HumanZoneIntakeOne:
-                if (!follower.isBusy() && time_since_ball_ready.seconds() == 0)
+                if (!follower.isBusy() && ball_ready)
+                    follower.setMaxPower(1);
                     set_step(AutoStep.ReturnToFarLaunchOne);
                 break;
             case ReturnToFarLaunchOne:
@@ -92,17 +93,20 @@ public class BallistaAutoFar extends BallistaAuto {
                 current_auto_step = AutoStep.FireFirstVolley;
                 break;
             case HumanZoneIntakeOne:
-                PathChain zone_one_intake_path = follower.pathBuilder()
+                follower.setMaxPower(1);
+                human_zone_corner_pose = new Pose(66,60,Math.PI/2);
+                PathChain human_zone_intake_path = follower.pathBuilder()
                         .addPath(new BezierLine(follower.getPose(),human_zone_corner_pose))
                         .setConstantHeadingInterpolation(human_zone_corner_pose.getHeading())
                         .addParametricCallback(0.4, () ->{
                             spin_intake = true;
                         })
                         .build();
-                follower.followPath(zone_one_intake_path);
+                follower.followPath(human_zone_intake_path);
                 current_auto_step = AutoStep.HumanZoneIntakeOne;
                 break;
             case ReturnToFarLaunchOne:
+                follower.setMaxPower(1);
                 PathChain return_to_launch_path = follower.pathBuilder()
                         .addPath(new BezierLine(follower.getPose(),launch_2_pose))
                         .setConstantHeadingInterpolation(launch_2_pose.getHeading())
