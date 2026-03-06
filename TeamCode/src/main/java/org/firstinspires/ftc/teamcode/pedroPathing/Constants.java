@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
+import com.pedropathing.control.PIDFCoefficients;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.follower.FollowerConstants;
 import com.pedropathing.ftc.FollowerBuilder;
@@ -17,6 +18,7 @@ public class Constants {
             .mass(9)
             .forwardZeroPowerAcceleration(-29.578)
             .lateralZeroPowerAcceleration(-67.625);
+//            .translationalPIDFCoefficients(new PIDFCoefficients(0.002,0,0.0001,0.025));
     //I think I need to tune path constraints so pedro stops overshooting the target position.
     //I want final position and final rotation to be more reliable.
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);

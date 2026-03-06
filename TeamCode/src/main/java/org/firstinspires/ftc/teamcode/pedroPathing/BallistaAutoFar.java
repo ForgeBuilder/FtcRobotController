@@ -90,7 +90,6 @@ public class BallistaAutoFar extends BallistaAuto {
                 follower.holdPoint(starter_pose);
                 spin_launcher = true;
                 fire_artifact = true;
-                current_auto_step = AutoStep.FireFirstVolley;
                 break;
             case HumanZoneIntakeOne:
                 follower.setMaxPower(1);
@@ -103,7 +102,6 @@ public class BallistaAutoFar extends BallistaAuto {
                         })
                         .build();
                 follower.followPath(human_zone_intake_path);
-                current_auto_step = AutoStep.HumanZoneIntakeOne;
                 break;
             case ReturnToFarLaunchOne:
                 follower.setMaxPower(1);
@@ -118,7 +116,6 @@ public class BallistaAutoFar extends BallistaAuto {
                         })
                         .build();
                 follower.followPath(return_to_launch_path);
-                current_auto_step = AutoStep.ReturnToFarLaunchOne;
                 break;
             case FireSecondVolley:
                 time_since_ball_ready.reset();
@@ -126,8 +123,8 @@ public class BallistaAutoFar extends BallistaAuto {
                 follower.holdPoint(launch_2_pose);
                 spin_launcher = true;
                 fire_artifact = true;
-                current_auto_step = AutoStep.FireSecondVolley;
                 break;
         }
+        set_step(step);
     }
 }
