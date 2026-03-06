@@ -52,6 +52,9 @@ public class BallistaFarTriangleRNDTest extends CrossbowMain {
         turret.update();
         launcher_code(fire_artifact,false);
 
+        panelsTelemetry.addData("step: ",current_auto_step);
+        telemetry.addData("step: ",current_auto_step);
+
         switch (current_auto_step){
             case FireFirstVolley:
                 if (open_door && (time_since_ball_ready.seconds() > 1.0)){
@@ -76,7 +79,11 @@ public class BallistaFarTriangleRNDTest extends CrossbowMain {
         PathChain zone_one_intake_path = follower.pathBuilder()
             .addPath(new BezierLine(follower.getPose(),ready_to_intake))
             .setConstantHeadingInterpolation(Math.PI)
+            .addParametricCallback(0.5, () ->{
+                spin_intake = true;
+            })
             .build();
+        follower.followPath(zone_one_intake_path);
         current_auto_step = AutoStep.ZoneOneIntake;
     }
 
