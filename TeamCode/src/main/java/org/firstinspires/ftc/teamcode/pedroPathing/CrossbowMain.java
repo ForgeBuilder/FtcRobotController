@@ -630,6 +630,8 @@ public class CrossbowMain extends OpMode {
     protected boolean open_door = false;
 
     protected ElapsedTime door_open_timer = new ElapsedTime();
+    protected ElapsedTime door_closed_timer = new ElapsedTime();
+    protected boolean door_closed = false;
 
 
     double limelight_chasis_rotation_multiplier = 0.02; //old system
@@ -751,9 +753,13 @@ public class CrossbowMain extends OpMode {
 
             if (open_door){  // //the right bumper serves as an override
                     launcher_freeze_movement = true;
+                door_closed_timer.reset();
             } else {
                 door_open_timer.reset();
             }
+
+            door_closed = (door_closed_timer.seconds() > the_time_it_takes_to_open_the_door_in_seconds);
+
         } else {
             launcher_freeze_movement = false;
             if (gamepad1.x){ spin_launcher = false;}
@@ -914,7 +920,7 @@ public class CrossbowMain extends OpMode {
         }
 
         //it's a 312 so 537.7 PPR at the Output Shaft. 5.2 RPS (max) would be 2796.04 or about 2800.
-        if (((spin_intake||reverse_intake)&&(!open_door))||(open_door && (door_open_timer.seconds() > the_time_it_takes_to_open_the_door_in_seconds))){
+        if (((spin_intake||reverse_intake)&&door_closed)||(open_door && (door_open_timer.seconds() > the_time_it_takes_to_open_the_door_in_seconds))){
             set_intake_speed(2000*reverse_multiplier);
         } else {
             set_intake_speed(0);
