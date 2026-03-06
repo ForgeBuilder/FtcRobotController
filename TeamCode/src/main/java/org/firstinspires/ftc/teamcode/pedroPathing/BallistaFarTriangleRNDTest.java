@@ -21,6 +21,7 @@ public class BallistaFarTriangleRNDTest extends CrossbowMain {
     @Override public void init(){
         super.init();
         set_team("red");
+        follower.setPose(starter_pose);
     }
 
 
