@@ -302,7 +302,7 @@ public class CrossbowMain extends OpMode {
             boolean limit_encountered = false;
             panelsTelemetry.addData("turret_target_radians",angle);
 
-            angle = ((angle + (mod_constant/4)*Math.PI)%(Math.PI*2))-(mod_constant/4)*Math.PI;
+            angle = ((angle + (mod_constant)*Math.PI)%(Math.PI*2))-(mod_constant)*Math.PI;
             panelsTelemetry.addData("turret_target_radians_postmod",angle);
 
             double temp_tick_target = (angle/(Math.PI*2))*turret_ppr; //1 should be turret ppr but its evil?
@@ -345,7 +345,7 @@ public class CrossbowMain extends OpMode {
         }
 }
 
-    public static double mod_constant = -4.0;
+    public static double mod_constant = -1.0;
 
     private DcMotor rightFront;
     private DcMotor rightBack;
@@ -401,7 +401,7 @@ public class CrossbowMain extends OpMode {
             goal_pose = red_goal_pose;
             goal_pose_constants = red_goal_pose_constants;
             apm = -1.0;
-            mod_constant = 4.0;
+            mod_constant = 1.0;
         } else if (team == "blue"){
             backboard_pipeline = 2;
             backboard_id = 20;
@@ -409,7 +409,7 @@ public class CrossbowMain extends OpMode {
             goal_pose = blue_goal_pose;
             goal_pose_constants = blue_goal_pose_constants;
             apm = 1.0;
-            mod_constant = -4.0;
+            mod_constant = -1.0;
         }
 
 
@@ -713,19 +713,7 @@ public class CrossbowMain extends OpMode {
 
 
 
-        goal_aim_pid_output = chasis_pid.update(0,tx);
-
-        //goal_aim_pid_output = goal_aim_pid_output; //integration of Zero power
-
-        //goal_aim_pid_output = 0; //integration of Zero power movement
-
-//        double zeropower_deadzone = 0.01;
-//
-//        if (chasis_pid_output > zeropower_deadzone){
-//            goal_aim_pid_output +=zero_power_movement_constant;
-//        } else if (chasis_pid_output < -zeropower_deadzone){
-//            goal_aim_pid_output -=zero_power_movement_constant;
-//        }
+//        goal_aim_pid_output = chasis_pid.update(0,tx);
 
         if (fire) {
             trying_to_fire = true;
@@ -760,14 +748,6 @@ public class CrossbowMain extends OpMode {
         }
         telemetry.addData("left_speed_at_kick",left_speed_at_kick);
         telemetry.addData("right_speed_at_kick",right_speed_at_kick);
-
-        //debug
-//        if (debug_kicker) {
-//            kick = override_kick;
-//            if (gamepad1.xWasPressed()){
-//                override_kick = !override_kick;
-//            }
-//        }
 
         if (open_door) {
             launchKickServo1.setPosition(KickerLaunchAngle);
@@ -829,16 +809,6 @@ public class CrossbowMain extends OpMode {
 
         panelsTelemetry.addData("launcherTargetSpeed",launcherSpeed);
 
-//        if (estimated_distance < 50){
-//            launcherSpeed = super_near_shot_speed;
-//            limelight_x_offset = 0;
-//        } else if (estimated_distance < 130){
-//            launcherSpeed = near_shot_speed;
-//            limelight_x_offset = 0;
-//        } else {
-//            launcherSpeed = far_shot_speed;
-//            limelight_x_offset = -2*apm;
-//        }
     }
 
     public LLResult LLresult;
@@ -938,61 +908,6 @@ public class CrossbowMain extends OpMode {
         intakeMotor.setPower(speed);
     }
 
-//    private Pose teleop_remembered_pose = new Pose(0,0,Math.toRadians(0));
-    //run every tick with no arguments for ability to save and return to position in teleop
-//    public void teleop_return_to_position(){
-//        if (gamepad1.aWasPressed()){
-//            pose_tracker.update();
-//            teleop_remembered_pose = follower.getPose();
-//        }
-//        double x = teleop_remembered_pose.getX();//inches I think
-//        double y = teleop_remembered_pose.getY();
-//        double yaw = teleop_remembered_pose.getHeading(); //radians
-//
-//        telemetry.addData("saved pose x,y,yaw","("+x+","+y+","+yaw+")");
-//
-//        if (gamepad1.bWasPressed()){
-//            if (teleop_remembered_pose != null){
-//                pose_tracker.update();
-//                Pose current_pose = follower.getPose();
-//                PathChain path = follower.pathBuilder()
-//                        .addPath(new BezierLine(current_pose, teleop_remembered_pose))
-//                        .setLinearHeadingInterpolation(current_pose.getHeading(), teleop_remembered_pose.getHeading())
-//                        .build();
-//                follower.followPath(path);
-//            }
-//        }
-//    }
-    public void limelight_set_pose(){
-        if (LLresult != null && LLresult.isValid()) {
-            Pose3D limelight_botpose = LLresult.getBotpose_MT2();
-            if (limelight_botpose != null) {
-                double meters_to_inches = 39.3701;
-                double x = limelight_botpose.getPosition().x*meters_to_inches;
-                double y = limelight_botpose.getPosition().y*meters_to_inches;
-                YawPitchRollAngles limelight_orientation = limelight_botpose.getOrientation();
-                double yaw = limelight_orientation.getYaw(AngleUnit.RADIANS);
-
-//                telemetry.addData("MT1 Location", "(" + x*meters_to_inches + ", " + y*meters_to_inches + ")");
-//                telemetry.addData("MT1 Yaw", yaw);
-
-                //this will likley be very off becasue the limelight is backwards..
-                //the negitives and math.pi are to reverse the pose
-                Pose pedro_limelight_pose = new Pose(x,y,yaw);
-                follower.setPose(pedro_limelight_pose);
-
-                x = pedro_limelight_pose.getX() - 72;//inches I think
-                y = pedro_limelight_pose.getY() + 72; // hopefully this should provide the translated coords
-                yaw = pedro_limelight_pose.getHeading(); //radians
-
-                telemetry.addData("limelight pose x,y,yaw","("+x+","+y+","+yaw+")");
-            }
-        } else {
-            telemetry.addData("Limelight", "No Targets");
-        }
-    }
-
-    //manual control for drive, will use user input if pedro is not executing a task.
     public void manual_drive(double forward, double strafe, double turn, double slowdown){
         if (follower_was_just_busy){
             rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -1012,31 +927,11 @@ public class CrossbowMain extends OpMode {
         strafe = -strafe*slowdown_multiplier;
         turn = (-turn*slowdown_multiplier);
 
-        //chasis aim replaced with turret aim
-//      turn += goal_aim_pid_output;
-
-        //field centric
-//        double pinpoint_heading = follower.getHeading();
-//
-//        panelsTelemetry.addData("pinpoint_heading",pinpoint_heading);
-//
-//        double field_forward = forward*Math.sin(pinpoint_heading)-strafe*Math.cos(pinpoint_heading);
-//        double field_strafe = forward*Math.cos(pinpoint_heading)+strafe*Math.sin(pinpoint_heading);
-//
-//        forward = field_forward;
-//        strafe = field_strafe;
-
         leftFront.setPower(forward - strafe - turn);
         leftBack.setPower(forward + strafe - turn);
         rightFront.setPower(forward + strafe + turn);
         rightBack.setPower(forward - strafe + turn);
 
-//        if (launcher_freeze_movement){
-//            leftFront.setPower(0);
-//            leftBack.setPower(0);
-//            rightFront.setPower(0);
-//            rightBack.setPower(0);
-//        }
     }
 
     /*
