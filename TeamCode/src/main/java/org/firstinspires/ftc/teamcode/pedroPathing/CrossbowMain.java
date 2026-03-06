@@ -138,6 +138,10 @@ public class CrossbowMain extends OpMode {
             TurretState turret_current_state = TurretState.FINDING_LIMIT;
         }
 
+        public int getTurretError(){
+            return tick_target-turret_current_position_ticks;
+        }
+
         public double global_rotation_target;
         public double local_rotation_target;
         public Pose target_pose;
@@ -156,6 +160,9 @@ public class CrossbowMain extends OpMode {
                 follower.setPose(pedro_pose_from_limelight.setHeading(current_pedro_pose.getHeading()));
             }
         }
+
+        int turret_current_position_ticks = 0;
+        double turret_velocity = 0.0;
 
         public void update(){
             Pose tracking_from_pose;
@@ -183,8 +190,8 @@ public class CrossbowMain extends OpMode {
             }
 
 
-            double turret_current_position_ticks = turret_motor.getCurrentPosition();
-            double turret_velocity = turret_motor.getVelocity();
+            turret_current_position_ticks = turret_motor.getCurrentPosition();
+            turret_velocity = turret_motor.getVelocity();
 
             panelsTelemetry.addData("turret_max_ticks",turret_max_ticks);
             panelsTelemetry.addData("turret_max_ticks_preround",turret_motor_ppr*turret_large_gear_teeth/turret_small_gear_teeth);
@@ -298,6 +305,8 @@ public class CrossbowMain extends OpMode {
         public double get_turret_rotation_degrees(){
             return (turret_motor.getCurrentPosition()/turret_ppr)*360;
         }
+
+        int tick_target = 0;
         public boolean turret_spin_to_rotation_radians(double angle){
             boolean limit_encountered = false;
             panelsTelemetry.addData("turret_target_radians",angle);
@@ -306,7 +315,7 @@ public class CrossbowMain extends OpMode {
             panelsTelemetry.addData("turret_target_radians_postmod",angle);
 
             double temp_tick_target = (angle/(Math.PI*2))*turret_ppr; //1 should be turret ppr but its evil?
-            int tick_target = (int) Math.round(temp_tick_target);
+            tick_target = (int) Math.round(temp_tick_target);
             panelsTelemetry.addData("turret_tick_target",tick_target);
 
             turret_motor.setTargetPosition(tick_target);
@@ -630,6 +639,8 @@ public class CrossbowMain extends OpMode {
     }
 
     public static boolean update_chasis_pid_toggle = false;
+
+    public static int max_turret_error = 3;
     protected double goal_aim_pid_output = 0;
         public void launcher_code(boolean fire,boolean override_shot){
         rangefind();
@@ -673,7 +684,7 @@ public class CrossbowMain extends OpMode {
 
         boolean flywheel_speed_acceptable = right_speed_met || left_speed_met;
 
-
+        boolean turret_error_acceptable = Math.abs(turret.getTurretError()) < max_turret_error;
 
         boolean limelight_average_error_acceptable = Math.abs(limelight_error_average.getAverageError()) < max_limelight_average_error;
 
@@ -726,9 +737,9 @@ public class CrossbowMain extends OpMode {
             boolean non_flywheel_conditions = (linear_velocity_acceptable && angular_velocity_acceptable && !follower.isBusy());
 
             //replace true with the new "is turret aimed correctly" variable later
-            boolean open_door_conditions = ((true && flywheel_speed_acceptable && non_flywheel_conditions) || (override_shot && basic_speed_acceptable));
+            boolean open_door_conditions = ((turret_error_acceptable && flywheel_speed_acceptable && non_flywheel_conditions) || (override_shot && basic_speed_acceptable));
             //If the speed goes back down.. too bad. door stays open. not in use rn because I think it causes missing when we get defended.
-            boolean keep_door_open_conditions = (non_flywheel_conditions && true && basic_speed_acceptable);
+            boolean keep_door_open_conditions = (turret_error_acceptable && non_flywheel_conditions && basic_speed_acceptable);
 
             open_door = open_door_conditions || (keep_door_open_conditions && open_door);
 
