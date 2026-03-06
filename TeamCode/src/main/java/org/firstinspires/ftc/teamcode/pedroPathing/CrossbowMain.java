@@ -239,13 +239,15 @@ public class CrossbowMain extends OpMode {
 
 
                         //SECOND -
-                        
-                        //turret_spin_to_rotation_radians((-tracking_from_pose.getHeading()+test_rotation-Math.PI)%(Math.PI*2)+Math.PI);
+
+
 
                         //double deltaY = goal_pose.getY()-tracking_from_pose.getY()
                         //double deltaX = goal_pose.getX()-tracking_from_pose.getX()
-                        //double
+                        //double test_rotation = Math.atan2(deltaX,deltaY)
+                        //double angle_for_turret = -tracking_from_pose.getHeading()+test_rotation;
 
+                        //turret_spin_to_rotation_radians((-tracking_from_pose.getHeading()+test_rotation-Math.PI)%(Math.PI*2)+Math.PI);
 
                         //set the target of the goal to 0,0 and drive around it in a circle to see if it works. graph the variable.
                         double angle_to_goal_with_pedro = Math.atan2((),();
