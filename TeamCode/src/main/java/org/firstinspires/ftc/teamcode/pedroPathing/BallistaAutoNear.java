@@ -78,9 +78,11 @@ public class BallistaAutoNear extends BallistaAuto {
                         .addPath(new BezierLine(starter_pose,launch_one_pose))
                         .setConstantHeadingInterpolation(starter_pose.getHeading())
                         .build();
+                current_auto_step = AutoStep.ReturnToLaunchNearOne;
                 break;
             case FireFirstVolley:
                 start_turret_fire(starter_pose);
+                current_auto_step = AutoStep.FireFirstVolley;
                 break;
             case IntakeFarBar:
                 PathChain to_intake_bar_one = follower.pathBuilder()
@@ -91,6 +93,7 @@ public class BallistaAutoNear extends BallistaAuto {
                         })
                         .build();
                 follower.followPath(to_intake_bar_one);
+                current_auto_step = AutoStep.IntakeFarBar;
                 break;
         }
     }
