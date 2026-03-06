@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public class BallistaPedroUnitTest extends CrossbowMain {
 
 
-    Pose start_pose = new Pose (0,0,0);
+    Pose start_pose = new Pose (2,2,0);
     Pose pose_a = new Pose(5,5,0);
 
     Pose pose_b = new Pose(5,-5,Math.PI/4);
@@ -22,7 +22,7 @@ public class BallistaPedroUnitTest extends CrossbowMain {
 
     @Override public void start(){
         super.start();
-
+        follower.setStartingPose(start_pose);
         test_path = follower.pathBuilder()
                 .addPath(new BezierLine(pose_a, pose_b))
                 .setLinearHeadingInterpolation(pose_a.getHeading(), pose_b.getHeading(), 0.5)
