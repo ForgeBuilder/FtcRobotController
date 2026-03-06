@@ -365,7 +365,7 @@ public class CrossbowMain extends OpMode {
     //universal pedro stuff
 
     protected Pose pedro_pose_from_limelight;
-    protected Pose current_pedro_pose;
+    protected Pose current_pedro_pose = new Pose(0,0,0);
     public static Follower follower;
     public static PoseTracker pose_tracker;
 
