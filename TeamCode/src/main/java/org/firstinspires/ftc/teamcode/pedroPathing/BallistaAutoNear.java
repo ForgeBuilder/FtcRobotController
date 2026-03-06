@@ -18,7 +18,7 @@ public class BallistaAutoNear extends BallistaAuto {
     @Override
     public void init() {
         super.init();
-        set_team("red");
+        set_team("blue");
         follower.setPose(starter_pose);
     }
 
@@ -60,9 +60,7 @@ public class BallistaAutoNear extends BallistaAuto {
                 }
                 break;
             case FireFirstVolley:
-                if (open_door && time_since_ball_ready.seconds() > 1.0){
-                    follower.breakFollowing();
-                    fire_artifact = false;
+                if (turret_fire_loop() == turret_firing_state.FINISHED_FIRING){
                     set_step(AutoStep.IntakeFarBar);
                 }
                 break;
@@ -82,16 +80,15 @@ public class BallistaAutoNear extends BallistaAuto {
                         .build();
                 break;
             case FireFirstVolley:
-                time_since_ball_ready.reset();
-                follower.holdPoint(starter_pose);
-                spin_launcher = true;
-                fire_artifact = true;
-                current_auto_step = AutoStep.FireFirstVolley;
+                start_turret_fire(starter_pose);
                 break;
             case IntakeFarBar:
                 PathChain to_intake_bar_one = follower.pathBuilder()
                         .addPath(new BezierLine(launch_one_pose,intake_far_for_pose))
                         .setConstantHeadingInterpolation(intake_far_for_pose.getHeading())
+                        .addParametricCallback(0.2,()->{
+                            spin_intake = true;
+                        })
                         .build();
                 follower.followPath(to_intake_bar_one);
                 break;
