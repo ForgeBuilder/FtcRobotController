@@ -83,6 +83,7 @@ public class BallistaAutoNear extends BallistaAuto {
                 break;
             case FireFirstVolley:
                 if (turret_fire_loop() == turret_firing_state.FINISHED_FIRING){
+                    turret_stop_firing();
                     set_step(AutoStep.IntakeNearBar);
                 }
                 break;
@@ -97,6 +98,7 @@ public class BallistaAutoNear extends BallistaAuto {
                 break;
             case FireSecondVolley:
                 if (turret_fire_loop() == turret_firing_state.FINISHED_FIRING){
+                    turret_stop_firing();
                     set_step(AutoStep.IntakeMidBar);
                 }
                 break;
@@ -108,6 +110,12 @@ public class BallistaAutoNear extends BallistaAuto {
             case ReturnToLaunchNearThree:
                 if (!follower.isBusy()){
                     set_step(AutoStep.FireThirdVolley);
+                }
+                break;
+            case FireThirdVolley:
+                if (turret_fire_loop() == turret_firing_state.FINISHED_FIRING){
+                    turret_stop_firing();
+                    set_step(AutoStep.IntakeFarBar);
                 }
                 break;
             case IntakeFarBar:

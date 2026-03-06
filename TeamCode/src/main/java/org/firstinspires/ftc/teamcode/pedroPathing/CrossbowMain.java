@@ -230,8 +230,32 @@ public class CrossbowMain extends OpMode {
                     break;
                 case TRACKING_TARGET_POSE:
                     try{
-                        double angle_to_goal_with_pedro = -tracking_from_pose.getHeading()+Math.atan2((goal_pose.getY()-tracking_from_pose.getY()),(goal_pose.getX()-tracking_from_pose.getX()));
-                        turret.turret_spin_to_rotation_radians(angle_to_goal_with_pedro);//
+                        //FIRST -
+
+                        //try having the turret face in arbitrary directions with no goal pose. make test rotation a static.
+
+                        //turret_spin_to_rotation_radians((-tracking_from_pose.getHeading()+arbitrary_rotation-Math.PI)%(Math.PI*2)+Math.PI);
+
+
+
+                        //SECOND -
+                        
+                        //turret_spin_to_rotation_radians((-tracking_from_pose.getHeading()+test_rotation-Math.PI)%(Math.PI*2)+Math.PI);
+
+                        //double deltaY = goal_pose.getY()-tracking_from_pose.getY()
+                        //double deltaX = goal_pose.getX()-tracking_from_pose.getX()
+                        //double
+
+
+                        //set the target of the goal to 0,0 and drive around it in a circle to see if it works. graph the variable.
+                        double angle_to_goal_with_pedro = Math.atan2((),();
+                        double angle_for_turret = -tracking_from_pose.getHeading()+angle_to_goal_with_pedro;
+
+                        //-tracking_from_pose.getHeading() should be correct because it just turns the way the robot goes.
+
+
+
+                        turret.turret_spin_to_rotation_radians(angle_for_turret);//
                         break;
                     } catch (RuntimeException e) {
                         panelsTelemetry.addData("TRACKING_TARGET_POSE error",e);
