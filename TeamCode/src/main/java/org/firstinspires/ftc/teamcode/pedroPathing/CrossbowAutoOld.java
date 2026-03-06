@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 //This is the auto program. a few values will be able to be change to make it work for red/blue
 //or near/far. near/far might be completley different programs based on how much crossbowMain allready abstracts
 //but I allways could inherit the class bwahaha
-public class CrossbowAuto extends CrossbowMain{
+public class CrossbowAutoOld extends CrossbowMain{
 
     public String far_near = "near";
     public Pose launch_pose;

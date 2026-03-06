@@ -1,10 +1,9 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@Autonomous(name="CrossbowAutoRed",preselectTeleOp = "CrossbowTeleopRed")
-public class CrossbowAutoRed extends CrossbowAuto{
+@Autonomous(name="CrossbowAutoFarRed",preselectTeleOp = "CrossbowTeleopRed")
+public class CrossbowAutoOldFarRed extends CrossbowAutoOldFar {
     @Override
     public void init(){
         super.init();

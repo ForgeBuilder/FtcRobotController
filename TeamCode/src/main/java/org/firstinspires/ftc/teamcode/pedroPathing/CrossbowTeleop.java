@@ -28,9 +28,9 @@ public class CrossbowTeleop extends CrossbowMain {
         super.init();
         try {
             if (team == "blue"){
-                autopose = CrossbowAutoBlue.auto_current_pose;
+                autopose = CrossbowAutoOldBlue.auto_current_pose;
             } else if (team == "red"){
-                autopose = CrossbowAutoRed.auto_current_pose;
+                autopose = CrossbowAutoOldRed.auto_current_pose;
             }
 
         } finally {
