@@ -27,21 +27,20 @@ public class BallistaAutoNear extends BallistaAuto {
     @Override
     public void init() {
         super.init();
-        set_team("red");
 
-        starter_pose = new Pose(-45.2, -60.8*apm, apm*-Math.PI / 2);
+        starter_pose = new Pose(-42.5, -53.77*apm, apm*-Math.PI / 2);
 
         launch_one_pose = new Pose(-30, -35*apm, apm*-Math.PI / 2);
 
 
-        intake_near_bar_pose_1 = new Pose(-20,-24*apm,apm*-Math.PI / 2);
-        intake_near_bar_pose_2 = new Pose(-20,-60*apm,apm*-Math.PI / 2);
+        intake_near_bar_pose_1 = new Pose(-12,-17*apm,apm*-Math.PI / 2);
+        intake_near_bar_pose_2 = new Pose(-12,-53*apm,apm*-Math.PI / 2);
 
-        intake_mid_bar_pose_1 = new Pose(14,-24*apm,apm*-Math.PI / 2);
-        intake_mid_bar_pose_2 = new Pose(14,-60*apm,apm*-Math.PI / 2);
+        intake_mid_bar_pose_1 = new Pose(12,-17*apm,apm*-Math.PI / 2);
+        intake_mid_bar_pose_2 = new Pose(12,-53*apm,apm*-Math.PI / 2);
 
-        intake_far_bar_pose_1 = new Pose(28,-24*apm,apm*-Math.PI / 2);
-        intake_far_bar_pose_2 = new Pose(28,-60*apm,apm*-Math.PI / 2);
+        intake_far_bar_pose_1 = new Pose(34,-17*apm,apm*-Math.PI / 2);
+        intake_far_bar_pose_2 = new Pose(34,-60*apm,apm*-Math.PI / 2);
 
         follower.setPose(starter_pose);
     }
@@ -61,7 +60,8 @@ public class BallistaAutoNear extends BallistaAuto {
         FireThirdVolley,
         IntakeFarBar,
         ReturnToLaunchNearFour,
-        FireFourthVolley
+        FireFourthVolley,
+        OffLaunchLine,
     }
 
     @Override
@@ -123,6 +123,7 @@ public class BallistaAutoNear extends BallistaAuto {
                 break;
             case ReturnToLaunchNearThree:
                 if (!follower.isBusy()){
+
                     set_step(AutoStep.FireThirdVolley);
                 }
                 break;
@@ -140,6 +141,12 @@ public class BallistaAutoNear extends BallistaAuto {
             case ReturnToLaunchNearFour:
                 if (!follower.isBusy()){
                     set_step(AutoStep.FireFourthVolley);
+                }
+                break;
+            case FireFourthVolley:
+                if (!follower.isBusy()){
+                    turret_stop_firing();
+                    set_step(AutoStep.OffLaunchLine);
                 }
                 break;
         }
@@ -232,6 +239,13 @@ public class BallistaAutoNear extends BallistaAuto {
                 break;
             case FireFourthVolley:
                 start_turret_fire(launch_one_pose);
+                break;
+            case OffLaunchLine:
+                PathChain off_launch_line_path = follower.pathBuilder()
+                        .addPath(new BezierLine(follower.getPose(),intake_near_bar_pose_1))
+                        .setConstantHeadingInterpolation(intake_near_bar_pose_1.getHeading())
+                        .build();
+                follower.followPath(off_launch_line_path);
                 break;
         }
         current_auto_step = step;

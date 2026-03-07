@@ -124,7 +124,7 @@ public class BallistaAutoFar extends BallistaAuto {
                             spin_intake = false;
                         })
                         .addParametricCallback(0.5, () ->{
-                            follower.setMaxPower(0.2);
+                            follower.setMaxPower(0.6);
                         })
                         .build();
                 follower.followPath(return_to_launch_path);
