@@ -68,10 +68,11 @@ public class BallistaAutoFar extends BallistaAuto {
                 }
                 break;
             case HumanZoneIntakeOne:
-                //check to see if this if is what is sending us back
-//                if ((!follower.isBusy()) && ball_ready)
-//                    follower.setMaxPower(1);
-//                    set_step(AutoStep.ReturnToFarLaunchOne);
+//                check to see if this if is what is sending us back
+                if ((!follower.isBusy()) && ball_ready) { //(Math.abs(current_pedro_pose.getY()) > 30.0)
+                    follower.setMaxPower(1);
+                    set_step(AutoStep.ReturnToFarLaunchOne);
+                }
                 break;
             case ReturnToFarLaunchOne:
                 if (!follower.isBusy())
@@ -102,8 +103,9 @@ public class BallistaAutoFar extends BallistaAuto {
             case HumanZoneIntakeOne:
                 //CHANGE THIS BACK TO 1 LATER
                 //REMOVE, IMPORTANT DADADA SEE ME KEYWORDS
-                follower.setMaxPower(0.2);
+                follower.setMaxPower(1);
 
+                follower.breakFollowing();
                 PathChain human_zone_intake_path = follower.pathBuilder()
                         .addPath(new BezierLine(follower.getPose(),human_zone_corner_pose))
                         .setConstantHeadingInterpolation(human_zone_corner_pose.getHeading())
