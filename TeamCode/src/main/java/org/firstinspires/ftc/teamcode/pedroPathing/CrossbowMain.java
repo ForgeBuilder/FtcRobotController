@@ -231,11 +231,12 @@ public class CrossbowMain extends OpMode {
                     break;
                 case TRACKING_TARGET_POSE:
                     try{
-                        //FIRST -
 
                         double deltaY = goal_pose.getY()-tracking_from_pose.getY();
                         double deltaX = goal_pose.getX()-tracking_from_pose.getX();
+
                         double goal_rotation = Math.atan2(deltaY,deltaX);
+
                         double angle_for_turret = -tracking_from_pose.getHeading()+goal_rotation;
                         double turret_angle_mod = AngleUnit.normalizeRadians(angle_for_turret);
                         panelsTelemetry.addData("turret_angle_mod",turret_angle_mod);

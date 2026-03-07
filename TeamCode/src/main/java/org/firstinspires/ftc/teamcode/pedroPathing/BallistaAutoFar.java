@@ -125,6 +125,6 @@ public class BallistaAutoFar extends BallistaAuto {
                 fire_artifact = true;
                 break;
         }
-        set_step(step);
+        current_auto_step = step;
     }
 }
