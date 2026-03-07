@@ -27,22 +27,6 @@ public class BallistaAutoNear extends BallistaAuto {
     @Override
     public void init() {
         super.init();
-
-        starter_pose = new Pose(-42.5, -53.77*apm, apm*-Math.PI / 2);
-
-        launch_one_pose = new Pose(-30, -35*apm, apm*-Math.PI / 2);
-
-
-        intake_near_bar_pose_1 = new Pose(-12,-17*apm,apm*-Math.PI / 2);
-        intake_near_bar_pose_2 = new Pose(-12,-53*apm,apm*-Math.PI / 2);
-
-        intake_mid_bar_pose_1 = new Pose(12,-17*apm,apm*-Math.PI / 2);
-        intake_mid_bar_pose_2 = new Pose(12,-53*apm,apm*-Math.PI / 2);
-
-        intake_far_bar_pose_1 = new Pose(34,-17*apm,apm*-Math.PI / 2);
-        intake_far_bar_pose_2 = new Pose(34,-60*apm,apm*-Math.PI / 2);
-
-        follower.setPose(starter_pose);
     }
 
 
@@ -67,6 +51,23 @@ public class BallistaAutoNear extends BallistaAuto {
     @Override
     public void start() {
         super.start();
+
+        starter_pose = new Pose(-42.5, -53.77*apm, apm*-Math.PI / 2);
+
+        launch_one_pose = new Pose(-30, -35*apm, apm*-Math.PI / 2);
+
+
+        intake_near_bar_pose_1 = new Pose(-12,-17*apm,apm*-Math.PI / 2);
+        intake_near_bar_pose_2 = new Pose(-12,-53*apm,apm*-Math.PI / 2);
+
+        intake_mid_bar_pose_1 = new Pose(12,-17*apm,apm*-Math.PI / 2);
+        intake_mid_bar_pose_2 = new Pose(12,-53*apm,apm*-Math.PI / 2);
+
+        intake_far_bar_pose_1 = new Pose(34,-17*apm,apm*-Math.PI / 2);
+        intake_far_bar_pose_2 = new Pose(34,-60*apm,apm*-Math.PI / 2);
+
+        follower.setPose(starter_pose);
+
         spin_launcher = true;
         set_step(AutoStep.ReturnToLaunchNearOne);
         //for red, mod constant is still 1 as long as you spesify 3.14 as the heading shift within the config settings.
