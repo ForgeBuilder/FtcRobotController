@@ -7,6 +7,7 @@ import com.pedropathing.ftc.PoseConverter;
 import com.pedropathing.geometry.PedroCoordinates;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.PoseTracker;
+import com.pedropathing.math.Vector;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
@@ -560,6 +561,11 @@ public class CrossbowMain extends OpMode {
         panelsTelemetry.addData("current_pedro_pose x",current_pedro_pose.getX());
         panelsTelemetry.addData("current_pedro_pose y",current_pedro_pose.getY());
         panelsTelemetry.addData("current_pedro_pose heading",current_pedro_pose.getHeading());
+
+        Vector follower_velocity = follower.getVelocity();
+
+        panelsTelemetry.addData("current_pedro_pose x",follower_velocity.getXComponent());
+        panelsTelemetry.addData("current_pedro_pose y",follower_velocity.getYComponent());
 
         if (follower.isBusy()){
             follower_was_just_busy = true;

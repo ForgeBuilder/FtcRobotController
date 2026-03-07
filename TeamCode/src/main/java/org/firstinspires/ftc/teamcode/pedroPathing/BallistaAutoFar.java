@@ -7,18 +7,17 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 public class BallistaAutoFar extends BallistaAuto {
     PathChain test_path;
-    Pose starter_pose = new Pose(68.2,7.1*apm,apm*-Math.PI/2);
+    Pose starter_pose;
 
-    Pose human_zone_corner_pose = new Pose(66,60,apm*-Math.PI/2);
+    Pose launch_2_pose;
 
-    Pose launch_2_pose = new Pose(65.5,15,apm*-Math.PI/2);
+    Pose human_zone_corner_pose;
 //    Pose launch_pose = new Pose(-14.3,-16,Math.PI);
 
 //    Pose firing_pose = new Pose();
 
     @Override public void init(){
         super.init();
-        follower.setPose(starter_pose);
     }
 
 
@@ -29,6 +28,15 @@ public class BallistaAutoFar extends BallistaAuto {
 
     @Override public void start(){
         super.start();
+
+        starter_pose = new Pose(68.2,-7.1*apm,apm*-Math.PI/2);
+        launch_2_pose = new Pose(65.5,-10*apm,apm*-Math.PI/2);
+
+        //CHANGE IT BACK TO 60 OR AS HIGH AS WE NEED TO GET IT TO HIT THE WALL BUT COME BACK
+        human_zone_corner_pose = new Pose(66,-61*apm,apm*-Math.PI/2);
+
+        follower.setPose(starter_pose);
+
         set_step(AutoStep.FireFirstVolley);
         //for red, mod constant is still 1 as long as you spesify 3.14 as the heading shift within the config settings.
 
@@ -55,13 +63,13 @@ public class BallistaAutoFar extends BallistaAuto {
                 if (open_door && time_since_ball_ready.seconds() > 1.0){
                     follower.breakFollowing();
                     fire_artifact = false;
+                    turret_stop_firing();
                     set_step(AutoStep.HumanZoneIntakeOne);
                 }
                 break;
             case HumanZoneIntakeOne:
                 //check to see if this if is what is sending us back
-
-//                if (!follower.isBusy() && ball_ready)
+//                if ((!follower.isBusy()) && ball_ready)
 //                    follower.setMaxPower(1);
 //                    set_step(AutoStep.ReturnToFarLaunchOne);
                 break;
@@ -73,6 +81,7 @@ public class BallistaAutoFar extends BallistaAuto {
                 if (open_door && (time_since_ball_ready.seconds() > 1.0)){
                     follower.breakFollowing();
                     fire_artifact = false;
+                    turret_stop_firing();
                     set_step(AutoStep.HumanZoneIntakeOne);
                 }
                 break;
@@ -91,8 +100,10 @@ public class BallistaAutoFar extends BallistaAuto {
                 fire_artifact = true;
                 break;
             case HumanZoneIntakeOne:
-                follower.setMaxPower(1);
-                human_zone_corner_pose = new Pose(66,60,apm*-Math.PI/2);
+                //CHANGE THIS BACK TO 1 LATER
+                //REMOVE, IMPORTANT DADADA SEE ME KEYWORDS
+                follower.setMaxPower(0.2);
+
                 PathChain human_zone_intake_path = follower.pathBuilder()
                         .addPath(new BezierLine(follower.getPose(),human_zone_corner_pose))
                         .setConstantHeadingInterpolation(human_zone_corner_pose.getHeading())

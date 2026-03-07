@@ -7,19 +7,19 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous(name="BallistaAutoNear")
 public class BallistaAutoNear extends BallistaAuto {
-    Pose starter_pose = new Pose(-45.2, -60.8, apm*-Math.PI / 2);
+    Pose starter_pose;
 
-    Pose launch_one_pose = new Pose(-30, -35, apm*-Math.PI / 2);
+    Pose launch_one_pose;
 
 
-    Pose intake_near_bar_pose_1 = new Pose(-20,-24,apm*-Math.PI / 2);
-    Pose intake_near_bar_pose_2 = new Pose(-20,-60,apm*-Math.PI / 2);
+    Pose intake_near_bar_pose_1;
+    Pose intake_near_bar_pose_2;
 
-    Pose intake_mid_bar_pose_1 = new Pose(14,-24,apm*-Math.PI / 2);
-    Pose intake_mid_bar_pose_2 = new Pose(14,-60,apm*-Math.PI / 2);
+    Pose intake_mid_bar_pose_1;
+    Pose intake_mid_bar_pose_2;
 
-    Pose intake_far_bar_pose_1 = new Pose(28,-24,apm*-Math.PI / 2);
-    Pose intake_far_bar_pose_2 = new Pose(28,-60,apm*-Math.PI / 2);
+    Pose intake_far_bar_pose_1;
+    Pose intake_far_bar_pose_2;
 
 
 //    PathConstraints path_constraint = new PathConstraints()
@@ -28,6 +28,21 @@ public class BallistaAutoNear extends BallistaAuto {
     public void init() {
         super.init();
         set_team("red");
+
+        starter_pose = new Pose(-45.2, -60.8*apm, apm*-Math.PI / 2);
+
+        launch_one_pose = new Pose(-30, -35*apm, apm*-Math.PI / 2);
+
+
+        intake_near_bar_pose_1 = new Pose(-20,-24*apm,apm*-Math.PI / 2);
+        intake_near_bar_pose_2 = new Pose(-20,-60*apm,apm*-Math.PI / 2);
+
+        intake_mid_bar_pose_1 = new Pose(14,-24*apm,apm*-Math.PI / 2);
+        intake_mid_bar_pose_2 = new Pose(14,-60*apm,apm*-Math.PI / 2);
+
+        intake_far_bar_pose_1 = new Pose(28,-24*apm,apm*-Math.PI / 2);
+        intake_far_bar_pose_2 = new Pose(28,-60*apm,apm*-Math.PI / 2);
+
         follower.setPose(starter_pose);
     }
 
