@@ -79,8 +79,9 @@ public class BallistaAutoFar extends BallistaAuto {
                 }
                 break;
             case ReturnToFarLaunchOne:
-                if (!follower.isBusy() && (Math.abs(follower.getPose().getY())<20));
+                if (!follower.isBusy() && (Math.abs(follower.getPose().getY())<20)) {
                     set_step(AutoStep.FireSecondVolley);
+                }
                 break;
             case FireSecondVolley:
                 if (open_door && (time_since_ball_ready.seconds() > 1.0)){
