@@ -20,6 +20,7 @@ public class CrossbowTeleop extends BallistaMain {
     @Override
     public void start() {
         super.start();
+        spin_launcher = true;
         runtime.reset();
     }
 
@@ -73,6 +74,14 @@ public class CrossbowTeleop extends BallistaMain {
 
         if (gamepad1.aWasPressed()){
             fire_launcher = !fire_launcher;
+        }
+
+        if (gamepad1.dpadUpWasPressed()){
+            set_launcher_speed(1480);
+        }
+
+        if (gamepad1.dpadDownWasPressed()){
+            set_launcher_speed(1200);
         }
 
 
@@ -150,22 +159,22 @@ public class CrossbowTeleop extends BallistaMain {
 
         launcher_code(fire_launcher, gamepad1.y);
 
-        if (gamepad1.dpadUpWasPressed()) {
-            set_launcher_speed(get_launcher_speed() + 40);
-        } else if (gamepad1.dpadDownWasPressed()) {//||gamepad1.dpadDownWasPressed()
-            set_launcher_speed(get_launcher_speed() - 40);
-        }
-        if (LLresult != null && LLresult.isValid()) {
-            Pose3D botpose = LLresult.getBotpose_MT2();
-
-            if (botpose != null) {
-                double x = botpose.getPosition().x;
-                double y = botpose.getPosition().y;
-                double yaw = botpose.getOrientation().getYaw();
-                double meters_to_inches = 39.3701;
-                telemetry.addData("MT2 Location\n", "x: " + x * meters_to_inches + "\ny: " + y * meters_to_inches + "\nyaw: " + yaw);
-            }
-        }
+//        if (gamepad1.dpadUpWasPressed()) {
+//            set_launcher_speed(get_launcher_speed() + 40);
+//        } else if (gamepad1.dpadDownWasPressed()) {//||gamepad1.dpadDownWasPressed()
+//            set_launcher_speed(get_launcher_speed() - 40);
+//        }
+//        if (LLresult != null && LLresult.isValid()) {
+//            Pose3D botpose = LLresult.getBotpose_MT2();
+//
+//            if (botpose != null) {
+//                double x = botpose.getPosition().x;
+//                double y = botpose.getPosition().y;
+//                double yaw = botpose.getOrientation().getYaw();
+//                double meters_to_inches = 39.3701;
+//                telemetry.addData("MT2 Location\n", "x: " + x * meters_to_inches + "\ny: " + y * meters_to_inches + "\nyaw: " + yaw);
+//            }
+//        }
 //        if (gamepad1.yWasPressed()) {
 //            limelight_set_pose();
 //        }

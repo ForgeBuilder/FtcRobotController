@@ -91,7 +91,7 @@ public class BallistaAutoNear extends BallistaAuto {
 
         switch (current_auto_step) {
             case ReturnToLaunchNearOne:
-                if (!follower.isBusy() && (Math.abs(current_pedro_pose.getY()) < 16)){
+                if (!follower.isBusy() && (Math.abs(current_pedro_pose.getY())< 16)){
                     set_step(AutoStep.FireFirstVolley);
                 }
                 break;

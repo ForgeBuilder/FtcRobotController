@@ -19,7 +19,7 @@ public class BallistaAuto extends BallistaMain {
     @Override public void loop(){
         super.loop();
         if (runtime.seconds() > 29.5){
-            stop();
+            requestOpModeStop();
         }
     }
 

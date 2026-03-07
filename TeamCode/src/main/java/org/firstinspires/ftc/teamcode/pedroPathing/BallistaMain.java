@@ -856,24 +856,28 @@ public class BallistaMain extends OpMode {
     public void rangefind(){
         //estimated_distance is old distance
 
-        double distance = get_range_with_pose();
-        panelsTelemetry.addData("distance_to_goal",distance);
-
-        if (override_launch_speed == 0){
-
-
-            double unrounded_launcher_speed = rangefinder_constants[0]*Math.pow(distance,2)+rangefinder_constants[1]*distance+rangefinder_constants[2];
-
-            launcherSpeed = Math.round((long) (unrounded_launcher_speed/20))*20;
-
-            launcherSpeed = Math.max(Math.min(launcherSpeed,1500),1140);
-        } else {
-            launcherSpeed = override_launch_speed;
-        }
-
-
-
-        panelsTelemetry.addData("launcherTargetSpeed",launcherSpeed);
+//        double distance = get_range_with_pose();
+//        panelsTelemetry.addData("distance_to_goal",distance);
+//
+//        if (override_launch_speed == 0){
+//
+//
+//            double unrounded_launcher_speed = rangefinder_constants[0]*Math.pow(distance,2)+rangefinder_constants[1]*distance+rangefinder_constants[2];
+//
+//            launcherSpeed = Math.round((long) (unrounded_launcher_speed/20))*20;
+//
+//            panelsTelemetry.addData("launcherSpeed_BeforeClamp",launcherSpeed);
+//            launcherSpeed = Math.min(launcherSpeed,1500);
+//            panelsTelemetry.addData("launcherSpeed_postmmin",launcherSpeed);
+//            launcherSpeed = Math.max(launcherSpeed,1140);
+//            panelsTelemetry.addData("launcherSpeed_postmmax",launcherSpeed);
+//        } else {
+//            launcherSpeed = override_launch_speed;
+//        }
+//
+//
+//
+//        panelsTelemetry.addData("launcherTargetSpeed",launcherSpeed);
 
     }
 

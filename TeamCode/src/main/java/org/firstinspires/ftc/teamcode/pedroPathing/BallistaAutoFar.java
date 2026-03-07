@@ -123,13 +123,14 @@ public class BallistaAutoFar extends BallistaAuto {
                         .addParametricCallback(0.2, () ->{
                             spin_intake = false;
                         })
-                        .addParametricCallback(0.5, () ->{
-                            follower.setMaxPower(0.6);
+                        .addParametricCallback(0.7, () ->{
+                            follower.setMaxPower(0.2);
                         })
                         .build();
                 follower.followPath(return_to_launch_path);
                 break;
             case FireSecondVolley:
+                follower.setMaxPower(1);
                 time_since_ball_ready.reset();
                 spin_intake = false;
                 follower.holdPoint(launch_2_pose);
