@@ -5,7 +5,6 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name="BallistaAutoNear")
 public class BallistaAutoNear extends BallistaAuto {
     Pose starter_pose;
 
@@ -54,17 +53,17 @@ public class BallistaAutoNear extends BallistaAuto {
 
         starter_pose = new Pose(-42.5, -53.77*apm, apm*-Math.PI / 2);
 
-        launch_one_pose = new Pose(-12, -24*apm, apm*-Math.PI / 2);
+        launch_one_pose = new Pose(-12, -18*apm, apm*-Math.PI / 2);
 
 
         intake_near_bar_pose_1 = new Pose(-12,-17*apm,apm*-Math.PI / 2);
-        intake_near_bar_pose_2 = new Pose(-12,-53*apm,apm*-Math.PI / 2);
+        intake_near_bar_pose_2 = new Pose(-12,-50*apm,apm*-Math.PI / 2);
 
         intake_mid_bar_pose_1 = new Pose(12,-17*apm,apm*-Math.PI / 2);
-        intake_mid_bar_pose_2 = new Pose(12,-53*apm,apm*-Math.PI / 2);
+        intake_mid_bar_pose_2 = new Pose(12,-50*apm,apm*-Math.PI / 2);
 
         intake_far_bar_pose_1 = new Pose(34,-17*apm,apm*-Math.PI / 2);
-        intake_far_bar_pose_2 = new Pose(34,-60*apm,apm*-Math.PI / 2);
+        intake_far_bar_pose_2 = new Pose(34,-58*apm,apm*-Math.PI / 2);
 
         follower.setPose(starter_pose);
 
@@ -92,7 +91,7 @@ public class BallistaAutoNear extends BallistaAuto {
 
         switch (current_auto_step) {
             case ReturnToLaunchNearOne:
-                if (!follower.isBusy()){
+                if (!follower.isBusy() && (Math.abs(current_pedro_pose.getY()) < 16)){
                     set_step(AutoStep.FireFirstVolley);
                 }
                 break;
