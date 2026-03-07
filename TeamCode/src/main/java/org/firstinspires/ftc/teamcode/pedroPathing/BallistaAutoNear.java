@@ -7,20 +7,19 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous(name="BallistaAutoNear")
 public class BallistaAutoNear extends BallistaAuto {
+    Pose starter_pose = new Pose(-45.2, -60.8, apm*-Math.PI / 2);
 
-    Pose starter_pose = new Pose(-45.2, -60.8, -Math.PI / 2);
-
-    Pose launch_one_pose = new Pose(-30, -35, -Math.PI / 2);
+    Pose launch_one_pose = new Pose(-30, -35, apm*-Math.PI / 2);
 
 
-    Pose intake_near_bar_pose_1 = new Pose(-20,-24,-Math.PI / 2);
-    Pose intake_near_bar_pose_2 = new Pose(-20,-60,-Math.PI / 2);
+    Pose intake_near_bar_pose_1 = new Pose(-20,-24,apm*-Math.PI / 2);
+    Pose intake_near_bar_pose_2 = new Pose(-20,-60,apm*-Math.PI / 2);
 
-    Pose intake_mid_bar_pose_1 = new Pose(14,-24,-Math.PI / 2);
-    Pose intake_mid_bar_pose_2 = new Pose(14,-60,-Math.PI / 2);
+    Pose intake_mid_bar_pose_1 = new Pose(14,-24,apm*-Math.PI / 2);
+    Pose intake_mid_bar_pose_2 = new Pose(14,-60,apm*-Math.PI / 2);
 
-    Pose intake_far_bar_pose_1 = new Pose(28,-24,-Math.PI / 2);
-    Pose intake_far_bar_pose_2 = new Pose(28,-60,-Math.PI / 2);
+    Pose intake_far_bar_pose_1 = new Pose(28,-24,apm*-Math.PI / 2);
+    Pose intake_far_bar_pose_2 = new Pose(28,-60,apm*-Math.PI / 2);
 
 
 //    PathConstraints path_constraint = new PathConstraints()

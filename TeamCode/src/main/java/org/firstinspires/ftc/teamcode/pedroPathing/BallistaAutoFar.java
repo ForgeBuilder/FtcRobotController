@@ -8,12 +8,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 @Autonomous(name="BallistaAutoFar")
 public class BallistaAutoFar extends BallistaAuto {
     PathChain test_path;
+    Pose starter_pose = new Pose(68.2,7.1*apm,apm*-Math.PI/2);
 
-    Pose starter_pose = new Pose(68.2,7.1,Math.PI/2);
+    Pose human_zone_corner_pose = new Pose(66,60,apm*-Math.PI/2);
 
-    Pose human_zone_corner_pose = new Pose(66,60,Math.PI/2);
-
-    Pose launch_2_pose = new Pose(65.5,15,Math.PI/2);
+    Pose launch_2_pose = new Pose(65.5,15,apm*-Math.PI/2);
 //    Pose launch_pose = new Pose(-14.3,-16,Math.PI);
 
 //    Pose firing_pose = new Pose();
@@ -62,9 +61,11 @@ public class BallistaAutoFar extends BallistaAuto {
                 }
                 break;
             case HumanZoneIntakeOne:
-                if (!follower.isBusy() && ball_ready)
-                    follower.setMaxPower(1);
-                    set_step(AutoStep.ReturnToFarLaunchOne);
+                //check to see if this if is what is sending us back
+
+//                if (!follower.isBusy() && ball_ready)
+//                    follower.setMaxPower(1);
+//                    set_step(AutoStep.ReturnToFarLaunchOne);
                 break;
             case ReturnToFarLaunchOne:
                 if (!follower.isBusy())
