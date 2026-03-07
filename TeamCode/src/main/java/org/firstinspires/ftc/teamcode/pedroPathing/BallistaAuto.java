@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import com.pedropathing.geometry.Pose;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class BallistaAuto extends BallistaMain {
 
     protected boolean fire_artifact;
 
+    protected ElapsedTime runtime = new ElapsedTime();
     public enum turret_firing_state {
         FIRING_ARTIFACTS,FINISHED_FIRING
     }
@@ -14,6 +16,17 @@ public class BallistaAuto extends BallistaMain {
         NOT_FULL,FULL
     }
 
+    @Override public void loop(){
+        super.loop();
+        if (runtime.seconds() > 29.5){
+            stop();
+        }
+    }
+
+    @Override public void start(){
+        super.start();
+        runtime.reset();
+    }
     public balls_loaded_state get_balls_loaded_state(){
         if (ball_ready && ball_in_intake){
             return balls_loaded_state.FULL;

@@ -54,7 +54,7 @@ public class BallistaAutoNear extends BallistaAuto {
 
         starter_pose = new Pose(-42.5, -53.77*apm, apm*-Math.PI / 2);
 
-        launch_one_pose = new Pose(-30, -35*apm, apm*-Math.PI / 2);
+        launch_one_pose = new Pose(-12, -24*apm, apm*-Math.PI / 2);
 
 
         intake_near_bar_pose_1 = new Pose(-12,-17*apm,apm*-Math.PI / 2);
