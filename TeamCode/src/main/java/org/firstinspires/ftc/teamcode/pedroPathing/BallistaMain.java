@@ -63,7 +63,7 @@ public class BallistaMain extends OpMode {
     public static double the_time_it_takes_to_open_the_door_in_seconds = 0;
 
 
-
+    public double aim_offset = 0.0;
     //these rough estimates are now outdated and should only be used as a starting point
 
 //    public static int super_near_shot_speed = 1120;
@@ -237,7 +237,7 @@ public class BallistaMain extends OpMode {
 
                         double goal_rotation = Math.atan2(deltaY,deltaX);
 
-                        double angle_for_turret = -tracking_from_pose.getHeading()+goal_rotation;
+                        double angle_for_turret = -tracking_from_pose.getHeading()+goal_rotation+aim_offset;
                         double turret_angle_mod = AngleUnit.normalizeRadians(angle_for_turret);
                         panelsTelemetry.addData("turret_angle_mod",turret_angle_mod);
                         turret_spin_to_rotation_radians(turret_angle_mod);

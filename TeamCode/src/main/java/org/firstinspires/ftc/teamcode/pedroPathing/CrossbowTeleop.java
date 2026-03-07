@@ -40,9 +40,9 @@ public class CrossbowTeleop extends BallistaMain {
 
         } finally {
             if (autopose != null){
-                telemetry.addData("auto_pose",autopose);
+//                telemetry.addData("auto_pose",autopose);
             } else {
-                telemetry.addData("auto_pose","no auto pose found");
+//                telemetry.addData("auto_pose","no auto pose found");
             }
         }
         Pose start_pose = new Pose(start_pose_members[0],start_pose_members[1],start_pose_members[2]);
@@ -75,7 +75,7 @@ public class CrossbowTeleop extends BallistaMain {
         super.loop();
         //handels limelight, should probably go in main at some point
         limelight_code();
-
+        telemetry.addData("aim_offset = ", aim_offset);
         if (gamepad1.aWasPressed()){
             fire_launcher = !fire_launcher;
         }
@@ -136,25 +136,37 @@ public class CrossbowTeleop extends BallistaMain {
         //aim adjustment
 
 
-        telemetry.addData("backboard_pose x", goal_pose.getX());
-        telemetry.addData("backboard_pose y", goal_pose.getY());
-
-        panelsTelemetry.addData("backboard_pose x", goal_pose.getX());
-        panelsTelemetry.addData("backboard_pose y", goal_pose.getY());
+//        telemetry.addData("backboard_pose x", goal_pose.getX());
+//        telemetry.addData("backboard_pose y", goal_pose.getY());
+//
+//        panelsTelemetry.addData("backboard_pose x", goal_pose.getX());
+//        panelsTelemetry.addData("backboard_pose y", goal_pose.getY());
 
         //adjustment_size
 
         //backboard_pose = new Pose (backboard_pose.getX(),backboard_pose.getY());
 
+//        if(gamepad2.dpadUpWasPressed()){
+//            goal_pose_constants[0] -= adjustment_size;
+//        } else if (gamepad2.dpadLeftWasPressed()){
+//            goal_pose_constants[1] -= adjustment_size;
+//        } else if(gamepad2.dpadDownWasPressed()){
+//            goal_pose_constants[0] -= adjustment_size;
+//        } else if (gamepad2.dpadRightWasPressed()){
+//            goal_pose_constants[1] += adjustment_size;
+//        }
+
         if(gamepad2.dpadUpWasPressed()){
-            goal_pose_constants[0] -= adjustment_size;
+
         } else if (gamepad2.dpadLeftWasPressed()){
-            goal_pose_constants[1] -= adjustment_size;
+            aim_offset -= Math.toRadians(1);
         } else if(gamepad2.dpadDownWasPressed()){
-            goal_pose_constants[0] -= adjustment_size;
-        } else if (gamepad2.dpadRightWasPressed()){
-            goal_pose_constants[1] += adjustment_size;
+            aim_offset += Math.toRadians(1);
+        } else if (gamepad2.xWasPressed()){
+            aim_offset = 0;
         }
+
+
         goal_pose = new Pose(goal_pose_constants[0],goal_pose_constants[1],0);
 
         //launcher
@@ -197,8 +209,8 @@ public class CrossbowTeleop extends BallistaMain {
 
     @Override
     public void intake_code() {
-        panelsTelemetry.addData("spin intake",spin_intake);
-        panelsTelemetry.addData("reverse intake",reverse_intake);
+//        panelsTelemetry.addData("spin intake",spin_intake);
+//        panelsTelemetry.addData("reverse intake",reverse_intake);
 
         boolean activate = (gamepad1.right_trigger > 0.1) || gamepad2.a;
 
