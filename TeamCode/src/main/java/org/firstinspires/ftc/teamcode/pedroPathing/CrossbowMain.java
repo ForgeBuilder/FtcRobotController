@@ -99,6 +99,7 @@ public class CrossbowMain extends OpMode {
         return Math.sqrt(Math.pow(current_pedro_pose.getX()- goal_pose.getX(),2)+Math.pow(current_pedro_pose.getY()- goal_pose.getY(),2));
     }
 
+    public static double arbitrary_rotation = 0;
 
     public class turret_class {
 
@@ -232,32 +233,25 @@ public class CrossbowMain extends OpMode {
                     try{
                         //FIRST -
 
-                        //try having the turret face in arbitrary directions with no goal pose. make test rotation a static.
-
-                        //turret_spin_to_rotation_radians((-tracking_from_pose.getHeading()+arbitrary_rotation-Math.PI)%(Math.PI*2)+Math.PI);
-
-
-
-                        //SECOND -
-
-
-
-                        //double deltaY = goal_pose.getY()-tracking_from_pose.getY()
-                        //double deltaX = goal_pose.getX()-tracking_from_pose.getX()
-                        //double test_rotation = Math.atan2(deltaX,deltaY)
-                        //double angle_for_turret = -tracking_from_pose.getHeading()+test_rotation;
+                        double deltaY = goal_pose.getY()-tracking_from_pose.getY();
+                        double deltaX = goal_pose.getX()-tracking_from_pose.getX();
+                        double goal_rotation = Math.atan2(deltaY,deltaX);
+                        double angle_for_turret = -tracking_from_pose.getHeading()+goal_rotation;
+                        double turret_angle_mod = AngleUnit.normalizeRadians(angle_for_turret);
+                        panelsTelemetry.addData("turret_angle_mod",turret_angle_mod);
+                        turret_spin_to_rotation_radians(turret_angle_mod);
 
                         //turret_spin_to_rotation_radians((-tracking_from_pose.getHeading()+test_rotation-Math.PI)%(Math.PI*2)+Math.PI);
 
                         //set the target of the goal to 0,0 and drive around it in a circle to see if it works. graph the variable.
-                        double angle_to_goal_with_pedro = Math.atan2((),();
-                        double angle_for_turret = -tracking_from_pose.getHeading()+angle_to_goal_with_pedro;
+//                        double angle_to_goal_with_pedro = Math.atan2((),();
+//                        double angle_for_turret = -tracking_from_pose.getHeading()+angle_to_goal_with_pedro;
 
                         //-tracking_from_pose.getHeading() should be correct because it just turns the way the robot goes.
 
 
 
-                        turret.turret_spin_to_rotation_radians(angle_for_turret);//
+//                        turret.turret_spin_to_rotation_radians(angle_for_turret);//
                         break;
                     } catch (RuntimeException e) {
                         panelsTelemetry.addData("TRACKING_TARGET_POSE error",e);
@@ -340,8 +334,6 @@ public class CrossbowMain extends OpMode {
         public boolean turret_spin_to_rotation_radians(double angle){
             boolean limit_encountered = false;
             panelsTelemetry.addData("turret_target_radians",angle);
-
-            angle = ((angle + (mod_constant)*Math.PI)%(Math.PI*2))-(mod_constant)*Math.PI;
             panelsTelemetry.addData("turret_target_radians_postmod",angle);
 
             double temp_tick_target = (angle/(Math.PI*2))*turret_ppr; //1 should be turret ppr but its evil?
@@ -901,7 +893,7 @@ public class CrossbowMain extends OpMode {
             //after some testing this looks pretty stable! gonna keep it for this comp
 
             double ty = LLresult.getTy();
-            double ta = LLresult.getTa(); // How big the target looks (0%-100% of the image)
+            double ta = LLresult.getTa(); // How big the target looks (0 percent -100 percent of the image)
             double limelightMountAngleDegrees = 19.0;
             double targetOffsetAngle_Vertical = ty;
             double limelight_height = 11.5;
