@@ -27,7 +27,7 @@ public class BallistaAutoNear extends BallistaAuto {
     @Override
     public void init() {
         super.init();
-        set_team("blue");
+        set_team("red");
         follower.setPose(starter_pose);
     }
 

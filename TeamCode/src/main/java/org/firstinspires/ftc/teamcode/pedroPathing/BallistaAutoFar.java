@@ -5,7 +5,6 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name="BallistaAutoFar")
 public class BallistaAutoFar extends BallistaAuto {
     PathChain test_path;
     Pose starter_pose = new Pose(68.2,7.1*apm,apm*-Math.PI/2);
@@ -19,7 +18,6 @@ public class BallistaAutoFar extends BallistaAuto {
 
     @Override public void init(){
         super.init();
-        set_team("red");
         follower.setPose(starter_pose);
     }
 
@@ -94,7 +92,7 @@ public class BallistaAutoFar extends BallistaAuto {
                 break;
             case HumanZoneIntakeOne:
                 follower.setMaxPower(1);
-                human_zone_corner_pose = new Pose(66,60,Math.PI/2);
+                human_zone_corner_pose = new Pose(66,60,apm*-Math.PI/2);
                 PathChain human_zone_intake_path = follower.pathBuilder()
                         .addPath(new BezierLine(follower.getPose(),human_zone_corner_pose))
                         .setConstantHeadingInterpolation(human_zone_corner_pose.getHeading())
