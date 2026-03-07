@@ -834,10 +834,16 @@ public class CrossbowMain extends OpMode {
 //    };
 
         // 3/5/2026 gobilda 30a yellow hood
+//        public static double[] rangefinder_constants = {
+//                -0.084,
+//                19.91,
+//                288.297
+//        }
+
         public static double[] rangefinder_constants = {
-                -0.084,
-                19.91,
-                288.297
+            -0.044,
+            -1.97,
+            1126.93
         };
 
     public static int override_launch_speed;
@@ -854,9 +860,13 @@ public class CrossbowMain extends OpMode {
             double unrounded_launcher_speed = rangefinder_constants[0]*Math.pow(distance,2)+rangefinder_constants[1]*distance+rangefinder_constants[2];
 
             launcherSpeed = Math.round((long) (unrounded_launcher_speed/20))*20;
+
+            launcherSpeed = Math.max(launcherSpeed,1480);
         } else {
             launcherSpeed = override_launch_speed;
         }
+
+
 
         panelsTelemetry.addData("launcherTargetSpeed",launcherSpeed);
 
