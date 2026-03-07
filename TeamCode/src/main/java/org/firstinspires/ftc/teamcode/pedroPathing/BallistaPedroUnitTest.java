@@ -6,7 +6,7 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous(name="BallistaPedroUnitTest")
-public class BallistaPedroUnitTest extends CrossbowMain {
+public class BallistaPedroUnitTest extends BallistaMain {
 
 
     Pose start_pose = new Pose (2,2,0);

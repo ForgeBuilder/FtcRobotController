@@ -12,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
 
 @Configurable
-public class CrossbowTeleop extends CrossbowMain {
+public class CrossbowTeleop extends BallistaMain {
     private ElapsedTime runtime = new ElapsedTime();
 
     public static double[] start_pose_members = {0,0,0};

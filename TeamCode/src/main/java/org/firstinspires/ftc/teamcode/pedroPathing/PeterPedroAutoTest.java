@@ -6,13 +6,12 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 @Autonomous(name="PeterPedroAutoTest",preselectTeleOp = "TeleopMain")
 
 
 
-public class PeterPedroAutoTest extends CrossbowMain {
+public class PeterPedroAutoTest extends BallistaMain {
     public static Follower follower;
     private PathChain halfSquareLoop;
     private PathChain otherHalfSquareLoop;

@@ -6,7 +6,7 @@ import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous(name="BallistaTurretAutoTest")
-public class BallistaTurretAutoTest extends CrossbowMain {
+public class BallistaTurretAutoTest extends BallistaMain {
 
     PathChain test_path;
 

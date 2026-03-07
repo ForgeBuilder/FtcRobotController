@@ -28,7 +28,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -57,7 +56,7 @@ import com.bylazar.configurables.annotations.Configurable;
 
 
 @Configurable
-public class CrossbowMain extends OpMode {
+public class BallistaMain extends OpMode {
 
 //    public PanelsField panelsField = PanelsField.INSTANCE;
 
@@ -867,7 +866,7 @@ public class CrossbowMain extends OpMode {
 
             launcherSpeed = Math.round((long) (unrounded_launcher_speed/20))*20;
 
-            launcherSpeed = Math.max(launcherSpeed,1480);
+            launcherSpeed = Math.max(Math.min(launcherSpeed,1500),1140);
         } else {
             launcherSpeed = override_launch_speed;
         }
