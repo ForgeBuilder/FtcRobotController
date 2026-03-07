@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class BallistaAuto extends BallistaMain {
 
+    public static Pose auto_end_pose = new Pose(0,0,0);
     protected boolean fire_artifact;
 
     protected ElapsedTime runtime = new ElapsedTime();
@@ -23,6 +24,10 @@ public class BallistaAuto extends BallistaMain {
         }
     }
 
+    @Override public void stop(){
+        super.stop();
+        auto_end_pose = current_pedro_pose;
+    }
     @Override public void start(){
         super.start();
         runtime.reset();
@@ -51,6 +56,7 @@ public class BallistaAuto extends BallistaMain {
             return turret_firing_state.FIRING_ARTIFACTS;
         }
     }
+    //MUST BE CALLED BEFORE STARTING NEW PATHS
     public void turret_stop_firing(){
         follower.breakFollowing();
         fire_artifact = false;

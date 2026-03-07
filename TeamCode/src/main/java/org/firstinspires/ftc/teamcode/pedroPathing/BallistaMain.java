@@ -601,7 +601,7 @@ public class BallistaMain extends OpMode {
     public static double KickerLaunchAngle = 0.3;
     public static double KickerIdleAngle = 0;
 
-    private int launcherSpeed = 780;
+    private int launcherSpeed = 1480;
     public int get_launcher_speed(){
         return launcherSpeed;
     }
@@ -664,7 +664,7 @@ public class BallistaMain extends OpMode {
 
     protected ElapsedTime door_open_timer = new ElapsedTime();
     protected ElapsedTime door_closed_timer = new ElapsedTime();
-    protected boolean door_closed = false;
+    protected boolean door_closed = true;
 
 
     double limelight_chasis_rotation_multiplier = 0.02; //old system

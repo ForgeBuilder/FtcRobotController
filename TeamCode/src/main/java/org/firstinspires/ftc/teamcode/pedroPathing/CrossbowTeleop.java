@@ -20,6 +20,10 @@ public class CrossbowTeleop extends BallistaMain {
     @Override
     public void start() {
         super.start();
+        if (BallistaAuto.auto_end_pose != null){
+            follower.setPose(BallistaAuto.auto_end_pose);
+        }
+        turret.set_turret_state(TurretState.FINDING_LIMIT);
         spin_launcher = true;
         runtime.reset();
     }

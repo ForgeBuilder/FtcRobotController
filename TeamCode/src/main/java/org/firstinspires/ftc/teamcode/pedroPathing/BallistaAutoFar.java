@@ -4,10 +4,13 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class BallistaAutoFar extends BallistaAuto {
     PathChain test_path;
     Pose starter_pose;
+
+    ElapsedTime step_timer = new ElapsedTime();
 
     Pose launch_2_pose;
 
@@ -27,6 +30,7 @@ public class BallistaAutoFar extends BallistaAuto {
     }
 
     @Override public void start(){
+        set_launcher_speed(1480);
         super.start();
 
         starter_pose = new Pose(68.2,-7.1*apm,apm*-Math.PI/2);
@@ -61,28 +65,27 @@ public class BallistaAutoFar extends BallistaAuto {
         switch (current_auto_step){
             case FireFirstVolley:
                 if (open_door && time_since_ball_ready.seconds() > 1.0){
-                    follower.breakFollowing();
-                    fire_artifact = false;
                     turret_stop_firing();
+                    fire_artifact = false;
                     set_step(AutoStep.HumanZoneIntakeOne);
                 }
                 break;
             case HumanZoneIntakeOne:
 //                check to see if this if is what is sending us back
-                if ((!follower.isBusy()) && ball_ready) { //(Math.abs(current_pedro_pose.getY()) > 30.0)
+                if (ball_ready || !follower.isBusy() || (step_timer.seconds() > 5)) { //(Math.abs(current_pedro_pose.getY()) > 30.0)
+                    follower.breakFollowing();
                     follower.setMaxPower(1);
                     set_step(AutoStep.ReturnToFarLaunchOne);
                 }
                 break;
             case ReturnToFarLaunchOne:
-                if (!follower.isBusy())
+                if (!follower.isBusy() && (Math.abs(follower.getPose().getY())<20));
                     set_step(AutoStep.FireSecondVolley);
                 break;
             case FireSecondVolley:
                 if (open_door && (time_since_ball_ready.seconds() > 1.0)){
-                    follower.breakFollowing();
-                    fire_artifact = false;
                     turret_stop_firing();
+                    fire_artifact = false;
                     set_step(AutoStep.HumanZoneIntakeOne);
                 }
                 break;
@@ -114,6 +117,7 @@ public class BallistaAutoFar extends BallistaAuto {
                         })
                         .build();
                 follower.followPath(human_zone_intake_path);
+                step_timer.reset();
                 break;
             case ReturnToFarLaunchOne:
                 follower.setMaxPower(1);
@@ -123,7 +127,7 @@ public class BallistaAutoFar extends BallistaAuto {
                         .addParametricCallback(0.2, () ->{
                             spin_intake = false;
                         })
-                        .addParametricCallback(0.7, () ->{
+                        .addParametricCallback(0.4, () ->{
                             follower.setMaxPower(0.2);
                         })
                         .build();
