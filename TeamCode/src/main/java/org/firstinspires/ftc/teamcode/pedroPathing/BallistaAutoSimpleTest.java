@@ -1,12 +1,15 @@
 package org.firstinspires.ftc.teamcode.pedroPathing;
 
 import com.pedropathing.geometry.BezierLine;
+import com.pedropathing.geometry.BezierPoint;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathBuilder;
 import com.pedropathing.paths.PathChain;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.pedropathing.paths.callbacks.ParametricCallback;
+import com.pedropathing.paths.callbacks.PathCallback;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-public class BallistaAutoFar extends BallistaAuto {
+public class BallistaAutoSimpleTest extends BallistaAuto {
     PathChain test_path;
     Pose starter_pose;
 
@@ -42,16 +45,7 @@ public class BallistaAutoFar extends BallistaAuto {
         follower.setPose(starter_pose);
 
         set_step(AutoStep.FireFirstVolley);
-        //for red, mod constant is still 1 as long as you spesify 3.14 as the heading shift within the config settings.
 
-
-
-//        follower.setStartingPose(starter_pose);
-//        PathChain to_first_launch = follower.pathBuilder()
-//                .addPath(new BezierLine(starter_pose,test_pose))
-//                .setConstantHeadingInterpolation(Math.PI)
-//                .build();
-//        follower.followPath(to_first_launch);
     }
 
     @Override public void loop(){
@@ -73,49 +67,37 @@ public class BallistaAutoFar extends BallistaAuto {
 
         }
 
-        //ALL OF THIS loops stuff should not be here. THIS SHOULD ALL BE DONE WITH PEDRO CALLBACKS.
-
-        switch (current_auto_step){
-            case FireFirstVolley:
-                if (open_door && time_since_ball_ready.seconds() > 1.0){
-                    turret_stop_firing();
-                    fire_artifact = false;
-                    set_step(AutoStep.HumanZoneIntakeOne);
-                }
-                break;
-            case HumanZoneIntakeOne:
-//                check to see if this if is what is sending us back
-                if (ball_ready || !follower.isBusy() || (step_timer.seconds() > 5)) { //(Math.abs(current_pedro_pose.getY()) > 30.0)
-                    follower.breakFollowing();
-                    follower.setMaxPower(1);
-                    set_step(AutoStep.ReturnToFarLaunchOne);
-                }
-                break;
-            case ReturnToFarLaunchOne:
-                if (!follower.isBusy() && (Math.abs(follower.getPose().getY())<20)) {
-                    set_step(AutoStep.FireSecondVolley);
-                }
-                break;
-            case FireSecondVolley:
-                if (open_door && (time_since_ball_ready.seconds() > 1.0)){
-                    turret_stop_firing();
-                    fire_artifact = false;
-                    set_step(AutoStep.HumanZoneIntakeOne);
-                }
-                break;
-        }
-
         turret.track_goal_from_current_position();
         panelsTelemetry.update(telemetry);
     }
-    public void set_step(AutoStep step){
+    public void set_step(AutoStep step) {
 
-        switch (step){
+        switch (step) {
             case FireFirstVolley:
-                time_since_ball_ready.reset();
-                follower.holdPoint(starter_pose);
                 spin_launcher = true;
                 fire_artifact = true;
+
+                Runnable GUHHH = ()->{
+                    turret_stop_firing();
+                    fire_artifact = false;
+                    follower.resumePathFollowing();
+                };
+
+                PathBuilder.CallbackCondition hi = new PathBuilder.CallbackCondition() {
+                    @Override
+                    public boolean isReady() {
+                        return (open_door && time_since_ball_ready.seconds() > 1.0);
+                    }
+                };
+
+                
+                PathChain FireFirstVolley = follower.pathBuilder()
+                        .addPath(new BezierPoint(starter_pose))
+                        .addCallback(hi,GUHHH)
+                        .build();
+                follower.followPath(FireFirstVolley);
+                follower.pausePathFollowing();
+                time_since_ball_ready.reset();
                 break;
             case HumanZoneIntakeOne:
                 //CHANGE THIS BACK TO 1 LATER

@@ -156,12 +156,14 @@ public class CrossbowTeleop extends BallistaMain {
 //            goal_pose_constants[1] += adjustment_size;
 //        }
 
-        if(gamepad2.dpadUpWasPressed()){
 
-        } else if (gamepad2.dpadLeftWasPressed()){
-            aim_offset -= Math.toRadians(1);
-        } else if(gamepad2.dpadDownWasPressed()){
+
+
+
+        if (gamepad2.dpadLeftWasPressed()){
             aim_offset += Math.toRadians(1);
+        } else if(gamepad2.dpadRightWasPressed()){
+            aim_offset -= Math.toRadians(1);
         } else if (gamepad2.xWasPressed()){
             aim_offset = 0;
         }
