@@ -204,6 +204,7 @@ public class BallistaMain extends OpMode {
             panelsTelemetry.addData("turret state",turret_current_state);
             panelsTelemetry.addData("turret_current_position_ticks",turret_current_position_ticks);
             panelsTelemetry.addData("turret_current_power",turret_motor.getPower());
+
             switch(turret_current_state){
                 case FINDING_LIMIT:
                     boolean limit_encountered = get_right_limit()||get_left_limit();

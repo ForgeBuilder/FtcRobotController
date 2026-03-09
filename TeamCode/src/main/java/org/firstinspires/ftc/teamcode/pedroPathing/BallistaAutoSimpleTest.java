@@ -77,31 +77,28 @@ public class BallistaAutoSimpleTest extends BallistaAuto {
                 spin_launcher = true;
                 fire_artifact = true;
 
-                Runnable GUHHH = ()->{
+                Runnable FireFirstVolleyLoop = ()->{
                     turret_stop_firing();
                     fire_artifact = false;
                     follower.resumePathFollowing();
                 };
 
-                PathBuilder.CallbackCondition hi = new PathBuilder.CallbackCondition() {
+                PathBuilder.CallbackCondition StopFireFirstVolleyLoop = new PathBuilder.CallbackCondition() {
                     @Override
                     public boolean isReady() {
                         return (open_door && time_since_ball_ready.seconds() > 1.0);
                     }
                 };
 
-                
                 PathChain FireFirstVolley = follower.pathBuilder()
                         .addPath(new BezierPoint(starter_pose))
-                        .addCallback(hi,GUHHH)
+                        .addCallback(StopFireFirstVolleyLoop,FireFirstVolleyLoop)
                         .build();
                 follower.followPath(FireFirstVolley);
                 follower.pausePathFollowing();
                 time_since_ball_ready.reset();
                 break;
             case HumanZoneIntakeOne:
-                //CHANGE THIS BACK TO 1 LATER
-                //REMOVE, IMPORTANT DADADA SEE ME KEYWORDS
                 follower.setMaxPower(1);
 
                 follower.breakFollowing();
