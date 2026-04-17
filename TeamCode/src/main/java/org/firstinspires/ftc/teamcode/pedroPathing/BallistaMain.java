@@ -415,7 +415,7 @@ public class BallistaMain extends OpMode {
     protected boolean ball_ready = false;
 
     protected boolean ball_in_intake = false;
-    protected ElapsedTime time_since_ball_ready = new ElapsedTime();
+//    protected ElapsedTime time_since_ball_ready = new ElapsedTime();
 
     Pose goal_pose;
 
@@ -454,7 +454,7 @@ public class BallistaMain extends OpMode {
     @Override
     public void init() {
 
-        time_since_ball_ready.reset();
+//        time_since_ball_ready.reset();
     /// pedro
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"pinpoint");
         follower = Constants.createFollower(hardwareMap);
@@ -465,8 +465,8 @@ public class BallistaMain extends OpMode {
         limelight.start();
 
     /// turret
-        ball_looker = hardwareMap.get(Rev2mDistanceSensor.class,"ballLooker");
-        ball_looker_intake = hardwareMap.get(Rev2mDistanceSensor.class,"ballLookerIntake");
+//        ball_looker = hardwareMap.get(Rev2mDistanceSensor.class,"ballLooker");
+//        ball_looker_intake = hardwareMap.get(Rev2mDistanceSensor.class,"ballLookerIntake");
         turret.init();
 
     /// launch motors
@@ -512,7 +512,7 @@ public class BallistaMain extends OpMode {
 
     @Override
     public void init_loop() {
-        time_since_ball_ready.reset();
+//        time_since_ball_ready.reset();
         limelight.start();
         if (gamepad1.left_bumper){
             turret.set_turret_state(TurretState.FINDING_LIMIT);
@@ -537,17 +537,17 @@ public class BallistaMain extends OpMode {
             update_chasis_pid_toggle = false;
             chasis_pid = new PID(aiming_pid_coeficients[0], aiming_pid_coeficients[1], aiming_pid_coeficients[2]);
         }
-        ball_ready = ball_looker.getDistance(DistanceUnit.MM) < 170;
-        ball_in_intake = ball_looker_intake.getDistance(DistanceUnit.MM) < 150;
-        if (ball_ready){
-            time_since_ball_ready.reset();
-        }
+//        ball_ready = ball_looker.getDistance(DistanceUnit.MM) < 170;
+//        ball_in_intake = ball_looker_intake.getDistance(DistanceUnit.MM) < 150;
+//        if (ball_ready){
+//            time_since_ball_ready.reset();
+//        }
         panelsTelemetry.addData("intake_ball_looker_distance",ball_looker_intake.getDistance(DistanceUnit.MM));
 
         panelsTelemetry.addData("color",color_goober.getNormalizedColors());
 
-        panelsTelemetry.addData("ball_ready",bool_spike(ball_ready));
-        panelsTelemetry.addData("time_since_ball_ready",time_since_ball_ready.seconds());
+//        panelsTelemetry.addData("ball_ready",bool_spike(ball_ready));
+//        panelsTelemetry.addData("time_since_ball_ready",time_since_ball_ready.seconds());
 
 //        panelsTelemetry.addData("magnetic_limit_switch_left", magnetic_limit_switch_left.getValue());
 //        panelsTelemetry.addData("magnetic_limit_switch_right",magnetic_limit_switch_right.getValue());

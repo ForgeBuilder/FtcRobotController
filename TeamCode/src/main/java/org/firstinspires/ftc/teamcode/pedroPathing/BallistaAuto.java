@@ -42,14 +42,14 @@ public class BallistaAuto extends BallistaMain {
 
     public balls_loaded_state current_balls_loaded_state = balls_loaded_state.NOT_FULL;
     public void start_turret_fire(Pose pose){
-        time_since_ball_ready.reset();
+        //time_since_ball_ready.reset();
         follower.holdPoint(pose);
         spin_launcher = true;
         fire_artifact = true;
     }
 
     public turret_firing_state turret_fire_loop(){
-        if (open_door && time_since_ball_ready.seconds() > 1.0){
+        if (open_door){ // && time_since_ball_ready.seconds() > 1.0
             turret_stop_firing();
             return turret_firing_state.FINISHED_FIRING;
         } else {

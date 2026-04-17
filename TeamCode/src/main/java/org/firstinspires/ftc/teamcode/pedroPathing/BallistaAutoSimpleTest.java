@@ -86,7 +86,7 @@ public class BallistaAutoSimpleTest extends BallistaAuto {
                 PathBuilder.CallbackCondition StopFireFirstVolleyLoop = new PathBuilder.CallbackCondition() {
                     @Override
                     public boolean isReady() {
-                        return (open_door && time_since_ball_ready.seconds() > 1.0);
+                        return (open_door); // && time_since_ball_ready.seconds() > 1.0
                     }
                 };
 
@@ -96,7 +96,7 @@ public class BallistaAutoSimpleTest extends BallistaAuto {
                         .build();
                 follower.followPath(FireFirstVolley);
                 follower.pausePathFollowing();
-                time_since_ball_ready.reset();
+                //time_since_ball_ready.reset();
                 break;
             case HumanZoneIntakeOne:
                 follower.setMaxPower(1);
@@ -134,7 +134,7 @@ public class BallistaAutoSimpleTest extends BallistaAuto {
                 break;
             case FireSecondVolley:
                 follower.setMaxPower(1);
-                time_since_ball_ready.reset();
+//                time_since_ball_ready.reset();
                 spin_intake = false;
                 follower.holdPoint(launch_2_pose);
                 spin_launcher = true;

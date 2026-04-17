@@ -77,7 +77,7 @@ public class BallistaAutoFar extends BallistaAuto {
 
         switch (current_auto_step){
             case FireFirstVolley:
-                if (open_door && time_since_ball_ready.seconds() > 1.0){
+                if (open_door ){ //&& time_since_ball_ready.seconds() > 1.0
                     turret_stop_firing();
                     fire_artifact = false;
                     set_step(AutoStep.HumanZoneIntakeOne);
@@ -85,7 +85,7 @@ public class BallistaAutoFar extends BallistaAuto {
                 break;
             case HumanZoneIntakeOne:
 //                check to see if this if is what is sending us back
-                if (ball_ready || !follower.isBusy() || (step_timer.seconds() > 5)) { //(Math.abs(current_pedro_pose.getY()) > 30.0)
+                if (!follower.isBusy() || (step_timer.seconds() > 5)) { //(Math.abs(current_pedro_pose.getY()) > 30.0) //ball_ready ||
                     follower.breakFollowing();
                     follower.setMaxPower(1);
                     set_step(AutoStep.ReturnToFarLaunchOne);
@@ -97,7 +97,7 @@ public class BallistaAutoFar extends BallistaAuto {
                 }
                 break;
             case FireSecondVolley:
-                if (open_door && (time_since_ball_ready.seconds() > 1.0)){
+                if (open_door){ // && (time_since_ball_ready.seconds() > 1.0)
                     turret_stop_firing();
                     fire_artifact = false;
                     set_step(AutoStep.HumanZoneIntakeOne);
@@ -112,7 +112,7 @@ public class BallistaAutoFar extends BallistaAuto {
 
         switch (step){
             case FireFirstVolley:
-                time_since_ball_ready.reset();
+//                time_since_ball_ready.reset();
                 follower.holdPoint(starter_pose);
                 spin_launcher = true;
                 fire_artifact = true;
@@ -155,7 +155,7 @@ public class BallistaAutoFar extends BallistaAuto {
                 break;
             case FireSecondVolley:
                 follower.setMaxPower(1);
-                time_since_ball_ready.reset();
+//                time_since_ball_ready.reset();
                 spin_intake = false;
                 follower.holdPoint(launch_2_pose);
                 spin_launcher = true;
