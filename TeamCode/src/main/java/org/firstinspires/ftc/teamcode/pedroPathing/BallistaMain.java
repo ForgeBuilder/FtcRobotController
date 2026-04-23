@@ -125,7 +125,7 @@ public class BallistaMain extends OpMode {
         private TurretState turret_current_state = TurretState.CENTER_IDLE;
 
         public void init(){
-            color_goober = hardwareMap.get(RevColorSensorV3.class,"color");
+//            color_goober = hardwareMap.get(RevColorSensorV3.class,"color");
 
             magnetic_limit_switch_left = hardwareMap.get(TouchSensor.class,"magL");
             magnetic_limit_switch_right = hardwareMap.get(TouchSensor.class,"magR");
@@ -542,9 +542,9 @@ public class BallistaMain extends OpMode {
 //        if (ball_ready){
 //            time_since_ball_ready.reset();
 //        }
-        panelsTelemetry.addData("intake_ball_looker_distance",ball_looker_intake.getDistance(DistanceUnit.MM));
+//        panelsTelemetry.addData("intake_ball_looker_distance",ball_looker_intake.getDistance(DistanceUnit.MM));
 
-        panelsTelemetry.addData("color",color_goober.getNormalizedColors());
+//        panelsTelemetry.addData("color",color_goober.getNormalizedColors());
 
 //        panelsTelemetry.addData("ball_ready",bool_spike(ball_ready));
 //        panelsTelemetry.addData("time_since_ball_ready",time_since_ball_ready.seconds());
@@ -589,7 +589,7 @@ public class BallistaMain extends OpMode {
     public boolean kick = false;
     public ElapsedTime timeSinceShot = new ElapsedTime();
 
-    protected RevColorSensorV3 color_goober;
+//    protected RevColorSensorV3 color_goober;
 
     private int maxLauncherSpeed = 2200;
     private int minLauncherSpeed = 600;
