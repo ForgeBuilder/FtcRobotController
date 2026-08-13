@@ -60,9 +60,9 @@ public class BallistaMain extends OpMode {
 
 //    public PanelsField panelsField = PanelsField.INSTANCE;
 
-    public static double the_time_it_takes_to_open_the_door_in_seconds = 0;
+    public static double the_time_it_takes_to_open_the_door_in_seconds = 0.6;
 
-
+ 
     public double aim_offset = 0.0;
     //these rough estimates are now outdated and should only be used as a starting point
 
@@ -663,6 +663,8 @@ public class BallistaMain extends OpMode {
 
     protected boolean open_door = false;
 
+    protected boolean spin_intake_shoot = false; //whether to spin the intake for the purpose of shooting
+
     protected ElapsedTime door_open_timer = new ElapsedTime();
     protected ElapsedTime door_closed_timer = new ElapsedTime();
     protected boolean door_closed = true;
@@ -781,28 +783,32 @@ public class BallistaMain extends OpMode {
             //replace true with the new "is turret aimed correctly" variable later
             boolean open_door_conditions = ((turret_error_acceptable && flywheel_speed_acceptable && non_flywheel_conditions) || (override_shot && basic_speed_acceptable));
             //If the speed goes back down.. too bad. door stays open. not in use rn because I think it causes missing when we get defended.
-            boolean keep_door_open_conditions = (turret_error_acceptable && non_flywheel_conditions && basic_speed_acceptable);
+            boolean keep_shooting_conditions = (turret_error_acceptable && non_flywheel_conditions && basic_speed_acceptable);
 
-            open_door = open_door_conditions || (keep_door_open_conditions && open_door);
+            open_door = open_door_conditions || open_door;
 
-            if (open_door){  // //the right bumper serves as an override
-                    launcher_freeze_movement = true;
-                door_closed_timer.reset();
-            } else {
-                door_open_timer.reset();
-            }
-
-            door_closed = (door_closed_timer.seconds() > the_time_it_takes_to_open_the_door_in_seconds);
+            spin_intake_shoot = (keep_shooting_conditions && open_door && (door_open_timer.seconds() > the_time_it_takes_to_open_the_door_in_seconds));
 
         } else {
+            spin_intake_shoot = false;
             launcher_freeze_movement = false;
             if (gamepad1.x){ spin_launcher = false;}
             trying_to_fire = false;
             open_door = false;
+
             telemetry.addData("speed_ready"," -N/A-");
             telemetry.addData("limelight_ready"," -N/A-");
             telemetry.addData("bias",limelight_x_offset);
         }
+
+        door_closed = (door_closed_timer.seconds() > the_time_it_takes_to_open_the_door_in_seconds);
+        if (open_door){  // //the right bumper serves as an override
+            launcher_freeze_movement = true;
+            door_closed_timer.reset();
+        } else {
+            door_open_timer.reset();
+        }
+
         telemetry.addData("left_speed_at_kick",left_speed_at_kick);
         telemetry.addData("right_speed_at_kick",right_speed_at_kick);
 
@@ -968,7 +974,7 @@ public class BallistaMain extends OpMode {
         }
 
         //it's a 312 so 537.7 PPR at the Output Shaft. 5.2 RPS (max) would be 2796.04 or about 2800.
-        if (((spin_intake||reverse_intake)&&door_closed)||(open_door && (door_open_timer.seconds() > the_time_it_takes_to_open_the_door_in_seconds))){
+        if (((spin_intake||reverse_intake)&&door_closed)||spin_intake_shoot){
             set_intake_speed(2000*reverse_multiplier);
         } else {
             set_intake_speed(0);
