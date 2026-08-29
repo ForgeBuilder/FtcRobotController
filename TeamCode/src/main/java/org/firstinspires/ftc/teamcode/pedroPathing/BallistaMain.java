@@ -783,7 +783,7 @@ public class BallistaMain extends OpMode {
             //replace true with the new "is turret aimed correctly" variable later
             boolean open_door_conditions = ((turret_error_acceptable && flywheel_speed_acceptable && non_flywheel_conditions) || (override_shot && basic_speed_acceptable));
             //If the speed goes back down.. too bad. door stays open. not in use rn because I think it causes missing when we get defended.
-            boolean keep_shooting_conditions = (turret_error_acceptable && non_flywheel_conditions && basic_speed_acceptable);
+            boolean keep_shooting_conditions = (turret_error_acceptable && non_flywheel_conditions && basic_speed_acceptable) || override_shot && basic_speed_acceptable;
 
             open_door = open_door_conditions || open_door;
 
