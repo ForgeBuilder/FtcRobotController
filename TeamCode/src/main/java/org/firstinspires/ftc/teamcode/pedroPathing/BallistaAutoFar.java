@@ -57,7 +57,7 @@ public class BallistaAutoFar extends BallistaAuto {
     @Override public void loop(){
         super.loop();
         turret.update();
-        launcher_code(fire_artifact,false);
+        launcher_code(fire_artifact,true);
 
         panelsTelemetry.addData("step: ",current_auto_step);
         telemetry.addData("step: ",current_auto_step);

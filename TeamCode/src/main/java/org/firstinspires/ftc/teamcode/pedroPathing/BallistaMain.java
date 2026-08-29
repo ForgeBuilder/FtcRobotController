@@ -781,7 +781,7 @@ public class BallistaMain extends OpMode {
             boolean non_flywheel_conditions = (linear_velocity_acceptable && angular_velocity_acceptable); //&& !follower.isBusy() -- conflicts with parts of the auto. replace with something that says "still for x seconds" or just don't tell the shooter to fire before stationary. allways active fixes this so we should be good.
 
             //replace true with the new "is turret aimed correctly" variable later
-            boolean open_door_conditions = ((turret_error_acceptable && flywheel_speed_acceptable && non_flywheel_conditions) || (override_shot && basic_speed_acceptable));
+            boolean open_door_conditions = (turret_error_acceptable && flywheel_speed_acceptable && non_flywheel_conditions) || (override_shot && basic_speed_acceptable);
             //If the speed goes back down.. too bad. door stays open. not in use rn because I think it causes missing when we get defended.
             boolean keep_shooting_conditions = (turret_error_acceptable && non_flywheel_conditions && basic_speed_acceptable) || (override_shot && basic_speed_acceptable);
 
